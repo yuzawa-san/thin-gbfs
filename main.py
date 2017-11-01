@@ -33,6 +33,10 @@ class RestHandler(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'text/html'
         self.cached_response(payload, ttl, etag)
     
+    def text_response(self, payload, ttl=0, etag=False):
+        self.response.headers['Content-Type'] = 'text/plain'
+        self.cached_response(payload, ttl, etag)
+    
     def json_response(self, obj, ttl=0, etag=False):
         payload = json.dumps(obj,separators=(',', ':'))
         self.response.headers['Content-Type'] = 'application/json'
@@ -61,6 +65,11 @@ class RestHandler(webapp2.RequestHandler):
         self.response.write(json.dumps({"error":"not_found"}))
         self.response.set_status(404)
 
+class LicenseHandler(RestHandler):
+    def get(self):
+        payload= template.render('LICENSE',{})
+        self.text_response(payload,ttl=0,etag=True)
+        
 class MainPage(RestHandler):
     def get(self):
         payload= template.render('index.html',{'ttl':STATION_STATUS_TTL+10})
@@ -181,5 +190,6 @@ app = webapp2.WSGIApplication([
     ('/systems/(\w+)/info', GbfsSystemInfoApi),
     ('/systems/(\w+)/status', GbfsSystemStatusApi),
     ('/systems', GbfsSystemListApi),
+    ('/LICENSE', LicenseHandler),
     ('/load', UpdateSystemsHandler),
 ], debug=True)
