@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>fast-gbfs</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="fast-gbfs">
+    <link rel="apple-touch-icon" href="static/img/bike.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="shortcut icon" href="static/img/bike.png">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js" type="text/javascript" charset="utf-8"></script>
+    <!-- Load Leaflet from CDN -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+    integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+    crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+    integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+    crossorigin=""></script>
+
+    <!--<script src="https://unpkg.com/pouchdb@^5.2.0/dist/pouchdb.js"></script>
+    	<script src="https://unpkg.com/leaflet.tilelayer.pouchdbcached@latest/L.TileLayer.PouchDBCached.js"></script>
+-->
+    <!-- Load Esri Leaflet from CDN
+    <script src="https://unpkg.com/esri-leaflet@2.1.1/dist/esri-leaflet.js"
+    integrity="sha512-ECQqaYZke9cSdqlFG08zSkudgrdF6I1d8ViSa7I3VIszJyVqw4ng1G8sehEXlumdMnFYfzY0tMgdQa4WCs9IUw=="
+    crossorigin=""></script> -->
+    
+    <!-- load the latest release from the cdn automatically
+    <script src="https://unpkg.com/esri-leaflet-vector"></script>
+     -->
+    <link href="static/css/main.css" rel="stylesheet" type="text/css">
+    <script src="static/js/compass.js"></script>
+</head>
+<body>
+<div id="map"></div>
+<div id="content">
+    <div id="header">
+        <div id="selector">
+        <div id="center"><img src="static/img/dot.svg" width="12"></div>
+        <div class="filter active" id="filter-all">All</div><div class="filter" id="filter-bike">Bike</div><div class="filter" id="filter-dock">Dock</div>
+        </div>
+        <div id="progress-indicator">
+        <svg viewBox="-2 -2 4 4" style="transform: rotate(-0.25turn)" width="20" height="20">
+        <path id="status-arc" d="M 1 0 A 1 1 0 0 1 1 0" stroke="rgb(253,77,2)" fill="none" stroke-width="0.8"></path>
+        </svg>
+        </div>
+    </div>
+    <div id="station-list">
+        <div id="loading">loading...</div>
+    </div>
+    <div id="footer">
+        fast-gbfs<br>
+        <a href="http://github.com/yuzawa-san">yuzawa-san</a>
+    </div>
+</div>
+<script>
+    var gbfsTtl = {{ttl}};
+</script>
+<script src="static/js/main.js">
+</script>
+</body>
+</html>
