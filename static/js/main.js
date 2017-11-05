@@ -120,6 +120,10 @@
         draw();
         localStorage.setItem('filter', filter);
     });
+    
+    $("#toggle").click(function(){
+        $("#system-select").toggle();
+    });
 
     try {
         filter = localStorage.getItem('filter');
@@ -153,22 +157,35 @@
         var lon = currentPosition.coords.longitude;
         $.get("/systems", function(response) {
             var systems = pivot(response);
-            var system = geo.closest(lat, lon, systems);
+            var nearbySystems = geo.nearby(lat, lon, systems);
+            var $system = $("#system");
+            var system = nearbySystems[0];
             var override = window.location.hash;
-            for(var i in systems){
-                var currentSystem = systems[i];
-                if (override === "#" + currentSystem.id){
+            for(var i in nearbySystems){
+                var nearbySystem = nearbySystems[i];
+                if(nearbySystem.distance < 50000){
+                    $system.append('<option value="'+nearbySystem.id+'">'+nearbySystem.name+'</option>');
+                    if(localStorage.getItem('system') === nearbySystem.id){
+                        system = nearbySystem;
+                    }
+                }
+                if (override === "#" + nearbySystem.id){
                     // manual override 
-                    system = currentSystem;
-                    map.setView([currentSystem.lat, currentSystem.lon], map.getZoom());
+                    system = nearbySystem;
+                    map.setView([nearbySystem.lat, nearbySystem.lon], map.getZoom());
                 }
             }
+            $system.val(system.id);
+            $system.change(function(){
+                localStorage.setItem('system', $(this).val());
+                window.location.reload();
+            }).show();
             L.setOptions(youMarker, {
                 icon: myIcon,
                 attribution: system.name
             });
             youMarker.addTo(map);
-            if (!override && system.distance > 100000) {
+            if (!override && system.distance > 50000) {
                 $stationList.html('<div id="loading">No bikeshare system with GBFS feed nearby!</div>');
             } else {
                 var systemId = system.id
