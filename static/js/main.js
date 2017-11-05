@@ -154,12 +154,21 @@
         $.get("/systems", function(response) {
             var systems = pivot(response);
             var system = geo.closest(lat, lon, systems);
+            var override = window.location.hash;
+            for(var i in systems){
+                var currentSystem = systems[i];
+                if (override === "#" + currentSystem.id){
+                    // manual override 
+                    system = currentSystem;
+                    map.setView([currentSystem.lat, currentSystem.lon], map.getZoom());
+                }
+            }
             L.setOptions(youMarker, {
                 icon: myIcon,
                 attribution: system.name
             });
             youMarker.addTo(map);
-            if (system.distance > 100000) {
+            if (!override && system.distance > 100000) {
                 $stationList.html('<div id="loading">No bikeshare system with GBFS feed nearby!</div>');
             } else {
                 var systemId = system.id
