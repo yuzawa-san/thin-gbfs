@@ -75,9 +75,9 @@
     //     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
     // }).addTo(map);
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-             attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-             maxZoom: 16
-            }).addTo(map);
+        attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+        maxZoom: 16
+    }).addTo(map);
     // L.esri.Vector.basemap('BlackAndWhite').addTo(map);
     // L.esri.basemapLayer('Gray', {
     //     detectRetina: true
@@ -120,8 +120,8 @@
         draw();
         localStorage.setItem('filter', filter);
     });
-    
-    $("#toggle").click(function(){
+
+    $("#toggle").click(function() {
         $("#system-select").toggle();
     });
 
@@ -161,22 +161,22 @@
             var $system = $("#system");
             var system = nearbySystems[0];
             var override = window.location.hash;
-            for(var i in nearbySystems){
+            for (var i in nearbySystems) {
                 var nearbySystem = nearbySystems[i];
-                if(nearbySystem.distance < 50000){
-                    $system.append('<option value="'+nearbySystem.id+'">'+nearbySystem.name+'</option>');
-                    if(localStorage.getItem('system') === nearbySystem.id){
+                if (nearbySystem.distance < 50000) {
+                    $system.append('<option value="' + nearbySystem.id + '">' + nearbySystem.name + '</option>');
+                    if (localStorage.getItem('system') === nearbySystem.id) {
                         system = nearbySystem;
                     }
                 }
-                if (override === "#" + nearbySystem.id){
+                if (override === "#" + nearbySystem.id) {
                     // manual override 
                     system = nearbySystem;
                     map.setView([nearbySystem.lat, nearbySystem.lon], map.getZoom());
                 }
             }
             $system.val(system.id);
-            $system.change(function(){
+            $system.change(function() {
                 localStorage.setItem('system', $(this).val());
                 window.location.reload();
             }).show();
@@ -265,12 +265,20 @@
                         markerMap[stationId] = marker;
                         marker.bindPopup(station.name);
                         marker.addTo(map);
-                        var pointsIcon = L.divIcon({className:'points-icon'});
-                        var pointsMarker = L.marker([station.lat, station.lon], {icon: pointsIcon, interactive: false}).addTo(map);
+                        var pointsIcon = L.divIcon({
+                            className: 'points-icon'
+                        });
+                        var pointsMarker = L.marker([station.lat, station.lon], {
+                            icon: pointsIcon,
+                            interactive: false
+                        }).addTo(map);
                         marker.pointsMarker = pointsMarker;
-                        
+
                     }
-                    var pointsIcon = L.divIcon({html: points(station.pts), className:'points-icon'});
+                    var pointsIcon = L.divIcon({
+                        html: points(station.pts),
+                        className: 'points-icon'
+                    });
                     marker.pointsMarker.setIcon(pointsIcon);
                     var pct = NaN;
                     var bikes = station.bikes;
@@ -333,14 +341,14 @@
             }
         }, 1000);
     }
-    
+
     var arc = document.getElementById("status-arc");
-    
-    function progress(percent){
+
+    function progress(percent) {
         var half = percent > .5 ? 1 : 0;
         var x = Math.cos(2 * Math.PI * percent);
         var y = Math.sin(2 * Math.PI * percent);
-        arc.setAttribute("d","M 1 0 A 1 1 0 "+half+" 1 "+x+" "+y);
+        arc.setAttribute("d", "M 1 0 A 1 1 0 " + half + " 1 " + x + " " + y);
     }
 
     function pad(v) {
@@ -409,15 +417,15 @@
         }
         return alerts;
     }
-    
-    function points(pts){
-        if(!pts){
+
+    function points(pts) {
+        if (!pts) {
             return "";
         }
-        if(pts < 0){
-            return "<span class='points-pick'>&#x2b06;&#xFE0E;"+(-pts)+"</span>";
-        }else{
-            return "<span class='points-drop'>&#x2b07;&#xFE0E;"+pts+"</span>";
+        if (pts < 0) {
+            return "<span class='points-pick'>&#x2b06;&#xFE0E;" + (-pts) + "</span>";
+        } else {
+            return "<span class='points-drop'>&#x2b07;&#xFE0E;" + pts + "</span>";
         }
     }
 
@@ -439,13 +447,13 @@
         var bikePoints = "";
         var dockPoints = "";
         var pts = station.pts;
-        if(pts < 0) {
-            bikePoints = " ["+points(pts)+"]";
-        }else if (pts > 0){
-            dockPoints = " ["+points(pts)+"]";
+        if (pts < 0) {
+            bikePoints = ", <span class='points-pick'>" + (-pts) + "pts</span>";
+        } else if (pts > 0) {
+            dockPoints = ", <span class='points-drop'>" + pts + "pts</span>";
         }
-        
-        return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='health station-cell'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><div class='name'>" + station.name  +"</div>" + "<div class='detail'>" + pad(station.bikes) + " bikes" + bikePoints +  " | " + pad(station.docks) + " docks" + dockPoints +  " | " + distance + " " + bearing + " | " + lastMod + "</div>" + alerts + "</div></div></div>";
+
+        return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='health station-cell'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><div class='name'>" + station.name + "</div>" + "<div class='detail'>" + pad(station.bikes) + " bikes" + bikePoints + " | " + pad(station.docks) + " docks" + dockPoints + " | " + distance + " " + bearing + " | " + lastMod + "</div>" + alerts + "</div></div></div>";
     }
 
     var lastRender = 0;
