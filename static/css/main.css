@@ -24,3 +24,8 @@ body{font-family:Menlo;font-size:12px;padding:0px;margin:0px}
 progress[value]{-webkit-appearance:none;}
 progress[value]::-webkit-progress-bar{background-color:#eee;border-radius:2px;box-shadow:0 2px 5px rgba(0,0,0,0.25) inset;height:6px;}
 progress[value]::-webkit-progress-value{background-color:rgb(253,77,2);border-radius:2px;}
+.points-icon{font-size:7px;padding-top:1px;font-family:Menlo;text-align:center}
+.points-icon .points-pick {color:white}
+.points-icon .points-drop {color:black}
+.station .points-pick {color:green}
+.station .points-drop {color:red}

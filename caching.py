@@ -2,6 +2,7 @@ from md5 import md5
 import json
 from google.appengine.api import urlfetch
 from google.appengine.api import memcache
+import logging
 
 def url_key(url):
     return md5(url).hexdigest()

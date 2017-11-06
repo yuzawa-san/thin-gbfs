@@ -37,6 +37,17 @@ def process_station_info(url):
     return out
 
 @cache
+def process_points(url):
+    result = urlfetch.fetch(url, validate_certificate=True)
+    if result.status_code != 200:
+        return {}
+    response_json = json.loads(result.content)
+    out = {}
+    for station,pts in response_json['stations'].items():
+        out[station] = pts
+    return out
+
+@cache
 def process_regions(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
@@ -157,8 +168,14 @@ class GbfsCodec(BikeNetworkCodec):
         return out
     
     def get_status(self, system):
-        status_header = [["id","bikes","docks","mod"]]
+        status_header = [["id","bikes","docks","mod","pts"]]
         station_statuses = process_station_status(system.config['station_status'], STATION_STATUS_TTL)
+        if "citibike" in system.config['station_status']:
+            points = process_points("https://bikeangels-api.citibikenyc.com/bikeangels/v1/scores",ALERTS_TTL)
+            for station_status in station_statuses:
+                station_id = station_status[0]
+                if station_id in points:
+                    station_status.append(points[station_id])
         out = {"statuses": (status_header + station_statuses), "alerts":[], 'bikes':[]}
         if 'system_alerts' in system.config:
             out['alerts'] = process_alerts(system.config['system_alerts'], ALERTS_TTL)

@@ -265,7 +265,13 @@
                         markerMap[stationId] = marker;
                         marker.bindPopup(station.name);
                         marker.addTo(map);
+                        var pointsIcon = L.divIcon({className:'points-icon'});
+                        var pointsMarker = L.marker([station.lat, station.lon], {icon: pointsIcon, interactive: false}).addTo(map);
+                        marker.pointsMarker = pointsMarker;
+                        
                     }
+                    var pointsIcon = L.divIcon({html: points(station.pts), className:'points-icon'});
+                    marker.pointsMarker.setIcon(pointsIcon);
                     var pct = NaN;
                     var bikes = station.bikes;
                     var docks = station.docks
@@ -403,6 +409,17 @@
         }
         return alerts;
     }
+    
+    function points(pts){
+        if(!pts){
+            return "";
+        }
+        if(pts < 0){
+            return "<span class='points-pick'>&#x2b06;&#xFE0E;"+(-pts)+"</span>";
+        }else{
+            return "<span class='points-drop'>&#x2b07;&#xFE0E;"+pts+"</span>";
+        }
+    }
 
     function stationRow(station) {
         var miles = station.distance / 1609.34;
@@ -419,7 +436,16 @@
         var lastMod = timeDelta(station.mod);
 
         var alerts = alertsRows(station.alerts);
-        return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='health station-cell'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'>" + "<div class='name'>" + station.name + "</div>" + "<div class='detail'>" + pad(station.bikes) + " bikes | " + pad(station.docks) + " docks | " + distance + " " + bearing + " | " + lastMod + "</div>" + alerts + "</div></div></div>";
+        var bikePoints = "";
+        var dockPoints = "";
+        var pts = station.pts;
+        if(pts < 0) {
+            bikePoints = " ["+points(pts)+"]";
+        }else if (pts > 0){
+            dockPoints = " ["+points(pts)+"]";
+        }
+        
+        return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='health station-cell'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><div class='name'>" + station.name  +"</div>" + "<div class='detail'>" + pad(station.bikes) + " bikes" + bikePoints +  " | " + pad(station.docks) + " docks" + dockPoints +  " | " + distance + " " + bearing + " | " + lastMod + "</div>" + alerts + "</div></div></div>";
     }
 
     var lastRender = 0;
