@@ -363,8 +363,8 @@
             lastMod = Math.round(((Date.now() / 1000) - seconds) / 60);
         }
         var out = lastMod + "m ago";
-        if(lastMod > 1440){
-            out = "<span style='color:red'>"+out+"</span>";
+        if (lastMod > 1440) {
+            out = "<span style='color:red'>" + out + "</span>";
         }
         return out;
     }
