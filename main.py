@@ -39,7 +39,7 @@ class BikeNetworkStatusApi(RestHandler):
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Cache-Control'] = 'public,max-age=%d' % STATION_STATUS_TTL
         out = CODECS[system.codec].get_status(system)
-        self.json_response(out,ttl=STATION_STATUS_TTL)
+        self.json_response(out,ttl=STATION_STATUS_TTL,etag=True)
 
 class BikeNetworkInfoApi(RestHandler):
     def get(self,system_id):
