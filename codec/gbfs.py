@@ -44,7 +44,8 @@ def process_points(url):
     response_json = json.loads(result.content)
     out = {}
     for station,pts in response_json['stations'].items():
-        out[station] = pts
+        if pts != 0:
+            out[station] = pts
     return out
 
 @cache
