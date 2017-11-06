@@ -362,7 +362,11 @@
         if (seconds > 0) {
             lastMod = Math.round(((Date.now() / 1000) - seconds) / 60);
         }
-        return lastMod + "m ago";
+        var out = lastMod + "m ago";
+        if(lastMod > 1440){
+            out = "<span style='color:red'>"+out+"</span>";
+        }
+        return out;
     }
 
     function prettyDate(since) {
