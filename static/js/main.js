@@ -305,9 +305,8 @@
                     if (!marker) {
                         marker = L.circleMarker([bike.lat, bike.lon], {
                             radius: 3,
-                            color: "#cc6600",
-                            weight: 1,
-                            fillColor: "#ff9900",
+                            weight: 0,
+                            fillColor: "rgb(253,77,2)",
                             fillOpacity: 1.0
                         });
                         markerMap['bike' + bike.id] = marker;
