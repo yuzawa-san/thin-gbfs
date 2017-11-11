@@ -15,7 +15,14 @@ body{font-family:Menlo;font-size:12px;padding:0px;margin:0px}
 #footer{font-size:0.8em;padding:10px;text-align:center;color:gray;}
 #selector{display:inline-block}
 #map{height:50%;width:100%;}
-#content{height:50%;width:100%;overflow-y:auto}
+#content{height:50%;width:100%;}
+#app-name{display:none}
+@media (min-width: 700px){
+    body {padding: 0 350px 0 0;}
+    #app-name{display:block;text-align:center}
+    #map{height:100%;}
+    #content{height:100%;width:349px;top:0px;right:0px;position:fixed;border-left:1px solid black}
+}
 #system-name{float:right}
 #loading{font-size:1.5em;padding:10px;}
 #selector div{display:inline-block;padding:5px;font-size:14px;line-height:20px;color:#333;text-align:center;text-shadow:0 1px 1px rgba(255,255,255,0.75);vertical-align:middle;cursor:pointer;background-color:#f5f5f5;background-image:linear-gradient(to bottom,#fff,#e6e6e6);background-repeat:repeat-x;border:1px solid #ccc;border-color:#e6e6e6 #e6e6e6 #bfbfbf;border-color:rgba(0,0,0,0.1) rgba(0,0,0,0.1) rgba(0,0,0,0.25);border-bottom-color:#b3b3b3;box-shadow:inset 0 1px 0 rgba(255,255,255,0.2),0 1px 2px rgba(0,0,0,0.05);}
