@@ -1,6 +1,6 @@
 html,body{height:100%;overflow-y:hidden;}
 body{font-family:Menlo;font-size:12px;padding:0px;margin:0px}
-.station{width:100%;}
+.station{width:100%;cursor:pointer}
 .station:nth-child(even){background-color:#FDF5F1;}
 .station-body{display:table-row}
 .station-cell{display:table-cell;padding:7px 4px;}
