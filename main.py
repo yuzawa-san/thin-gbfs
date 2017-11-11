@@ -30,6 +30,16 @@ class MainPage(RestHandler):
         payload= template.render('index.html',{'ttl':STATION_STATUS_TTL+10})
         self.html_response(payload,ttl=0,etag=True)
 
+class TileHandler(RestHandler):
+    def get(self,basemap,z,y,x):
+        #url = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/%s/%s/%s" % (z,y,x)
+        url = "http://cartodb-basemaps-a.global.ssl.fastly.net/light_all/%s/%s/%s.png" % (z,x,y)
+        result = urlfetch.fetch(url, validate_certificate=True)
+        if result.status_code != 200:
+            self.response_error()
+            return 
+        self.png_response(result.content, ttl=3600, etag=True)
+
 class BikeNetworkStatusApi(RestHandler):
     def get(self,system_id):
         system = BikeNetwork.get_by_id(system_id)
@@ -83,4 +93,5 @@ app = webapp2.WSGIApplication([
     ('/systems', BikeNetworkListApi),
     ('/LICENSE', LicenseHandler),
     ('/load', UpdateSystemsHandler),
+    ('/tile/([^/]+)/([0-9]+)/([0-9]+)/([0-9]+)', TileHandler),
 ], debug=True)

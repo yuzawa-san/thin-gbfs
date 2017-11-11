@@ -15,6 +15,10 @@ class RestHandler(webapp2.RequestHandler):
         self.response.headers['Content-Type'] = 'text/html'
         self.cached_response(payload, ttl, etag)
     
+    def png_response(self, payload, ttl=0, etag=False):
+        self.response.headers['Content-Type'] = 'image/png'
+        self.cached_response(payload, ttl, etag)
+    
     def text_response(self, payload, ttl=0, etag=False):
         self.response.headers['Content-Type'] = 'text/plain'
         self.cached_response(payload, ttl, etag)
