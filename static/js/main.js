@@ -1,5 +1,9 @@
 (function() {
-    var systemInfo = null;
+    // fetch the station info this often
+    var fetchMs = 30000;
+    // redraw the list this often
+    var renderMs = 10000;
+    
     var stations = null;
     var currentPosition = null;
     var $stationList = $("#station-list");
@@ -195,8 +199,7 @@
                         var station = response.stations[i]
                         response.stationMap[station.id] = station;
                     }
-                    systemInfo = response;
-                    loadSystem(systemId);
+                    loadSystem(systemId, response);
                 });
             }
 
@@ -214,7 +217,7 @@
 
     var lastFetch = 0;
 
-    function loadSystem(systemId) {
+    function loadSystem(systemId, systemInfo) {
         function fetch() {
             $.get("/systems/" + systemId + "/status", function(response) {
                 var statuses = pivot(response.statuses);
@@ -330,7 +333,7 @@
         setInterval(function() {
             var now = Date.now();
             var delta = now - lastFetch;
-            var span = gbfsTtl * 1000;
+            var span = fetchMs;
             var pct = Math.min(1.0, delta / span);
             progress(pct);
             if (delta > span) {
@@ -505,7 +508,7 @@
     }
     setInterval(function() {
         var now = Date.now();
-        if ((now - lastRender) > 10000) {
+        if ((now - lastRender) > renderMs) {
             draw();
             lastRender = now;
         }

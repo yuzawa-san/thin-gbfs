@@ -27,7 +27,7 @@ class LicenseHandler(RestHandler):
         
 class MainPage(RestHandler):
     def get(self):
-        payload= template.render('index.html',{'ttl':STATION_STATUS_TTL+10})
+        payload= template.render('index.html',{})
         self.html_response(payload,ttl=0,etag=True)
 
 class TileHandler(RestHandler):
