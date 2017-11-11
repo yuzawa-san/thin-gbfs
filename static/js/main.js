@@ -1,3 +1,6 @@
+var $ = require('jquery');
+var L = require('leaflet');
+var Compass = require('compass-js');
 (function() {
     // fetch the station info this often
     var fetchMs = 30000;

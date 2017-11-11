@@ -6,6 +6,9 @@ handlers:
 - url: /(robots\.txt)
   static_files: \1
   upload: (robots\.txt)
+- url: /dist
+  expiration: 1h
+  static_dir: dist
 - url: /static
   expiration: 1h
   static_dir: static
