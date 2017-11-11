@@ -1,17 +1,16 @@
 {
-    "name": "fast-gbfs",
-    "version": "1.0.0",
-    "description": "a fast bikeshare info web app",
-    "author": "yuzawa-san",
-    "license": "MIT",
-    "dependencies": {
-        "jquery": "1.11.0",
-        "leaflet": "1.2.0",
-        "compass.js": "ai/compass.js"
-    },
-    "devDependencies": {
-        "webpack": "3.8.1",
-        "style-loader": "0.19.0",
-        "css-loader": "0.28.7"
-    }
+  "name": "fast-gbfs",
+  "version": "1.0.0",
+  "description": "a fast bikeshare info web app",
+  "author": "yuzawa-san",
+  "license": "MIT",
+  "dependencies": {
+    "jquery": "1.11.0",
+    "leaflet": "1.2.0",
+    "compass.js": "ai/compass.js"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^4.2.0",
+    "webpack": "3.8.1"
+  }
 }

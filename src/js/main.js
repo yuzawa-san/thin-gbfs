@@ -90,7 +90,7 @@ var Compass = require('compass-js');
 
     var myIcon = L.divIcon({
         className: 'bearing-container',
-        'html': '<img src="static/img/arrow.svg" class="your-bearing" width=20>'
+        'html': '<img src="dist/img/arrow.svg" class="your-bearing" width=20>'
     });
 
     L.control.scale({
@@ -207,7 +207,7 @@ var Compass = require('compass-js');
             }
 
             Compass.noSupport(function() {
-                $('.your-bearing').attr("src", "static/img/dot.svg");
+                $('.your-bearing').attr("src", "dist/img/dot.svg");
             }).watch(function(heading) {
                 $('.your-bearing').css('transform', 'rotate(' + (heading) + 'deg)');
             });
