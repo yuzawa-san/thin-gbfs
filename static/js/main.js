@@ -69,19 +69,18 @@
     };
 
     var map = L.map('map').setZoom(15);
-    // L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png', {
-    //     useCache: true,
-    //     crossOrigin: true,
-    //     attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
-    // }).addTo(map);
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-        maxZoom: 16
-    }).addTo(map);
-    // L.esri.Vector.basemap('BlackAndWhite').addTo(map);
-    // L.esri.basemapLayer('Gray', {
-    //     detectRetina: true
-    // }).addTo(map);
+    var desktop = window.innerWidth > 700;
+    if (desktop) {
+        L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}@2x.png', {
+            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+        }).addTo(map);
+    } else {
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+            maxZoom: 16
+        }).addTo(map);
+    }
+
     var myIcon = L.divIcon({
         className: 'bearing-container',
         'html': '<img src="static/img/arrow.svg" class="your-bearing" width=20>'
@@ -257,7 +256,7 @@
                     var marker = markerMap[stationId];
                     if (!marker) {
                         marker = L.circleMarker([station.lat, station.lon], {
-                            radius: 8,
+                            radius: desktop ? 12 : 8,
                             color: "rgb(253,77,2)",
                             weight: station.alerts.length > 0 ? 4 : 2,
                             fillOpacity: 1.0
