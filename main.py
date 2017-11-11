@@ -55,7 +55,7 @@ class BikeNetworkInfoApi(RestHandler):
     def get(self,system_id):
         system = BikeNetwork.get_by_id(system_id)
         if not system:
-            self.self.response_error()
+            self.response_error()
             return
         self.response.headers['Content-Type'] = 'application/json'
         self.response.headers['Cache-Control'] = 'public,max-age=%d' % STATION_INFO_TTL
@@ -68,6 +68,9 @@ class BikeNetworkListApi(RestHandler):
         for system in BikeNetwork.query().fetch():
             out.append([system.key.id(), system.name, PrettyFloat(system.lat), PrettyFloat(system.lon)])
         out.sort(key=lambda x: x[0])
+        if not out:
+            self.response_error()
+            return
         self.json_response([["id","name","lat","lon"]] + out,ttl=STATION_INFO_TTL,etag=True)
 
 class UpdateSystemsHandler(webapp2.RequestHandler):
