@@ -1,11 +1,16 @@
 var $ = require('jquery');
 var L = require('leaflet');
-var Compass = require('compass-js');
+require('compass-js');
+var Compass = window.Compass;
 (function() {
     // fetch the station info this often
     var fetchMs = 30000;
     // redraw the list this often
     var renderMs = 10000;
+    
+    var arrowUrl = URL.createObjectURL(new Blob(['<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path id="arrow" fill="#007BFF" d="M 50,0 L 100,100 L 50,70 L 0,100" /></svg>'], {type : 'image/svg+xml'}));
+    var dotUrl = URL.createObjectURL(new Blob(['<svg xmlns="http://www.w3.org/2000/svg" width="175" height="175"><circle cx="85" cy="85" r="63" fill="#00ccff" stroke="#007BFF" stroke-width="44"/></svg>'], {type : 'image/svg+xml'}));
+    $("#center-icon").attr('src',dotUrl);
     
     var stations = null;
     var currentPosition = null;
@@ -90,7 +95,7 @@ var Compass = require('compass-js');
 
     var myIcon = L.divIcon({
         className: 'bearing-container',
-        'html': '<img src="dist/img/arrow.svg" class="your-bearing" width=20>'
+        'html': '<img src="'+arrowUrl+'" class="your-bearing" width=20>'
     });
 
     L.control.scale({
@@ -207,7 +212,7 @@ var Compass = require('compass-js');
             }
 
             Compass.noSupport(function() {
-                $('.your-bearing').attr("src", "dist/img/dot.svg");
+                $('.your-bearing').attr("src", dotUrl);
             }).watch(function(heading) {
                 $('.your-bearing').css('transform', 'rotate(' + (heading) + 'deg)');
             });

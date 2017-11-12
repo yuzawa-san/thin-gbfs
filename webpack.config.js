@@ -1,7 +1,7 @@
 var path = require('path');
 var CopyTask = require('copy-webpack-plugin')
 module.exports = {
-    entry: './static/js/main.js',
+    entry: './src/js/main.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.js'
