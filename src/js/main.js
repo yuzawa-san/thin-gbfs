@@ -337,8 +337,7 @@ var Compass = window.Compass;
                 draw();
             });
         }
-        fetch();
-        setInterval(function() {
+        function checkFetch() {
             var now = Date.now();
             var delta = now - lastFetch;
             var span = fetchMs;
@@ -348,7 +347,9 @@ var Compass = window.Compass;
                 fetch();
                 lastFetch = now;
             }
-        }, 1000);
+        }
+        checkFetch();
+        setInterval(checkFetch, 1000);
     }
 
     var arc = document.getElementById("status-arc");
