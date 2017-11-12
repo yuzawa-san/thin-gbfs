@@ -140,7 +140,7 @@ var Compass = window.Compass;
         localStorage.setItem('filter', filter);
     });
 
-    $("#toggle").click(function() {
+    var $toggle = $("#toggle").click(function() {
         $("#system-select").toggle();
     });
 
@@ -180,9 +180,11 @@ var Compass = window.Compass;
             var $system = $("#system");
             var system = nearbySystems[0];
             var override = window.location.hash;
+            var nearbySystemCount = 0;
             for (var i in nearbySystems) {
                 var nearbySystem = nearbySystems[i];
                 if (nearbySystem.distance < 50000) {
+                    nearbySystemCount++;
                     $system.append('<option value="' + nearbySystem.id + '">' + nearbySystem.name + '</option>');
                     if (localStorage.getItem('system') === nearbySystem.id) {
                         system = nearbySystem;
@@ -193,6 +195,9 @@ var Compass = window.Compass;
                     system = nearbySystem;
                     map.setView([nearbySystem.lat, nearbySystem.lon], map.getZoom());
                 }
+            }
+            if(nearbySystemCount > 1){
+                $toggle.show();
             }
             $system.val(system.id);
             $system.change(function() {
