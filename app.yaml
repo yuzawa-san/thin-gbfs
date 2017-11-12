@@ -4,6 +4,7 @@ threadsafe: yes
 skip_files:
 - ^node_modules$
 - ^src$
+- ^\.git$
 
 handlers:
 - url: /(robots\.txt)
