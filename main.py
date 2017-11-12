@@ -30,6 +30,11 @@ class MainPage(RestHandler):
         payload= template.render('index.html',{})
         self.html_response(payload,ttl=0,etag=True)
 
+class OverviewPage(RestHandler):
+    def get(self):
+        payload= template.render('overview.html',{})
+        self.html_response(payload,ttl=0,etag=True)
+
 class TileHandler(RestHandler):
     def get(self,basemap,z,y,x):
         #url = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/%s/%s/%s" % (z,y,x)
@@ -91,6 +96,7 @@ class UpdateSystemsHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
+    ('/overview', OverviewPage),
     ('/systems/([^/]+)/info', BikeNetworkInfoApi),
     ('/systems/([^/]+)/status', BikeNetworkStatusApi),
     ('/systems', BikeNetworkListApi),
