@@ -27,12 +27,12 @@ class LicenseHandler(RestHandler):
         
 class MainPage(RestHandler):
     def get(self):
-        payload= template.render('index.html',{})
+        payload= template.render('src/html/index.html',{})
         self.html_response(payload,ttl=0,etag=True)
 
 class OverviewPage(RestHandler):
     def get(self):
-        payload= template.render('overview.html',{})
+        payload= template.render('src/html/overview.html',{})
         self.html_response(payload,ttl=0,etag=True)
 
 class TileHandler(RestHandler):
