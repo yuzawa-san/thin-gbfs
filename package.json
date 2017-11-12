@@ -1,7 +1,7 @@
 {
   "name": "fast-gbfs",
   "version": "1.0.0",
-  "description": "a fast bikeshare info web app",
+  "description": "A fast and low-network-use mobile web app for many common bike sharing systems.",
   "author": "yuzawa-san",
   "license": "MIT",
   "dependencies": {
