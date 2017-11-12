@@ -9,8 +9,18 @@
     "leaflet": "1.2.0",
     "compass.js": "ai/compass.js"
   },
+  "scripts": {
+    "dev": "dev_appserver.py app.yaml",
+    "watch": "./node_modules/webpack/bin/webpack.js -w -d",
+    "build": "./node_modules/gulp/bin/gulp.js",
+    "clean": "rm -rf dist",
+    "deploy": "gcloud app deploy app.yaml cron.yaml"
+  },
   "devDependencies": {
-    "copy-webpack-plugin": "^4.2.0",
-    "webpack": "3.8.1"
+    "gulp": "~3.9.1",
+    "gulp-clean-css": "^3.9.0",
+    "gulp-concat": "^2.6.1",
+    "webpack": "3.8.1",
+    "webpack-stream": "^4.0.0"
   }
 }

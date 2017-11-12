@@ -9,9 +9,6 @@ handlers:
 - url: /dist
   expiration: 1h
   static_dir: dist
-- url: /static
-  expiration: 1h
-  static_dir: static
 - url: /load
   script: main.app
   login: admin
