@@ -9,12 +9,16 @@
     "leaflet": "1.2.0",
     "compass.js": "ai/compass.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yuzawa-san/fast-gbfs.git"
+  },
   "scripts": {
-    "dev": "dev_appserver.py app.yaml",
+    "dev": "./node_modules/gulp/bin/gulp.js && dev_appserver.py app.yaml",
     "watch": "./node_modules/webpack/bin/webpack.js -w -d",
     "build": "./node_modules/gulp/bin/gulp.js",
     "clean": "rm -rf dist",
-    "deploy": "gcloud app deploy app.yaml cron.yaml"
+    "deploy": "./node_modules/gulp/bin/gulp.js && gcloud app deploy app.yaml cron.yaml"
   },
   "devDependencies": {
     "gulp": "~3.9.1",
