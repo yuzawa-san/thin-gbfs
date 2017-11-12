@@ -196,7 +196,7 @@ var Compass = window.Compass;
                     map.setView([nearbySystem.lat, nearbySystem.lon], map.getZoom());
                 }
             }
-            if(nearbySystemCount > 1){
+            if (nearbySystemCount > 1) {
                 $toggle.show();
             }
             $system.val(system.id);
