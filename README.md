@@ -1,5 +1,7 @@
 # :bike: fast-gbfs :bike:
 
+https://fast-gbfs.appspot.com/
+
 A fast and low-network-use mobile web app for many common bike sharing systems.
 
 I enjoy biking while I travel. Unfortunately, I have grown tired using many bloated web and native apps whilst using limited international data plans.
@@ -10,6 +12,8 @@ The goals of this project are:
 * be able to access a large number of open data sources for various popular bike sharing systems.
 * transmit data from server to app using a compact format.
 * cache system and station information server side to avoid hitting the source data API's too often.
+* limit number of TCP connections and number of hosts contacted
+* use HTTPS
 
 ## Development
 
@@ -20,7 +24,7 @@ There are more common tasks listed `npm run`.
 To run a dev server: `npm run dev` and open your browser to localhost:8080. TODO: support live reload
 You will need to seed the DB by going to localhost:8000, then cron jobs and then run the only cron job.
 
-## Licensing
+## Software License Info
 
 In order to minimize the number of TCP connections between the web app and the server, the dependencies have been webpacked together.
 These projects have been utilized and bundled:
