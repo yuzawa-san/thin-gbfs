@@ -3,7 +3,6 @@ api_version: 1
 threadsafe: yes
 skip_files:
 - ^node_modules$
-- ^src$
 - ^\.git$
 
 handlers:
