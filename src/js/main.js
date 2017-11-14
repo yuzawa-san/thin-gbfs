@@ -15,14 +15,20 @@ var Compass = window.Compass;
         type: 'image/svg+xml'
     }));
     $("#center-icon").attr('src', dotUrl);
-    
+
     var timers = {};
-    function timerStart(key){
+
+    function timerStart(key) {
         timers[key] = Date.now();
     }
-    function timerEnd(key){
+
+    function timerEnd(key, xhr) {
         var startMs = timers[key];
-        $("#timing-"+key).text(Math.round(Date.now() - startMs));
+        var content = Math.round(Date.now() - startMs) + "ms";
+        if (xhr) {
+            content += " (" + (xhr.responseText.length / 1024).toFixed(1) + "kb)";
+        }
+        $("#timing-" + key).text(content);
     }
 
     var stations = null;
@@ -186,8 +192,8 @@ var Compass = window.Compass;
         var lat = currentPosition.coords.latitude;
         var lon = currentPosition.coords.longitude;
         timerStart("system-list");
-        $.get("/systems", function(response) {
-            timerEnd("system-list");
+        $.get("/systems", function(response, status, xhr) {
+            timerEnd("system-list", xhr);
             var systems = pivot(response);
             var nearbySystems = geo.nearby(lat, lon, systems);
             var $system = $("#system");
@@ -227,8 +233,8 @@ var Compass = window.Compass;
             } else {
                 var systemId = system.id
                 timerStart("system-info");
-                $.get("/systems/" + systemId + "/info", function(response) {
-                    timerEnd("system-info");
+                $.get("/systems/" + systemId + "/info", function(response, status, xhr) {
+                    timerEnd("system-info", xhr);
                     response.stations = pivot(response.stations);
                     response.stationMap = {}
                     for (var i in response.stations) {
@@ -256,8 +262,8 @@ var Compass = window.Compass;
     function loadSystem(systemId, systemInfo) {
         function fetch() {
             timerStart("system-status");
-            $.get("/systems/" + systemId + "/status", function(response) {
-                timerEnd("system-status");
+            $.get("/systems/" + systemId + "/status", function(response, status, xhr) {
+                timerEnd("system-status", xhr);
                 var statuses = pivot(response.statuses);
                 var globalAlerts = [];
                 var nonGlobalAlerts = [];
