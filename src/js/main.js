@@ -15,6 +15,15 @@ var Compass = window.Compass;
         type: 'image/svg+xml'
     }));
     $("#center-icon").attr('src', dotUrl);
+    
+    var timers = {};
+    function timerStart(key){
+        timers[key] = Date.now();
+    }
+    function timerEnd(key){
+        var startMs = timers[key];
+        $("#timing-"+key).text(Math.round(Date.now() - startMs));
+    }
 
     var stations = null;
     var currentPosition = null;
@@ -157,12 +166,14 @@ var Compass = window.Compass;
             maximumAge: 30000,
             timeout: 27000
         };
+        timerStart("geolocation");
         navigator.geolocation.watchPosition(function(position) {
             var initial = !currentPosition;
             currentPosition = position;
             var newLatLng = new L.LatLng(position.coords.latitude, position.coords.longitude);
             youMarker.setLatLng(newLatLng);
             if (initial) {
+                timerEnd("geolocation");
                 map.setView([position.coords.latitude, position.coords.longitude], map.getZoom());
                 determineSystem();
             }
@@ -174,7 +185,9 @@ var Compass = window.Compass;
     function determineSystem() {
         var lat = currentPosition.coords.latitude;
         var lon = currentPosition.coords.longitude;
+        timerStart("system-list");
         $.get("/systems", function(response) {
+            timerEnd("system-list");
             var systems = pivot(response);
             var nearbySystems = geo.nearby(lat, lon, systems);
             var $system = $("#system");
@@ -213,7 +226,9 @@ var Compass = window.Compass;
                 $stationList.html('<div id="loading">No bikeshare system with GBFS feed nearby!</div>');
             } else {
                 var systemId = system.id
+                timerStart("system-info");
                 $.get("/systems/" + systemId + "/info", function(response) {
+                    timerEnd("system-info");
                     response.stations = pivot(response.stations);
                     response.stationMap = {}
                     for (var i in response.stations) {
@@ -240,7 +255,9 @@ var Compass = window.Compass;
 
     function loadSystem(systemId, systemInfo) {
         function fetch() {
+            timerStart("system-status");
             $.get("/systems/" + systemId + "/status", function(response) {
+                timerEnd("system-status");
                 var statuses = pivot(response.statuses);
                 var globalAlerts = [];
                 var nonGlobalAlerts = [];
