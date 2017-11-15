@@ -6,37 +6,30 @@ import json
 import time
 from StringIO import StringIO
 from models import BikeNetwork
-from caching import cache
-from models import PrettyFloat
+from caching import cache, STATION_STATUS_TTL, STATION_INFO_TTL, POINTS_TTL, ALERTS_TTL
+from models import SystemInfoElement, SystemStatusElement, RegionListElement, CompactElement
 
-
-STATION_INFO_TTL = 86400
-ALERTS_TTL = 600
-STATION_STATUS_TTL = 20
-
-@cache
+@cache(ttl=STATION_INFO_TTL)
 def process_station_info(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
-        return None
+        return []
     response_json = json.loads(result.content)
     stations = response_json['data']['stations']
     out = []
     for station in stations:
-        region_id = 0
+        element = SystemInfoElement(
+            id=station['station_id'],
+            name=station['name'],
+            lat=station['lat'],
+            lon=station['lon'],
+        )
         if 'region_id' in station:
-            region_id = station['region_id']
-        out.append([
-            station['station_id'],
-            station['name'],
-            station['lat'],
-            station['lon'],
-            region_id
-        ])
-    out.sort(key=lambda x: x[0])
+            element.region = station['region_id']
+        out.append(element)
     return out
 
-@cache
+@cache(ttl=POINTS_TTL)
 def process_points(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
@@ -48,7 +41,7 @@ def process_points(url):
             out[station] = pts
     return out
 
-@cache
+@cache(ttl=STATION_INFO_TTL)
 def process_regions(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
@@ -56,11 +49,10 @@ def process_regions(url):
     response_json = json.loads(result.content)
     out = []
     for region in response_json['data']['regions']:
-        out.append([region['region_id'],region['name']])
-    out.sort(key=lambda x: x[0])
+        out.append(RegionListElement(id=region['region_id'],name=region['name']))
     return out
     
-@cache
+@cache(ttl=STATION_STATUS_TTL)
 def process_free_bikes(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
@@ -69,10 +61,10 @@ def process_free_bikes(url):
     out = []
     for bike in response_json['data']['bikes']:
         if bike['is_reserved'] == 0 and bike['is_disabled'] == 0:
-            out.append([bike['bike_id'],bike['name'],bike['lat'],bike['lon']])
+            out.append(SystemInfoElement(id=bike['bike_id'],name=bike['name'],lat=bike['lat'],lon=bike['lon']))
     return out
 
-@cache
+@cache(ttl=ALERTS_TTL)
 def process_alerts(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
@@ -80,7 +72,7 @@ def process_alerts(url):
     response_json = json.loads(result.content)
     return response_json['data']['alerts']
 
-@cache
+@cache(ttl=STATION_STATUS_TTL)
 def process_station_status(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
@@ -96,7 +88,7 @@ def process_station_status(url):
             docks = station['num_docks_available']
             if station['is_returning'] == 0:
                 docks = 0
-            out.append([station['station_id'],bikes,docks,station['last_reported']])
+            out.append(SystemStatusElement(id=station['station_id'],bikes=bikes,docks=docks,mod=station['last_reported']))
     return out
 
 
@@ -157,33 +149,25 @@ class GbfsCodec(BikeNetworkCodec):
         return entities
     
     def get_info(self, system):
-        stations = [["id","name","lat","lon","region"]]
-        station_info = process_station_info(system.config['station_information'], STATION_INFO_TTL)
-        for station in station_info:
-            station[2] = PrettyFloat(station[2])
-            station[3] = PrettyFloat(station[3])
-            stations.append(station)
-        out = {"name": system.name, "stations": stations, "regions":[]}
+        stations = process_station_info(system.config['station_information'])
+        regions = []
         if 'system_regions' in system.config:
-            out['regions'] = [["id","name"]] + process_regions(system.config['system_regions'], STATION_INFO_TTL)
-        return out
+            regions = process_regions(system.config['system_regions'])
+        return {"name": system.name, "stations": CompactElement.of(stations), "regions":CompactElement.of(regions)}
     
     def get_status(self, system):
         status_header = [["id","bikes","docks","mod","pts"]]
-        station_statuses = process_station_status(system.config['station_status'], STATION_STATUS_TTL)
+        station_statuses = process_station_status(system.config['station_status'])
         if "citibike" in system.config['station_status']:
-            points = process_points("https://bikeangels-api.citibikenyc.com/bikeangels/v1/scores",ALERTS_TTL)
+            points = process_points("https://bikeangels-api.citibikenyc.com/bikeangels/v1/scores")
             for station_status in station_statuses:
-                station_id = station_status[0]
+                station_id = station_status.id
                 if station_id in points:
-                    station_status.append(points[station_id])
-        out = {"statuses": (status_header + station_statuses), "alerts":[], 'bikes':[]}
+                    station_status.pts = points[station_id]
+        alerts = []
         if 'system_alerts' in system.config:
-            out['alerts'] = process_alerts(system.config['system_alerts'], ALERTS_TTL)
+            alerts = process_alerts(system.config['system_alerts'])
+        bikes = []
         if 'free_bike_status' in system.config:
-            bikes = process_free_bikes(system.config['free_bike_status'], STATION_STATUS_TTL)
-            for bike in bikes:
-                bike[2] = PrettyFloat(bike[2])
-                bike[3] = PrettyFloat(bike[3])
-            out['bikes'] = [['id','name','lat','lon']] + bikes
-        return out
+            bikes = process_free_bikes(system.config['free_bike_status'])
+        return {"statuses": CompactElement.of(station_statuses), "alerts": alerts, 'bikes': CompactElement.of(bikes)}

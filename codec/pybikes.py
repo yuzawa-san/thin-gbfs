@@ -6,19 +6,17 @@ import json
 import time
 from StringIO import StringIO
 from models import BikeNetwork
-from caching import cache
-from models import PrettyFloat
+from caching import cache, STATION_STATUS_TTL
+from models import SystemInfoElement, SystemStatusElement, CompactElement
 import datetime
 import calendar
 
 API_ROOT = "http://api.citybik.es"
 
-STATION_INFO_TTL = 86400
-ALERTS_TTL = 600
-STATION_STATUS_TTL = 20
-
-@cache
-def process_station_info(url):
+# NOTE: use status ttl for station ttl since they are in the same file
+# otherwise the info fetch would lead to stale status fetches
+@cache(ttl=STATION_STATUS_TTL)
+def fetch_system_info(url):
     url = "%s%s" % (API_ROOT,url)
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
@@ -48,24 +46,20 @@ class PyBikesCodec(BikeNetworkCodec):
         return entities
     
     def get_info(self, system):
-        out = [["id","name","lat","lon","region"]]
-        response_json = process_station_info(system.config['href'], STATION_INFO_TTL)
+        response_json = fetch_system_info(system.config['href'])
         stations = []
         for station in response_json['network']['stations']:
-            stations.append([
-                station['id'],
-                station['name'],
-                PrettyFloat(station['latitude']),
-                PrettyFloat(station['longitude']),
-                0
-            ])
-        stations.sort(key=lambda x: x[0])
-        out = {"name": system.name, "stations": out + stations, "regions":[]}
+            stations.append(SystemInfoElement(
+                id=station['id'],
+                name=station['name'],
+                lat=station['latitude'],
+                lon=station['longitude']
+            ))
+        out = {"name": system.name, "stations": CompactElement.of(stations), "regions":[]}
         return out
     
     def get_status(self, system):
-        response_json = process_station_info(system.config['href'], STATION_STATUS_TTL)
-        status_header = [["id","bikes","docks","mod"]]
+        response_json = fetch_system_info(system.config['href'])
         station_statuses = []
         for station in response_json['network']['stations']:
             ts = station['timestamp']
@@ -74,6 +68,11 @@ class PyBikesCodec(BikeNetworkCodec):
                 fmt = "%Y-%m-%dT%H:%M:%S.%fZ"
             ts = datetime.datetime.strptime(ts, fmt)
             ts = calendar.timegm(ts.utctimetuple())
-            station_statuses.append([station['id'],station['free_bikes'],station['empty_slots'],ts])
-        out = {"statuses": (status_header + station_statuses), "alerts":[], 'bikes':[]}
+            station_statuses.append(SystemStatusElement(
+                id=station['id'],
+                bikes=station['free_bikes'],
+                docks=station['empty_slots'],
+                mod=ts
+            ))
+        out = {"statuses": CompactElement.of(station_statuses), "alerts":[], 'bikes':[]}
         return out

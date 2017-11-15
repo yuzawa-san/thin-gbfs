@@ -8,14 +8,10 @@ from google.appengine.ext import ndb
 from google.appengine.api import urlfetch
 from codec.gbfs import GbfsCodec
 from codec.pybikes import PyBikesCodec
-from models import PrettyFloat
+from models import SystemListElement, CompactElement
 from http import RestHandler
 from google.appengine.api import memcache
-from caching import http_cached
-
-STATION_INFO_TTL = 86400
-ALERTS_TTL = 600
-STATION_STATUS_TTL = 20
+from caching import http_cached, STATION_STATUS_TTL, STATION_INFO_TTL
 
 CODECS = {
     GbfsCodec.NAME: GbfsCodec(),
@@ -74,14 +70,11 @@ class BikeNetworkInfoApi(RestHandler):
 class BikeNetworkListApi(RestHandler):
     @http_cached(etag=True,ttl=STATION_INFO_TTL)
     def get(self):
-        out = []
-        for system in BikeNetwork.query().fetch():
-            out.append([system.key.id(), system.name, PrettyFloat(system.lat), PrettyFloat(system.lon)])
-        out.sort(key=lambda x: x[0])
+        out = [SystemListElement(system) for system in BikeNetwork.query().fetch()]
         if not out:
             self.response_error()
             return
-        self.json_response([["id","name","lat","lon"]] + out)
+        self.json_response(CompactElement.of(out))
 
 class UpdateSystemsHandler(webapp2.RequestHandler):
     def get(self):

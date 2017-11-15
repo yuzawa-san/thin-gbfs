@@ -4,26 +4,30 @@ from google.appengine.api import urlfetch
 from google.appengine.api import memcache
 import logging
 
-def url_key(url):
+STATION_INFO_TTL = 86400
+STATION_STATUS_TTL = 20
+ALERTS_TTL = 600
+POINTS_TTL = 300
+
+def hashed_key(url):
     return md5(url).hexdigest()
 
-def cache(some_function):
-
-    def wrapper(url, ttl):
-        key = url_key(url)
-        value = memcache.get(key)
-        if value is None:
-            value = some_function(url)
-            try:
-                added = memcache.add(key, json.dumps(value,separators=(',', ':')), ttl)
-                if not added:
-                    logging.error('Memcache set failed.')
-            except ValueError:
-                logging.error('Memcache set failed - data larger than 1MB')
+def cache(ttl):
+    def decorator(fn):
+        def wrapper(*args, **kwargs):
+            key = hashed_key(args[0])
+            value = memcache.get(key)
+            if value is None:
+                value = fn(*args, **kwargs)
+                try:
+                    added = memcache.add(key, value, ttl)
+                    if not added:
+                        logging.error('Memcache set failed.')
+                except ValueError:
+                    logging.error('Memcache set failed - data larger than 1MB')
             return value
-        return json.loads(value)
-
-    return wrapper
+        return wrapper
+    return decorator
 
 class MemcacheHolder:
     def __init__(self,etag,content_type,data):
@@ -38,7 +42,7 @@ def http_cached(etag=False, ttl=0):
             request = handler.request
             response = handler.response
             uri = request.path
-            key = url_key(uri)
+            key = hashed_key(uri)
             response.headers['Cache-Control'] = 'public,max-age=%d' % ttl
             holder = memcache.get(key)
             if holder is None:

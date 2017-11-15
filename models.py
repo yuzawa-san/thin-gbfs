@@ -5,6 +5,65 @@ class PrettyFloat(float):
     def __repr__(self):
         return '%.4f' % self
 
+class CompactElement(object):
+    def __init__(self, header, id):
+        self.header = header
+        self.id = id
+
+    @staticmethod
+    def of(items):
+        if not items:
+            return []
+        items.sort(key=lambda x: x.id)
+        return [items[0].header] + [item.row() for item in items]
+
+class RegionListElement(CompactElement):
+    def __init__(self, id=None, name=None):
+        super(RegionListElement, self).__init__(("id","name"), id)
+        self.name = name
+
+    def row(self):
+        return [self.id, self.name]
+
+class SystemListElement(CompactElement):
+    def __init__(self, bike_network):
+        super(SystemListElement, self).__init__(("id","name","lat","lon"), bike_network.key.id())
+        self.name = bike_network.name
+        self.lat = bike_network.lat
+        self.lon = bike_network.lon
+
+    def row(self):
+        return [self.id, self.name, PrettyFloat(self.lat), PrettyFloat(self.lon)]
+
+class SystemInfoElement(CompactElement):
+    def __init__(self, id=None, name=None, lat=0.0, lon=0.0, region=None):
+        super(SystemInfoElement, self).__init__(("id","name","lat","lon","region"),id)
+        self.id = id
+        self.name = name
+        self.lat = lat
+        self.lon = lon
+        self.region = region
+
+    def row(self):
+        out = [self.id, self.name, PrettyFloat(self.lat), PrettyFloat(self.lon)]
+        if self.region:
+            out.append(self.region)
+        return out
+
+class SystemStatusElement(CompactElement):
+    def __init__(self, id=None, bikes=0, docks=0, mod=0, pts=None):
+        super(SystemStatusElement, self).__init__(("id","bikes","docks","mod","pts"),id)
+        self.bikes = bikes
+        self.docks = docks
+        self.mod = mod
+        self.pts = pts
+        
+    def row(self):
+        out = [self.id, self.bikes, self.docks, self.mod]
+        if self.pts:
+            out.append(self.pts)
+        return out
+
 class BikeNetwork(ndb.Model):
     name = ndb.StringProperty()
     codec = ndb.StringProperty()
