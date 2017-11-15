@@ -10,6 +10,8 @@ from codec.gbfs import GbfsCodec
 from codec.pybikes import PyBikesCodec
 from models import PrettyFloat
 from http import RestHandler
+from google.appengine.api import memcache
+from caching import http_cached
 
 STATION_INFO_TTL = 86400
 ALERTS_TTL = 600
@@ -21,21 +23,25 @@ CODECS = {
 }
 
 class LicenseHandler(RestHandler):
+    @http_cached(etag=True)
     def get(self):
         payload= template.render('LICENSE',{})
-        self.text_response(payload,ttl=0,etag=True)
+        self.html_response(payload)
         
 class MainPage(RestHandler):
+    @http_cached(etag=True)
     def get(self):
         payload= template.render('src/html/index.html',{})
-        self.html_response(payload,ttl=0,etag=True)
+        self.html_response(payload)
 
 class OverviewPage(RestHandler):
+    @http_cached(etag=True)
     def get(self):
         payload= template.render('src/html/overview.html',{})
-        self.html_response(payload,ttl=0,etag=True)
+        self.html_response(payload)
 
 class TileHandler(RestHandler):
+    @http_cached(etag=True,ttl=3600)
     def get(self,basemap,z,y,x):
         #url = "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/%s/%s/%s" % (z,y,x)
         url = "http://cartodb-basemaps-a.global.ssl.fastly.net/light_all/%s/%s/%s.png" % (z,x,y)
@@ -43,31 +49,30 @@ class TileHandler(RestHandler):
         if result.status_code != 200:
             self.response_error()
             return 
-        self.png_response(result.content, ttl=3600, etag=True)
+        self.png_response(result.content)
 
 class BikeNetworkStatusApi(RestHandler):
+    @http_cached(etag=True,ttl=STATION_STATUS_TTL)
     def get(self,system_id):
         system = BikeNetwork.get_by_id(system_id)
         if not system:
             self.response_error()
             return
-        self.response.headers['Content-Type'] = 'application/json'
-        self.response.headers['Cache-Control'] = 'public,max-age=%d' % STATION_STATUS_TTL
         out = CODECS[system.codec].get_status(system)
-        self.json_response(out,ttl=STATION_STATUS_TTL,etag=True)
+        self.json_response(out)
 
 class BikeNetworkInfoApi(RestHandler):
+    @http_cached(etag=True,ttl=STATION_INFO_TTL)
     def get(self,system_id):
         system = BikeNetwork.get_by_id(system_id)
         if not system:
             self.response_error()
             return
-        self.response.headers['Content-Type'] = 'application/json'
-        self.response.headers['Cache-Control'] = 'public,max-age=%d' % STATION_INFO_TTL
         out = CODECS[system.codec].get_info(system)
-        self.json_response(out,ttl=STATION_INFO_TTL,etag=True)
+        self.json_response(out)
 
 class BikeNetworkListApi(RestHandler):
+    @http_cached(etag=True,ttl=STATION_INFO_TTL)
     def get(self):
         out = []
         for system in BikeNetwork.query().fetch():
@@ -76,7 +81,7 @@ class BikeNetworkListApi(RestHandler):
         if not out:
             self.response_error()
             return
-        self.json_response([["id","name","lat","lon"]] + out,ttl=STATION_INFO_TTL,etag=True)
+        self.json_response([["id","name","lat","lon"]] + out)
 
 class UpdateSystemsHandler(webapp2.RequestHandler):
     def get(self):
