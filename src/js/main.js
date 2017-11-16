@@ -337,7 +337,7 @@ var Compass = window.Compass;
                     var marker = markerMap[stationId];
                     if (!marker) {
                         marker = L.circleMarker([station.lat, station.lon], {
-                            radius: desktop ? 12 : 8,
+                            radius: desktop ? 12 : 10,
                             color: "rgb(253,77,2)",
                             weight: station.alerts.length > 0 ? 4 : 2,
                             fillOpacity: 1.0
@@ -582,6 +582,9 @@ var Compass = window.Compass;
             });
             var nearestStations = geo.nearby(lat, lon, effectiveStations, 25);
             $stationList.empty();
+            if(nearestStations.length === 0 && filter == "fave"){
+                $stationList.append("<p class='message'>No Favorites<br><em>Click a station on map or double click a station in list to mark it as favorite.</em></p>");
+            }
             for (var i in nearestStations) {
                 var station = nearestStations[i];
                 var $row = $(stationRow(station, favorites));

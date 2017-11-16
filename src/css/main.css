@@ -106,6 +106,8 @@ float: right
 }
 #loading {
 font-size: 1.5em;
+}
+.message {
 padding: 10px;
 }
 #selector div {
