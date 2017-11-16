@@ -10,7 +10,10 @@ margin: 0px
 }
 .station {
 width: 100%;
-cursor: pointer
+cursor: pointer;
+-webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+            user-select: none;
 }
 .station:nth-child(even) {
 background-color: #FDF5F1;
@@ -60,7 +63,6 @@ text-align: center;
 #footer {
 font-size: 0.8em;
 padding: 10px;
-text-align: center;
 color: gray;
 }
 #selector {

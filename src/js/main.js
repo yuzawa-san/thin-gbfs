@@ -31,6 +31,7 @@ var Compass = window.Compass;
         $("#timing-" + key).text(content);
     }
 
+    var systemId = null;
     var stations = null;
     var currentPosition = null;
     var $stationList = $("#station-list");
@@ -227,6 +228,7 @@ var Compass = window.Compass;
                 icon: myIcon,
                 attribution: system.name
             });
+            systemId = system.id;
             youMarker.addTo(map);
             if (!override && system.distance > 50000) {
                 $stationList.html('<div id="loading">No bikeshare system with GBFS feed nearby!</div>');
@@ -259,6 +261,37 @@ var Compass = window.Compass;
 
     var lastFetch = 0;
 
+    $("#map").on("click", ".favorite-toggle", function() {
+        var stationId = $(this).attr("data-id");
+        if (toggleFavorite(stationId)) {
+            $(this).html("&#x2606;");
+        } else {
+            $(this).html("&#x2605;");
+        }
+    });
+
+    function getFavorites() {
+        var faves = localStorage.getItem("fave_" + systemId);
+        if (faves) {
+            faves = JSON.parse(faves);
+        } else {
+            faves = {};
+        }
+        return faves;
+    }
+
+    function toggleFavorite(id) {
+        var faves = getFavorites();
+        if (faves[id]) {
+            delete faves[id];
+        } else {
+            faves[id] = 1;
+        }
+        localStorage.setItem("fave_" + systemId, JSON.stringify(faves));
+        draw();
+        return faves[id];
+    }
+
     function loadSystem(systemId, systemInfo) {
         function fetch() {
             timerStart("system-status");
@@ -276,6 +309,7 @@ var Compass = window.Compass;
                     }
                 }
                 var stationList = [];
+                var favorites = getFavorites();
                 for (var i in statuses) {
                     var station = statuses[i];
                     var stationInfo = systemInfo.stationMap[station.id];
@@ -339,7 +373,11 @@ var Compass = window.Compass;
                     marker.setStyle({
                         fillColor: fillColor
                     });
-                    marker.setPopupContent("<strong>" + station.name + "</strong><br>" + bikes + " bikes, " + docks + " docks" + alertsRows(station.alerts))
+                    var favorite = "&#x2605;";
+                    if (favorites[station.id]) {
+                        favorite = "&#x2606;";
+                    }
+                    marker.setPopupContent("<strong>" + station.name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(station.alerts) + " " + points(station.pts) + "<br><button class='favorite-toggle' data-id='" + station.id + "'>" + favorite + "</button>")
                 }
                 stations = stationList;
 
@@ -480,7 +518,7 @@ var Compass = window.Compass;
         }
     }
 
-    function stationRow(station) {
+    function stationRow(station, favorites) {
         var miles = station.distance / 1609.34;
         var distance;
         if (miles < 0.18) {
@@ -503,8 +541,12 @@ var Compass = window.Compass;
         } else if (pts > 0) {
             dockPoints = ", <span class='points-drop'>" + pts + "pts</span>";
         }
+        var favorite = "";
+        if (favorites[station.id]) {
+            favorite = "&#x2605; ";
+        }
 
-        return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='health station-cell'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><div class='name'>" + station.name + "</div>" + "<div class='detail'>" + pad(station.bikes) + " bikes" + bikePoints + " | " + pad(station.docks) + " docks" + dockPoints + " | " + distance + " " + bearing + " | " + lastMod + "</div>" + alerts + "</div></div></div>";
+        return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='health station-cell'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><div class='name'>" + favorite + station.name + "</div>" + "<div class='detail'>" + pad(station.bikes) + " bikes" + bikePoints + " | " + pad(station.docks) + " docks" + dockPoints + " | " + distance + " " + bearing + " | " + lastMod + "</div>" + alerts + "</div></div></div>";
     }
 
     var lastRender = 0;
@@ -513,9 +555,12 @@ var Compass = window.Compass;
         if (stations) {
             var lat = currentPosition.coords.latitude;
             var lon = currentPosition.coords.longitude;
+            var favorites = getFavorites();
             var effectiveStations = stations.filter(function(station) {
                 var status;
-                if (filter == 'bike') {
+                if (filter == "fave") {
+                    status = favorites[station.id];
+                } else if (filter == 'bike') {
                     status = station.pct > 0.05;
                 } else if (filter == 'dock') {
                     status = station.pct < 0.95 && station.type == 'station';
@@ -527,26 +572,25 @@ var Compass = window.Compass;
                     id = "bike" + id;
                 }
                 var marker = markerMap[id];
-                if (status) {
-                    marker.setStyle({
-                        opacity: 1.0,
-                        fillOpacity: 1.0
-                    });
-                } else {
-                    marker.setStyle({
-                        opacity: 0.2,
-                        fillOpacity: 0.2
-                    });
-                }
+                var opacity = status ? 1.0 : 0.2;
+                marker.setStyle({
+                    opacity: opacity,
+                    fillOpacity: opacity
+                });
+                marker.pointsMarker.setOpacity(opacity);
                 return status;
             });
             var nearestStations = geo.nearby(lat, lon, effectiveStations, 25);
             $stationList.empty();
             for (var i in nearestStations) {
                 var station = nearestStations[i];
-                var $row = $(stationRow(station));
+                var $row = $(stationRow(station, favorites));
                 $row.click(function() {
-                    markerMap[$(this).attr('data-id')].openPopup();
+                    var marker = markerMap[$(this).attr('data-id')];
+                    map.setView(marker.getLatLng(), map.getZoom());
+                }).dblclick(function() {
+                    var marker = markerMap[$(this).attr('data-id')];
+                    marker.openPopup();
                 });
                 $stationList.append($row);
             }
