@@ -44,7 +44,9 @@ def http_cached(etag=False, ttl=0):
             uri = request.path
             key = hashed_key(uri)
             response.headers['Cache-Control'] = 'public,max-age=%d' % ttl
-            holder = memcache.get(key)
+            holder = None
+            if ttl > 0:
+                holder = memcache.get(key)
             if holder is None:
                 handler_func(*args, **kwargs)
                 if response.status_int != 200:
@@ -52,9 +54,10 @@ def http_cached(etag=False, ttl=0):
                 body = response.body
                 holder = MemcacheHolder(md5(body).hexdigest(),handler.response.headers['Content-Type'],body)
                 try:
-                    added = memcache.add(key, holder, ttl)
-                    if not added:
-                        logging.error('Memcache set failed.')
+                    if ttl > 0:
+                        added = memcache.add(key, holder, ttl)
+                        if not added:
+                            logging.error('Memcache set failed.')
                 except ValueError:
                     logging.error('Memcache set failed - data larger than 1MB')
             else:
