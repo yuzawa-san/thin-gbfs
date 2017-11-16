@@ -561,7 +561,7 @@ var Compass = window.Compass;
                 if (filter == "fave") {
                     status = favorites[station.id];
                 } else if (filter == 'bike') {
-                    status = station.pct > 0.05;
+                    status = station.pct > 0.05 || station.type == 'bike';
                 } else if (filter == 'dock') {
                     status = station.pct < 0.95 && station.type == 'station';
                 } else {
