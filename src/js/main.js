@@ -181,7 +181,7 @@ var Compass = window.Compass;
             youMarker.setLatLng(newLatLng);
             if (initial) {
                 timerEnd("geolocation");
-                map.setView([position.coords.latitude, position.coords.longitude], map.getZoom());
+                map.setView(newLatLng, desktop ? 16 : 15);
                 determineSystem();
             }
         }, function(e) {
