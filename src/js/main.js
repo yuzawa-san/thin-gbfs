@@ -577,12 +577,14 @@ var Compass = window.Compass;
                     opacity: opacity,
                     fillOpacity: opacity
                 });
-                marker.pointsMarker.setOpacity(opacity);
+                if (marker.pointsMarker) {
+                    marker.pointsMarker.setOpacity(opacity);
+                }
                 return status;
             });
             var nearestStations = geo.nearby(lat, lon, effectiveStations, 25);
             $stationList.empty();
-            if(nearestStations.length === 0 && filter == "fave"){
+            if (nearestStations.length === 0 && filter == "fave") {
                 $stationList.append("<p class='message'>No Favorites<br><em>Click a station on map or double click a station in list to mark it as favorite.</em></p>");
             }
             for (var i in nearestStations) {
