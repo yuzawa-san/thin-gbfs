@@ -228,12 +228,11 @@ var Compass = window.Compass;
                 icon: myIcon,
                 attribution: system.name
             });
-            systemId = system.id;
             youMarker.addTo(map);
             if (!override && system.distance > 50000) {
                 $stationList.html('<div id="loading">No bikeshare system with GBFS feed nearby!</div>');
             } else {
-                var systemId = system.id
+                systemId = system.id
                 timerStart("system-info");
                 $.get("/systems/" + systemId + "/info", function(response, status, xhr) {
                     timerEnd("system-info", xhr);
@@ -243,7 +242,7 @@ var Compass = window.Compass;
                         var station = response.stations[i]
                         response.stationMap[station.id] = station;
                     }
-                    loadSystem(systemId, response);
+                    loadSystem(response);
                 });
             }
 
@@ -292,7 +291,7 @@ var Compass = window.Compass;
         return faves[id];
     }
 
-    function loadSystem(systemId, systemInfo) {
+    function loadSystem(systemInfo) {
         function fetch() {
             timerStart("system-status");
             $.get("/systems/" + systemId + "/status", function(response, status, xhr) {
