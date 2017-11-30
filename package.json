@@ -1,5 +1,5 @@
 {
-  "name": "fast-gbfs",
+  "name": "thin-gbfs",
   "version": "1.0.0",
   "description": "A fast and low-network-use mobile web app for many common bike sharing systems.",
   "author": "yuzawa-san",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/yuzawa-san/fast-gbfs.git"
+    "url": "https://github.com/yuzawa-san/thin-gbfs.git"
   },
   "scripts": {
     "dev": "./node_modules/gulp/bin/gulp.js && dev_appserver.py app.yaml",

@@ -1,6 +1,6 @@
-# :bike: fast-gbfs :bike:
+# :bike: thin-gbfs :bike:
 
-https://fast-gbfs.appspot.com/
+https://thin-gbfs.appspot.com/
 
 A fast and low-network-use mobile web app for many common bike sharing systems.
 
