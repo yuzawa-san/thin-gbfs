@@ -107,7 +107,7 @@ var Compass = window.Compass;
         if (window.devicePixelRatio > 1) {
             retina = "@2x";
         }
-        L.tileLayer('https://cartodb-basemaps-a.global.ssl.fastly.net/light_all/{z}/{x}/{y}' + retina + '.png', {
+        L.tileLayer('https://a.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}' + retina + '.png', {
             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
         }).addTo(map);
     } else {
