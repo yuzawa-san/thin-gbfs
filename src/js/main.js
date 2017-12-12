@@ -102,20 +102,13 @@ var Compass = window.Compass;
 
     var map = L.map('map').setZoom(15);
     var desktop = window.innerWidth > 700;
-    if (desktop) {
-        var retina = "";
-        if (window.devicePixelRatio > 1) {
-            retina = "@2x";
-        }
-        L.tileLayer('https://a.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}' + retina + '.png', {
-            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
-        }).addTo(map);
-    } else {
-        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-            maxZoom: 16
-        }).addTo(map);
+    var retina = "";
+    if (window.devicePixelRatio > 1 && desktop) {
+        retina = "@2x";
     }
+    L.tileLayer('https://a.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}' + retina + '.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+    }).addTo(map);
 
     var myIcon = L.divIcon({
         className: 'bearing-container',
