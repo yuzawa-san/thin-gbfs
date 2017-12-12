@@ -163,7 +163,7 @@ var Compass = window.Compass;
             $("#retina").prop("checked", true);
         }
     } catch (e) {}
-    
+
     var retina = "";
     if ($retina.prop("checked") || desktop) {
         retina = "{r}";
