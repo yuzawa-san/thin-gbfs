@@ -102,13 +102,6 @@ var Compass = window.Compass;
 
     var map = L.map('map').setZoom(15);
     var desktop = window.innerWidth > 700;
-    var retina = "";
-    if (window.devicePixelRatio > 1 && desktop) {
-        retina = "@2x";
-    }
-    L.tileLayer('https://a.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}' + retina + '.png', {
-        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
-    }).addTo(map);
 
     var myIcon = L.divIcon({
         className: 'bearing-container',
@@ -150,7 +143,15 @@ var Compass = window.Compass;
     });
 
     var $toggle = $("#toggle").click(function() {
-        $("#system-select").toggle();
+        $("#prefs").toggle();
+    });
+    var $retina = $("#retina").click(function() {
+        if ($(this).prop("checked")) {
+            localStorage.setItem('retina', 1);
+        } else {
+            localStorage.removeItem('retina');
+        }
+        window.location.reload();
     });
 
     try {
@@ -158,7 +159,18 @@ var Compass = window.Compass;
         if (filter) {
             $('#filter-' + filter).trigger('click');
         }
+        if (localStorage.getItem('retina')) {
+            $("#retina").prop("checked", true);
+        }
     } catch (e) {}
+    
+    var retina = "";
+    if ($retina.prop("checked") || desktop) {
+        retina = "{r}";
+    }
+    L.tileLayer('https://a.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}' + retina + '.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+    }).addTo(map);
 
     if (navigator.geolocation) {
         var geo_options = {
@@ -210,7 +222,7 @@ var Compass = window.Compass;
                 }
             }
             if (nearbySystemCount > 1) {
-                $toggle.show();
+                $system.show();
             }
             $system.val(system.id);
             $system.change(function() {
