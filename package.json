@@ -24,6 +24,7 @@
     "gulp": "~3.9.1",
     "gulp-clean-css": "^3.9.0",
     "gulp-concat": "^2.6.1",
+    "gulp-image-embed": "0.0.2",
     "webpack": "3.8.1",
     "webpack-stream": "^4.0.0"
   }

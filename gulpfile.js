@@ -2,6 +2,7 @@
 var gulp = require('gulp');
 var concat = require('gulp-concat');
 var minifyCSS = require('gulp-clean-css');
+var embed = require('gulp-image-embed');
 var webpack = require('webpack');
 var gulpWebpack = require('webpack-stream');
 
@@ -10,7 +11,8 @@ gulp.task("default", ["css","js"]);
 
 gulp.task('css', function(){
     gulp.src(['src/css/**/*.css','node_modules/leaflet/dist/*.css'])
-        .pipe(minifyCSS())
+        .pipe(embed({}))
+        .pipe(minifyCSS({rebase: false}))
         .pipe(concat('bundle.css'))
         .pipe(gulp.dest('dist'))
     gulp.src('node_modules/leaflet/dist/images/*')
