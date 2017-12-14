@@ -100,7 +100,9 @@ var Compass = window.Compass;
         }
     };
 
-    var map = L.map('map').setZoom(15);
+    var map = L.map('map', {
+        minZoom: 12
+    }).setZoom(15);
     var desktop = window.innerWidth > 700;
 
     var myIcon = L.divIcon({
@@ -145,31 +147,104 @@ var Compass = window.Compass;
     var $toggle = $("#toggle").click(function() {
         $("#prefs").toggle();
     });
-    var $retina = $("#retina").click(function() {
-        if ($(this).prop("checked")) {
-            localStorage.setItem('retina', 1);
-        } else {
-            localStorage.removeItem('retina');
-        }
-        window.location.reload();
-    });
 
+    var baseSelection = desktop ? "retina" : "default";
     try {
         filter = localStorage.getItem('filter');
         if (filter) {
             $('#filter-' + filter).trigger('click');
         }
-        if (localStorage.getItem('retina')) {
-            $("#retina").prop("checked", true);
+        var selectedBase = localStorage.getItem("base");
+        if (selectedBase) {
+            baseSelection = selectedBase;
         }
     } catch (e) {}
-
-    var retina = "";
-    if ($retina.prop("checked") || desktop) {
-        retina = "{r}";
+    var subdomain = 'a';
+    if (desktop) {
+        // this will open multiple connections which is ok on desktop
+        subdomain = '{s}'
     }
-    L.tileLayer('https://a.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}' + retina + '.png', {
+    var defaultBase = L.tileLayer('https://' + subdomain + '.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+    });
+    var retinaBase = L.tileLayer('https://' + subdomain + '.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png', {
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
+    });
+    L.GridLayer.GridLines = L.GridLayer.extend({
+        createTile: function(coords) {
+            var tile = document.createElement('canvas');
+
+            var tileSize = this.getTileSize();
+            tile.setAttribute('width', tileSize.x);
+            tile.setAttribute('height', tileSize.y);
+            tile.setAttribute("data-z", coords.z);
+
+            var y = map.getSize().y / 2;
+            var tileMeters = 40075016.686 * Math.abs(Math.cos(map.getCenter().lat * 180 / Math.PI)) / Math.pow(2, coords.z + 8);
+            var spacing = 100;
+            var jump = Math.round(spacing / tileMeters);
+
+            var ctx = tile.getContext('2d');
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, tileSize.x, tileSize.y);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "#eee";
+            ctx.beginPath();
+            for (var x = 0; x < tileSize.x; x++) {
+                if ((coords.x * tileSize.x + x) % jump == 0) {
+                    ctx.moveTo(x + 0.5, 0);
+                    ctx.lineTo(x + 0.5, tileSize.y);
+                }
+            }
+            for (var y = 0; y < tileSize.y; y++) {
+                if ((coords.y * tileSize.y + y) % jump == 0) {
+                    ctx.moveTo(0, y + 0.5);
+                    ctx.lineTo(tileSize.x, y + 0.5);
+                }
+            }
+            ctx.stroke();
+            return tile;
+        }
+    });
+
+    L.gridLayer.gridLines = function(opts) {
+        return new L.GridLayer.GridLines(opts);
+    };
+    var gridLayer = L.gridLayer.gridLines();
+    console.log(baseSelection);
+    defaultBase.on('add', function() {
+        localStorage.setItem("base", "default");
+    });
+    retinaBase.on('add', function() {
+        localStorage.setItem("base", "retina");
+    });
+    gridLayer.on('add', function() {
+        localStorage.setItem("base", "grid");
+    });
+
+    if (baseSelection == "retina") {
+        retinaBase.addTo(map);
+    } else if (baseSelection == "grid") {
+        gridLayer.addTo(map);
+    } else {
+        defaultBase.addTo(map);
+    }
+
+    var baseLayers = {
+        "Default": defaultBase,
+        "Retina (High-Data)": retinaBase,
+        "100m grid (No-Data)": gridLayer
+    };
+
+    var stationLayer = L.layerGroup().addTo(map);
+    var bikeLayer = L.layerGroup().addTo(map);
+
+    var overlays = {
+        "Stations": stationLayer,
+        "Floating Bikes": bikeLayer
+    };
+    L.control.layers(baseLayers, overlays,{
+        "position": "bottomleft"
     }).addTo(map);
 
     if (navigator.geolocation) {
@@ -348,14 +423,14 @@ var Compass = window.Compass;
                         });
                         markerMap[stationId] = marker;
                         marker.bindPopup(station.name);
-                        marker.addTo(map);
+                        marker.addTo(stationLayer);
                         var pointsIcon = L.divIcon({
                             className: 'points-icon'
                         });
                         var pointsMarker = L.marker([station.lat, station.lon], {
                             icon: pointsIcon,
                             interactive: false
-                        }).addTo(map);
+                        }).addTo(stationLayer);
                         marker.pointsMarker = pointsMarker;
 
                     }
@@ -399,7 +474,7 @@ var Compass = window.Compass;
                         });
                         markerMap['bike' + bike.id] = marker;
                         marker.bindPopup(bike.name);
-                        marker.addTo(map);
+                        marker.addTo(bikeLayer);
                     }
                     newBikeMarkers[bike.id] = marker;
                     delete bikeMarkers[bike.id];
