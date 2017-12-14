@@ -100,9 +100,7 @@ var Compass = window.Compass;
         }
     };
 
-    var map = L.map('map', {
-        minZoom: 12
-    }).setZoom(15);
+    var map = L.map('map').setZoom(15);
     var desktop = window.innerWidth > 700;
 
     var myIcon = L.divIcon({
@@ -210,8 +208,9 @@ var Compass = window.Compass;
     L.gridLayer.gridLines = function(opts) {
         return new L.GridLayer.GridLines(opts);
     };
-    var gridLayer = L.gridLayer.gridLines();
-    console.log(baseSelection);
+    var gridLayer = L.gridLayer.gridLines({
+        minZoom: 12
+    });
     defaultBase.on('add', function() {
         localStorage.setItem("base", "default");
     });
