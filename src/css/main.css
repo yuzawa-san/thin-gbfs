@@ -189,3 +189,47 @@ color: green
 .station .points-drop {
 color: red
 }
+#loading {
+text-align: center;
+}
+#loading .bar {
+display: inline-block;
+width: 10px;
+height: 10px;
+background: rgb(253,128,75);
+margin-right: 1px;
+box-shadow: 1px 1px 1px black;
+border-radius: 5px;
+animation: opacity-1 1000ms infinite ease-in-out;
+}
+
+#loading .bar1 {
+animation-delay: 100ms;
+}
+#loading .bar2 {
+animation-delay: 200ms;
+}
+#loading .bar3 {
+animation-delay: 300ms;
+}
+#loading .bar4 {
+animation-delay: 400ms;
+}
+#loading .bar5 {
+animation-delay: 500ms;
+}
+#loading .bar6 {
+animation-delay: 600ms;
+}
+
+@keyframes opacity-1 {
+  0% {
+opacity: 1;
+}
+  50% {
+opacity: 0;
+}
+  100% {
+opacity: 1;
+}
+}
