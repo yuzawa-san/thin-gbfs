@@ -154,9 +154,9 @@ background-color: rgb(253,77,2);
 border-radius: 2px;
 }
 .points-icon {
-font-size: 7px;
+font-size: 8px;
 padding-top: 1px;
-font-family: monospace;
+font-family: sans-serif;
 text-align: center;
 white-space: nowrap;
 }
@@ -168,14 +168,14 @@ color: black
 }
 .points-icon span::before {
 content: "";
-width: 5px;
-height: 6px;
+width: 6px;
+height: 7px;
 display: inline-block;
 background-size: contain;
 background-position: center;
 background-repeat: no-repeat;
 vertical-align: middle;
-padding-right: 2px;
+padding-right: 1px;
 }
 .points-icon .points-pick::before {
 background-image: url(images/up.svg);
