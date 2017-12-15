@@ -296,7 +296,7 @@ var Compass = window.Compass;
                 }
             }
             if (nearbySystemCount > 1) {
-                $system.show();
+                $toggle.show();
             }
             $system.val(system.id);
             $system.change(function() {
