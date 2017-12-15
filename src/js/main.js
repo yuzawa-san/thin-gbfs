@@ -178,7 +178,7 @@ var Compass = window.Compass;
             tile.setAttribute("data-z", coords.z);
 
             var y = map.getSize().y / 2;
-            var tileMeters = 40075016.686 * Math.abs(Math.cos(map.getCenter().lat * 180 / Math.PI)) / Math.pow(2, coords.z + 8);
+            var tileMeters = 40075016.686 * Math.abs(Math.cos(map.getCenter().lat * Math.PI / 180)) / Math.pow(2, coords.z + 8);
             var spacing = 100;
             var jump = Math.round(spacing / tileMeters);
 
