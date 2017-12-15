@@ -590,9 +590,9 @@ var Compass = window.Compass;
             return "";
         }
         if (pts < 0) {
-            return "<span class='points-pick'>&#x2b06;&#xFE0E;" + (-pts) + "</span>";
+            return "<span class='points-pick'>" + (-pts) + "</span>";
         } else {
-            return "<span class='points-drop'>&#x2b07;&#xFE0E;" + pts + "</span>";
+            return "<span class='points-drop'>" + pts + "</span>";
         }
     }
 
