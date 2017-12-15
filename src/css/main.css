@@ -3,7 +3,7 @@ height: 100%;
 overflow-y: hidden;
 }
 body {
-font-family: Menlo;
+font-family: sans-serif;
 font-size: 12px;
 padding: 0px;
 margin: 0px
@@ -156,14 +156,32 @@ border-radius: 2px;
 .points-icon {
 font-size: 7px;
 padding-top: 1px;
-font-family: Menlo;
-text-align: center
+font-family: monospace;
+text-align: center;
+white-space: nowrap;
 }
 .points-icon .points-pick {
 color: white
 }
 .points-icon .points-drop {
 color: black
+}
+.points-icon span::before {
+content: "";
+width: 5px;
+height: 6px;
+display: inline-block;
+background-size: contain;
+background-position: center;
+background-repeat: no-repeat;
+vertical-align: middle;
+padding-right: 2px;
+}
+.points-icon .points-pick::before {
+background-image: url(images/up.svg);
+}
+.points-icon .points-drop::before {
+background-image: url(images/down.svg);
 }
 .station .points-pick {
 color: green

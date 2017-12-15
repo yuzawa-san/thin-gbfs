@@ -10,8 +10,8 @@ var gulpWebpack = require('webpack-stream');
 gulp.task("default", ["css","js"]);
 
 gulp.task('css', function(){
-    gulp.src(['src/css/**/*.css','node_modules/leaflet/dist/*.css'])
-        .pipe(embed({}))
+    gulp.src(['src/css/*.css','node_modules/leaflet/dist/*.css'])
+        .pipe(embed({extension: ['jpg', 'png', 'svg']}))
         .pipe(minifyCSS({rebase: false}))
         .pipe(concat('bundle.css'))
         .pipe(gulp.dest('dist'))
