@@ -10,10 +10,10 @@ handlers:
   static_files: \1
   upload: (robots\.txt)
 - url: /dist/images
-  expiration: 1h
+  expiration: 1d
   static_dir: dist/images
 - url: /dist
-  expiration: 2h
+  expiration: 365d
   application_readable: true
   static_dir: dist
 - url: /load
