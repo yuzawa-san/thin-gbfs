@@ -15,47 +15,51 @@
 <body>
 <div id="map"></div>
 <div id="content">
-    <h1 id="app-name">thin-gbfs</h1>
-    <div id="header">
-        <div id="selector">
-        <div id="center"><img id="center-icon" width="12" height="12"></div>&nbsp;
-        <div class="filter active" id="filter-all">All</div>
-        <div class="filter" id="filter-bike">Bike</div>
-        <div class="filter" id="filter-dock">Dock</div>
-        <div class="filter" id="filter-fave">&#x2605;</div>&nbsp;
-        <div id="toggle">&#8278;</div>
-        </div>
-        <div id="progress-indicator">
-        <svg viewBox="-2 -2 4 4" style="transform: rotate(-0.25turn)" width="20" height="20">
-        <circle cx="0" cy="0" r="1" stroke="#ccc" fill="none" stroke-width="0.8"/>
-        <path id="status-arc" d="M 1 0 A 1 1 0 0 1 1 0" stroke="#fff" fill="none" stroke-width="0.8"></path>
-        </svg>
-        </div>
-        <p id="prefs" style="display:none">
-            <select id="system"></select>
-        </p>
-    </div>
-    <div id="station-list">
-        <div id="loading" class="message">
-            <div class="bar bar1"></div>
-            <div class="bar bar2"></div>
-            <div class="bar bar3"></div>
-            <div class="bar bar4"></div>
-            <div class="bar bar5"></div>
-            <div class="bar bar6"></div>
+    <div id="content-fixed">
+        <h1 id="app-name">thin-gbfs</h1>
+        <div id="header">
+            <div id="selector">
+            <div id="center"><img id="center-icon" width="12" height="12"></div>&nbsp;
+            <div class="filter active" id="filter-all">All</div>
+            <div class="filter" id="filter-bike">Bike</div>
+            <div class="filter" id="filter-dock">Dock</div>
+            <div class="filter" id="filter-fave">&#x2605;</div>&nbsp;
+            <div id="toggle">&#8278;</div>
+            </div>
+            <div id="progress-indicator">
+            <svg viewBox="-2 -2 4 4" style="transform: rotate(-0.25turn)" width="20" height="20">
+            <circle cx="0" cy="0" r="1" stroke="#ccc" fill="none" stroke-width="0.8"/>
+            <path id="status-arc" d="M 1 0 A 1 1 0 0 1 1 0" stroke="#fff" fill="none" stroke-width="0.8"></path>
+            </svg>
+            </div>
+            <p id="prefs" style="display:none">
+                <select id="system"></select>
+            </p>
         </div>
     </div>
-    <div id="footer">
-        <strong>thin-gbfs</strong> by <a href="https://github.com/yuzawa-san">yuzawa-san</a><br>
-        <a href="https://github.com/yuzawa-san/thin-gbfs">GitHub</a> | <a href="https://github.com/yuzawa-san/thin-gbfs/blob/master/README.md#software-license-info">Licensing Info</a> | <a href="https://github.com/yuzawa-san/thin-gbfs/blob/master/LICENSE">License</a><br>
-        sourced from <a href="https://github.com/NABSA/gbfs">gbfs</a> &amp; <a href="https://github.com/eskerda/pybikes">pybikes</a> via <a href="https://api.citybik.es/">citibik.es</a><br>
-        <hr>
-        <table>
-            <tr><td>geolocation</td><td id="timing-geolocation"></td></tr>
-            <tr><td>system list</td><td id="timing-system-list"></td></tr>
-            <tr><td>system info</td><td id="timing-system-info"></td></tr>
-            <tr><td>station status</td><td id="timing-system-status"></td></tr>
-        </table>
+    <div id="content-scroll">
+        <div id="station-list">
+            <div id="loading" class="message">
+                <div class="bar bar1"></div>
+                <div class="bar bar2"></div>
+                <div class="bar bar3"></div>
+                <div class="bar bar4"></div>
+                <div class="bar bar5"></div>
+                <div class="bar bar6"></div>
+            </div>
+        </div>
+        <div id="footer">
+            <strong>thin-gbfs</strong> by <a href="https://github.com/yuzawa-san">yuzawa-san</a><br>
+            <a href="https://github.com/yuzawa-san/thin-gbfs">GitHub</a> | <a href="https://github.com/yuzawa-san/thin-gbfs/blob/master/README.md#software-license-info">Licensing Info</a> | <a href="https://github.com/yuzawa-san/thin-gbfs/blob/master/LICENSE">License</a><br>
+            sourced from <a href="https://github.com/NABSA/gbfs">gbfs</a> &amp; <a href="https://github.com/eskerda/pybikes">pybikes</a> via <a href="https://api.citybik.es/">citibik.es</a><br>
+            <hr>
+            <table>
+                <tr><td>geolocation</td><td id="timing-geolocation"></td></tr>
+                <tr><td>system list</td><td id="timing-system-list"></td></tr>
+                <tr><td>system info</td><td id="timing-system-info"></td></tr>
+                <tr><td>station status</td><td id="timing-system-status"></td></tr>
+            </table>
+        </div>
     </div>
 </div>
 <!-- build:js -->
