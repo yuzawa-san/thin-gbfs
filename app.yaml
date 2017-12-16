@@ -9,8 +9,12 @@ handlers:
 - url: /(robots\.txt)
   static_files: \1
   upload: (robots\.txt)
-- url: /dist
+- url: /dist/images
   expiration: 1h
+  static_dir: dist/images
+- url: /dist
+  expiration: 2h
+  application_readable: true
   static_dir: dist
 - url: /load
   script: main.app

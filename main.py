@@ -27,7 +27,7 @@ class LicenseHandler(RestHandler):
 class MainPage(RestHandler):
     @http_cached(etag=True)
     def get(self):
-        payload= template.render('src/html/index.html',{})
+        payload= template.render('dist/index.html',{})
         self.html_response(payload)
 
 class OverviewPage(RestHandler):
