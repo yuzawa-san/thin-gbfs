@@ -2,7 +2,7 @@
 
 https://thin-gbfs.appspot.com/
 
-A fast and low-network-use mobile web app for many common bike sharing systems.
+A thin and low-network-use mobile web app for many common bike sharing systems.
 
 I enjoy biking while I travel. Unfortunately, I have grown tired using many bloated web and native apps whilst using limited international data plans.
 
@@ -14,6 +14,7 @@ The goals of this project are:
 * cache system and station information server side to avoid hitting the source data API's too often.
 * limit number of TCP connections and number of hosts contacted
 * use HTTPS
+* privacy: a geolocation call is made, but this application does not collect such data
 
 ## Development
 
