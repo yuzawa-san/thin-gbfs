@@ -199,9 +199,8 @@ width: 10px;
 height: 10px;
 background: rgb(253,128,75);
 margin-right: 1px;
-box-shadow: 1px 1px 1px black;
 border-radius: 5px;
-animation: opacity-1 1000ms infinite ease-in-out;
+animation: opacity-1 700ms infinite ease-in-out;
 }
 
 #loading .bar1 {
