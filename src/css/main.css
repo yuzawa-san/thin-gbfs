@@ -77,12 +77,13 @@ height: 50%;
 width: 100%;
 display: table;
 }
-#content-fixed {
+#content-fixed,#content-scoll {
 display: table-row;
+}
+#content-fixed {
 height: 0;
 }
 #content-scroll {
-display: table-row;
 height: 100%;
 overflow-y: auto;
 }
