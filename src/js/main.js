@@ -8,6 +8,9 @@ var Compass = window.Compass;
     // redraw the list this often
     var renderMs = 10000;
 
+    var languages = navigator.languages || [];
+    var imperialUnits = languages.indexOf("en-US") >= 0;
+
     var arrowUrl = URL.createObjectURL(new Blob(['<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path id="arrow" fill="#007BFF" d="M 50,0 L 100,100 L 50,70 L 0,100" /></svg>'], {
         type: 'image/svg+xml'
     }));
@@ -179,7 +182,7 @@ var Compass = window.Compass;
 
             var y = map.getSize().y / 2;
             var tileMeters = 40075016.686 * Math.abs(Math.cos(map.getCenter().lat * Math.PI / 180)) / Math.pow(2, coords.z + 8);
-            var spacing = 100;
+            var spacing = imperialUnits ? 91.44 : 100;
             var jump = Math.round(spacing / tileMeters);
 
             var ctx = tile.getContext('2d');
@@ -229,11 +232,12 @@ var Compass = window.Compass;
         defaultBase.addTo(map);
     }
 
+    var gridLabel = (imperialUnits ? "300ft" : "100m") + " grid (No-Data)";
     var baseLayers = {
         "Default": defaultBase,
-        "Retina (High-Data)": retinaBase,
-        "100m grid (No-Data)": gridLayer
+        "Retina (High-Data)": retinaBase
     };
+    baseLayers[gridLabel] = gridLayer;
 
     var stationLayer = L.layerGroup().addTo(map);
     var bikeLayer = L.layerGroup().addTo(map);
@@ -242,7 +246,7 @@ var Compass = window.Compass;
         "Stations": stationLayer,
         "Floating Bikes": bikeLayer
     };
-    L.control.layers(baseLayers, overlays,{
+    L.control.layers(baseLayers, overlays, {
         "position": "bottomleft"
     }).addTo(map);
 
@@ -597,12 +601,21 @@ var Compass = window.Compass;
     }
 
     function stationRow(station, favorites) {
-        var miles = station.distance / 1609.34;
         var distance;
-        if (miles < 0.18) {
-            distance = Math.round(miles * 5280) + "ft";
+        if (imperialUnits) {
+            var miles = station.distance / 1609.34;
+            if (miles < 0.189) {
+                distance = Math.round(miles * 5280) + "ft";
+            } else {
+                distance = miles.toFixed(1) + "mi";
+            }
         } else {
-            distance = miles.toFixed(1) + "mi";
+            var meters = station.distance;
+            if (meters < 500) {
+                distance = Math.round(meters) + "m";
+            } else {
+                distance = (meters / 1e3).toFixed(1) + "km";
+            }
         }
         var bearing = geo.cardinalDirection(station.bearing);
         if (station.type == 'bike') {
