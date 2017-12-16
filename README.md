@@ -29,7 +29,7 @@ You will need to seed the DB by going to localhost:8000, then cron jobs and then
 In order to minimize the number of TCP connections between the web app and the server, the dependencies have been webpacked together.
 These projects have been utilized and bundled:
 
-* [jQuery](https://github.com/jquery/jquery) ([MIT](https://github.com/jquery/jquery/blob/master/LICENSE.txt))
+* [zepto](https://github.com/madrobby/zepto) ([MIT](https://github.com/madrobby/zepto/blob/master/MIT-LICENSE))
 * [Leaflet](https://github.com/Leaflet/Leaflet) ([BSD 2-clause](https://github.com/Leaflet/Leaflet/blob/master/LICENSE))
 * [Compass.js](https://github.com/ai/compass.js) ([MIT](https://github.com/ai/compass.js/blob/master/LICENSE))
 

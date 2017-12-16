@@ -1,4 +1,4 @@
-var $ = require('jquery');
+var $ = require('npm-zepto');
 var L = require('leaflet');
 require('compass-js');
 var Compass = window.Compass;
