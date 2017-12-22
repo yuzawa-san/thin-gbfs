@@ -70,3 +70,4 @@ class BikeNetwork(ndb.Model):
     config = ndb.JsonProperty()
     lat = ndb.FloatProperty()
     lon = ndb.FloatProperty()
+    last_updated = ndb.IntegerProperty()

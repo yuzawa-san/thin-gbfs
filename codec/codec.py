@@ -1,4 +1,6 @@
 
+# do not ingest systems whose station statuses have not been updated in a long time (7 days)
+STALE_SYSTEM_SECONDS = 7*86400
 
 class BikeNetworkCodec(object):
     def load(self):

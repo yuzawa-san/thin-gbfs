@@ -13,15 +13,18 @@ import calendar
 
 API_ROOT = "http://api.citybik.es"
 
-# NOTE: use status ttl for station ttl since they are in the same file
-# otherwise the info fetch would lead to stale status fetches
-@cache(ttl=STATION_STATUS_TTL)
-def fetch_system_info(url):
+def _fetch_system_info(url):
     url = "%s%s" % (API_ROOT,url)
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
         return None
     return json.loads(result.content)
+
+# NOTE: use status ttl for station ttl since they are in the same file
+# otherwise the info fetch would lead to stale status fetches
+@cache(ttl=STATION_STATUS_TTL)
+def fetch_system_info(url):
+    return _fetch_system_info(url)
 
 class PyBikesCodec(BikeNetworkCodec):
     NAME = "pybikes"
@@ -33,16 +36,26 @@ class PyBikesCodec(BikeNetworkCodec):
         data = json.loads(result.content)
         entities = []
         for network in data['networks']:
-            if "gbfs_href" not in network:
-                logging.info("Processing %s" % network['name'])
-                r = BikeNetwork(
-                 id= "pybikes_%s" % network['id'],
-                 name=network['name'],
-                 codec=PyBikesCodec.NAME,
-                 config=network,
-                 lat=network['location']['latitude'],
-                 lon=network['location']['longitude'])
-                entities.append(r)
+            try:
+                if "gbfs_href" not in network:
+                    logging.info("Processing %s" % network['name'])
+                    recent_ts = 0
+                    station_info = _fetch_system_info(network['href'])
+                    for station in station_info['network']['stations']:
+                        ts = self._decode_timestamp(station['timestamp'])
+                        if ts > recent_ts:
+                            recent_ts = ts
+                    r = BikeNetwork(
+                     id= "pybikes_%s" % network['id'],
+                     name=network['name'],
+                     codec=PyBikesCodec.NAME,
+                     config=network,
+                     lat=network['location']['latitude'],
+                     lon=network['location']['longitude'],
+                     last_updated=recent_ts)
+                    entities.append(r)
+            except Exception as e:
+                logging.error("failed to load %s: %s", network['name'], e)
         return entities
     
     def get_info(self, system):
@@ -58,16 +71,18 @@ class PyBikesCodec(BikeNetworkCodec):
         out = {"name": system.name, "stations": CompactElement.of(stations), "regions":[]}
         return out
     
+    def _decode_timestamp(self, ts):
+        fmt = "%Y-%m-%dT%H:%M:%SZ"
+        if '.' in ts:
+            fmt = "%Y-%m-%dT%H:%M:%S.%fZ"
+        ts2 = datetime.datetime.strptime(ts, fmt)
+        return calendar.timegm(ts2.utctimetuple())
+    
     def get_status(self, system):
         response_json = fetch_system_info(system.config['href'])
         station_statuses = []
         for station in response_json['network']['stations']:
-            ts = station['timestamp']
-            fmt = "%Y-%m-%dT%H:%M:%SZ"
-            if '.' in ts:
-                fmt = "%Y-%m-%dT%H:%M:%S.%fZ"
-            ts = datetime.datetime.strptime(ts, fmt)
-            ts = calendar.timegm(ts.utctimetuple())
+            ts = self._decode_timestamp(station['timestamp'])
             station_statuses.append(SystemStatusElement(
                 id=station['id'],
                 bikes=station['free_bikes'],

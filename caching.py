@@ -35,6 +35,13 @@ class MemcacheHolder:
         self.content_type = content_type
         self.data = data
 
+def http_purge(uri):
+    try:
+        key = hashed_key(uri)
+        memcache.delete(key)
+    except Exception:
+        logging.error('Memcache purge failed %s' % url)
+
 def http_cached(etag=False, ttl=0):
     def decorator(handler_func):
         def wrapper(*args, **kwargs):

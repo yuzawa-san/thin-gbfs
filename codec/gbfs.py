@@ -72,8 +72,7 @@ def process_alerts(url):
     response_json = json.loads(result.content)
     return response_json['data']['alerts']
 
-@cache(ttl=STATION_STATUS_TTL)
-def process_station_status(url):
+def _process_station_status(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
         return None
@@ -90,6 +89,10 @@ def process_station_status(url):
                 docks = 0
             out.append(SystemStatusElement(id=station['station_id'],bikes=bikes,docks=docks,mod=station['last_reported']))
     return out
+
+@cache(ttl=STATION_STATUS_TTL)
+def process_station_status(url):
+    return _process_station_status(url)
 
 
 class GbfsCodec(BikeNetworkCodec):
@@ -134,18 +137,25 @@ class GbfsCodec(BikeNetworkCodec):
                     if station_count > 0:
                         avg_lat = avg_lat / station_count
                         avg_lon = avg_lon / station_count
+                    recent_ts = 0
+                    station_statuses = _process_station_status(config['station_status'])
+                    for station in station_statuses:
+                        ts = station.mod
+                        if ts > recent_ts:
+                            recent_ts = ts
                     r = BikeNetwork(
                         id= "gbfs_%s" % line['System ID'],
                         codec=GbfsCodec.NAME,
                         name=name,
                         config=config,
                         lat=avg_lat,
-                        lon=avg_lon)
+                        lon=avg_lon,
+                        last_updated=recent_ts)
                     entities.append(r)
                     break
                 except Exception as e:
                     logging.error("failed to load %s: %s", name, e)
-                    time.sleep(5)
+                    time.sleep(1)
         return entities
     
     def get_info(self, system):
