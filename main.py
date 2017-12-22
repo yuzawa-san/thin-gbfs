@@ -48,7 +48,8 @@ class BikeNetworkInfoApi(RestHandler):
         if not system:
             self.response_error()
             return
-        self.json_response(system.system_info)
+        out = CODECS[system.codec].get_info(system)
+        self.json_response(out)
 
 class BikeNetworkListApi(RestHandler):
     @http_cached(etag=True,ttl=STATION_INFO_TTL)

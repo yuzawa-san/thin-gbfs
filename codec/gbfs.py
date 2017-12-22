@@ -90,7 +90,10 @@ def _process_station_status(url):
             docks = station['num_docks_available']
             if station['is_returning'] == 0:
                 docks = 0
-            out.append(SystemStatusElement(id=station['station_id'],bikes=bikes,docks=docks,mod=station['last_reported']))
+            mod = station['last_reported']
+            if mod > 10000000000:
+                mod = mod / 1000
+            out.append(SystemStatusElement(id=station['station_id'],bikes=bikes,docks=docks,mod=mod))
     return out
 
 @cache(ttl=STATION_STATUS_TTL)
@@ -130,10 +133,12 @@ class GbfsCodec(BikeNetworkCodec):
                         regions = process_regions(config['system_regions'])
                     avg_lat = 0
                     avg_lon = 0
+                    station_count = 0
                     for station in stations:
-                        avg_lat += station.lat
-                        avg_lon += station.lon
-                    station_count = len(stations)
+                        if station.lat:
+                            avg_lat += station.lat
+                            avg_lon += station.lon
+                            station_count += 1
                     if station_count > 0:
                         avg_lat = avg_lat / station_count
                         avg_lon = avg_lon / station_count
@@ -143,12 +148,12 @@ class GbfsCodec(BikeNetworkCodec):
                         ts = station.mod
                         if ts > recent_ts:
                             recent_ts = ts
+                    config['system_info'] = {"name": name, "stations": CompactElement.of(stations), "regions":CompactElement.of(regions)}
                     r = BikeNetwork(
                         id= "gbfs_%s" % line['System ID'],
                         codec=GbfsCodec.NAME,
                         name=name,
                         config=config,
-                        system_info={"name": name, "stations": CompactElement.of(stations), "regions":CompactElement.of(regions)},
                         lat=avg_lat,
                         lon=avg_lon,
                         last_updated=recent_ts)
@@ -158,6 +163,9 @@ class GbfsCodec(BikeNetworkCodec):
                     logging.error("failed to load %s: %s", name, e)
                     time.sleep(1)
         return entities
+    
+    def get_info(self, system):
+        return system.config['system_info']
     
     def get_status(self, system):
         status_header = [["id","bikes","docks","mod","pts"]]
