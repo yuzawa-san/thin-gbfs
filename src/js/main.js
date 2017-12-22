@@ -224,12 +224,14 @@ var Compass = window.Compass;
         localStorage.setItem("base", "grid");
     });
 
-    if (baseSelection == "retina") {
-        retinaBase.addTo(map);
-    } else if (baseSelection == "grid") {
-        gridLayer.addTo(map);
-    } else {
-        defaultBase.addTo(map);
+    function populateMap(){
+        if (baseSelection == "retina") {
+            retinaBase.addTo(map);
+        } else if (baseSelection == "grid") {
+            gridLayer.addTo(map);
+        } else {
+            defaultBase.addTo(map);
+        }
     }
 
     var gridLabel = (imperialUnits ? "300ft" : "100m") + " grid (No-Data)";
@@ -690,13 +692,16 @@ var Compass = window.Compass;
                 });
                 $stationList.append($row);
             }
+            if(lastRender === 0){
+                populateMap();
+            }
+            lastRender = Date.now();
         }
     }
     setInterval(function() {
         var now = Date.now();
         if ((now - lastRender) > renderMs) {
             draw();
-            lastRender = now;
         }
     }, 1000);
 })();
