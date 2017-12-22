@@ -9,7 +9,6 @@ from models import BikeNetwork
 from caching import cache, STATION_STATUS_TTL, STATION_INFO_TTL, POINTS_TTL, ALERTS_TTL
 from models import SystemInfoElement, SystemStatusElement, RegionListElement, CompactElement
 
-@cache(ttl=STATION_INFO_TTL)
 def process_station_info(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
@@ -41,7 +40,6 @@ def process_points(url):
             out[station] = pts
     return out
 
-@cache(ttl=STATION_INFO_TTL)
 def process_regions(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
@@ -49,7 +47,12 @@ def process_regions(url):
     response_json = json.loads(result.content)
     out = []
     for region in response_json['data']['regions']:
-        out.append(RegionListElement(id=region['region_id'],name=region['name']))
+        name = "unknown"
+        if "name" in region:
+            name = region['name']
+        if "region_name" in region:
+            name = region['region_name']
+        out.append(RegionListElement(id=region['region_id'],name=name))
     return out
     
 @cache(ttl=STATION_STATUS_TTL)
@@ -121,18 +124,15 @@ class GbfsCodec(BikeNetworkCodec):
                     for feed in response_json['data']['en']['feeds']:
                         config[feed['name']] = feed['url']
                     
-                    station_info_url = config['station_information']
-                    result = urlfetch.fetch(station_info_url, validate_certificate=True)
-                    if result.status_code != 200:
-                        logging.error("failed to station info url for %s" % name)
-                        continue
-                    response_json = json.loads(result.content)
-                    stations = response_json['data']['stations']
+                    stations = process_station_info(config['station_information'])
+                    regions = []
+                    if 'system_regions' in config:
+                        regions = process_regions(config['system_regions'])
                     avg_lat = 0
                     avg_lon = 0
                     for station in stations:
-                        avg_lat += station['lat']
-                        avg_lon += station['lon']
+                        avg_lat += station.lat
+                        avg_lon += station.lon
                     station_count = len(stations)
                     if station_count > 0:
                         avg_lat = avg_lat / station_count
@@ -148,6 +148,7 @@ class GbfsCodec(BikeNetworkCodec):
                         codec=GbfsCodec.NAME,
                         name=name,
                         config=config,
+                        system_info={"name": name, "stations": CompactElement.of(stations), "regions":CompactElement.of(regions)},
                         lat=avg_lat,
                         lon=avg_lon,
                         last_updated=recent_ts)
@@ -157,13 +158,6 @@ class GbfsCodec(BikeNetworkCodec):
                     logging.error("failed to load %s: %s", name, e)
                     time.sleep(1)
         return entities
-    
-    def get_info(self, system):
-        stations = process_station_info(system.config['station_information'])
-        regions = []
-        if 'system_regions' in system.config:
-            regions = process_regions(system.config['system_regions'])
-        return {"name": system.name, "stations": CompactElement.of(stations), "regions":CompactElement.of(regions)}
     
     def get_status(self, system):
         status_header = [["id","bikes","docks","mod","pts"]]

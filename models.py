@@ -68,6 +68,10 @@ class BikeNetwork(ndb.Model):
     name = ndb.StringProperty()
     codec = ndb.StringProperty()
     config = ndb.JsonProperty()
+    system_info = ndb.JsonProperty()
     lat = ndb.FloatProperty()
     lon = ndb.FloatProperty()
     last_updated = ndb.IntegerProperty()
+    
+class BikeNetworkList(ndb.Model):
+    networks = ndb.JsonProperty()

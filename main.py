@@ -1,6 +1,6 @@
 import webapp2
 import logging
-from models import BikeNetwork
+from models import BikeNetwork, BikeNetworkList
 import json
 import time
 from google.appengine.ext.webapp import template
@@ -48,17 +48,16 @@ class BikeNetworkInfoApi(RestHandler):
         if not system:
             self.response_error()
             return
-        out = CODECS[system.codec].get_info(system)
-        self.json_response(out)
+        self.json_response(system.system_info)
 
 class BikeNetworkListApi(RestHandler):
     @http_cached(etag=True,ttl=STATION_INFO_TTL)
     def get(self):
-        out = [SystemListElement(system) for system in BikeNetwork.query().fetch()]
+        out = BikeNetworkList.get_by_id("all")
         if not out:
             self.response_error()
             return
-        self.json_response(CompactElement.of(out))
+        self.json_response(out.networks)
 
 class UpdateSystemsHandler(webapp2.RequestHandler):
     def get(self):
@@ -72,7 +71,7 @@ class UpdateSystemsHandler(webapp2.RequestHandler):
                     if delta < STALE_SYSTEM_SECONDS:
                         entities.append(entity)
                     else:
-                        logging.info("Out of date '%s': %d seconds" % (entity.id, delta))
+                        logging.info("Out of date '%s': %d seconds" % (entity.key.id(), delta))
             except Exception as e:
                 logging.error("failed to load %s: %s", codec_name, e)
                 time.sleep(5)
@@ -81,6 +80,12 @@ class UpdateSystemsHandler(webapp2.RequestHandler):
             BikeNetwork.query().fetch(keys_only=True)
         )
         ndb.put_multi(entities)
+        out = []
+        for system in entities:
+            http_purge("/systems/%s/info" % system.key.id())
+            out.append(SystemListElement(system))
+        networks = BikeNetworkList(id="all",networks=CompactElement.of(out))
+        networks.put()
         http_purge("/systems")
 
 app = webapp2.WSGIApplication([

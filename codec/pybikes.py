@@ -40,16 +40,24 @@ class PyBikesCodec(BikeNetworkCodec):
                 if "gbfs_href" not in network:
                     logging.info("Processing %s" % network['name'])
                     recent_ts = 0
+                    stations = []
                     station_info = _fetch_system_info(network['href'])
                     for station in station_info['network']['stations']:
                         ts = self._decode_timestamp(station['timestamp'])
                         if ts > recent_ts:
                             recent_ts = ts
+                        stations.append(SystemInfoElement(
+                            id=station['id'],
+                            name=station['name'],
+                            lat=station['latitude'],
+                            lon=station['longitude']
+                        ))
                     r = BikeNetwork(
                      id= "pybikes_%s" % network['id'],
                      name=network['name'],
                      codec=PyBikesCodec.NAME,
                      config=network,
+                     system_info={"name": network['name'], "stations": CompactElement.of(stations), "regions":[]},
                      lat=network['location']['latitude'],
                      lon=network['location']['longitude'],
                      last_updated=recent_ts)
@@ -57,19 +65,6 @@ class PyBikesCodec(BikeNetworkCodec):
             except Exception as e:
                 logging.error("failed to load %s: %s", network['name'], e)
         return entities
-    
-    def get_info(self, system):
-        response_json = fetch_system_info(system.config['href'])
-        stations = []
-        for station in response_json['network']['stations']:
-            stations.append(SystemInfoElement(
-                id=station['id'],
-                name=station['name'],
-                lat=station['latitude'],
-                lon=station['longitude']
-            ))
-        out = {"name": system.name, "stations": CompactElement.of(stations), "regions":[]}
-        return out
     
     def _decode_timestamp(self, ts):
         fmt = "%Y-%m-%dT%H:%M:%SZ"
