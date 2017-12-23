@@ -148,10 +148,6 @@ var Compass = window.Compass;
         localStorage.setItem('filter', filter);
     });
 
-    var $toggle = $("#toggle").click(function() {
-        $("#prefs").toggle();
-    });
-
     var baseSelection = desktop ? "retina" : "default";
     try {
         filter = localStorage.getItem('filter');
@@ -250,29 +246,31 @@ var Compass = window.Compass;
 
     var overlays = {
         "Stations": stationLayer,
-        "Floating Bikes": bikeLayer,
-        "Bike Systems": systemsLayer
+        "Floating Bikes": bikeLayer
     };
     var controls = L.control.layers(baseLayers, overlays, {
         "position": "bottomleft"
     }).addTo(map);
 
-    systemsLayer.on('add', function() {
-        setTimeout(function() {
-            controls.collapse();
-            stationLayer.remove();
-            bikeLayer.remove();
-            systemsLayer.addTo(map);
-            map.setZoom(6);
-        }, 100);
-    }).on('remove', function() {
-        setTimeout(function() {
-            controls.collapse();
+    var $prefs = $("#prefs");
+    var $toggle = $("#toggle").click(function() {
+        if ($(this).hasClass("active")) {
+            controls.addTo(map);
             stationLayer.addTo(map);
             bikeLayer.addTo(map);
             systemsLayer.remove();
             map.setView([currentPosition.coords.latitude, currentPosition.coords.longitude], desktop ? 16 : 15);
-        }, 100);
+            $(this).removeClass("active");
+            $prefs.hide();
+        } else {
+            controls.remove();
+            stationLayer.remove();
+            bikeLayer.remove();
+            systemsLayer.addTo(map);
+            map.setZoom(6);
+            $(this).addClass("active");
+            $prefs.show();
+        }
     });
 
     if (navigator.geolocation) {
@@ -326,8 +324,10 @@ var Compass = window.Compass;
                     map.setView([nearbySystem.lat, nearbySystem.lon], map.getZoom());
                 }
                 var systemMarker = L.circleMarker([nearbySystem.lat, nearbySystem.lon], {
-                    radius: 15,
-                    weight: 2,
+                    radius: 12,
+                    weight: 1,
+                    dashArray: "2, 2",
+                    lineCap: "butt",
                     fillColor: "rgb(253,77,2)",
                     fillOpacity: 0.3,
                     color: "rgb(253,77,2)",
@@ -336,14 +336,14 @@ var Compass = window.Compass;
                 systemMarker.bindTooltip(nearbySystem.name);
                 systemMarker.addTo(systemsLayer);
             }
-            if (nearbySystemCount > 1) {
-                $toggle.show();
+            if (nearbySystemCount <= 1) {
+                $system.hide();
             }
             $system.val(system.id);
             $system.change(function() {
                 localStorage.setItem('system', $(this).val());
                 window.location.reload();
-            }).show();
+            });
             L.setOptions(youAccuracy, {
                 opacity: 0.3,
                 weight: 1,
