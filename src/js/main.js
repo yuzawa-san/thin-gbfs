@@ -108,6 +108,8 @@ var Compass = window.Compass;
 
     var myIcon = L.divIcon({
         className: 'bearing-container',
+        iconSize: [20,20],
+        iconAnchor: [10,10],
         'html': '<img src="' + arrowUrl + '" class="your-bearing" width=20>'
     });
 
@@ -116,6 +118,7 @@ var Compass = window.Compass;
     }).addTo(map);
 
     var youMarker = L.marker();
+    var youAccuracy = L.circle();
 
     var markerMap = {};
     var bikeMarkers = {};
@@ -264,6 +267,8 @@ var Compass = window.Compass;
             currentPosition = position;
             var newLatLng = new L.LatLng(position.coords.latitude, position.coords.longitude);
             youMarker.setLatLng(newLatLng);
+            youAccuracy.setLatLng(newLatLng);
+            youAccuracy.setRadius(position.coords.accuracy);
             if (initial) {
                 timerEnd("geolocation");
                 map.setView(newLatLng, desktop ? 16 : 15);
@@ -309,6 +314,14 @@ var Compass = window.Compass;
                 localStorage.setItem('system', $(this).val());
                 window.location.reload();
             }).show();
+            L.setOptions(youAccuracy, {
+                opacity: 0.3,
+                weight: 1,
+                interactive: false,
+                fillColor: "#00ccff",
+                color: "#007BFF"
+            });
+            youAccuracy.addTo(map);
             L.setOptions(youMarker, {
                 icon: myIcon,
                 attribution: system.name
@@ -690,7 +703,7 @@ var Compass = window.Compass;
                     var pct = 0;
                     var timer = setInterval(function() {
                         marker.setStyle({
-                            radius: originalRadius +  originalRadius / 2 * (1 - pct)
+                            radius: originalRadius + originalRadius / 2 * (1 - pct)
                         });
                         pct += 0.1;
                         if (pct >= 1.0) {
