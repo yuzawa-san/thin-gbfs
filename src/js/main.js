@@ -527,7 +527,7 @@ var Compass = window.Compass;
                             fillOpacity: 1.0
                         });
                         markerMap['bike' + bike.id] = marker;
-                        marker.bindPopup(bike.name);
+                        marker.bindTooltip(bike.name);
                         marker.addTo(bikeLayer);
                     }
                     newBikeMarkers[bike.id] = marker;
