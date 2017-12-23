@@ -358,6 +358,15 @@ var Compass = window.Compass;
                 });
                 systemMarker.bindTooltip(nearbySystem.name);
                 systemMarker.addTo(systemsLayer);
+                var distance = geo.getDistanceString(nearbySystem.distance);
+                var bearing = geo.cardinalDirection(nearbySystem.bearing);
+                var $systemRow = $("<div class='station' data-lat='" + nearbySystem.lat + "' data-lon='" + nearbySystem.lon + "'><div class='station-body'><div class='station-cell'><div class='name'>" + nearbySystem.name + "</div>" + "<div class='detail'>" + distance + " " + bearing + " | " + nearbySystem.id + "</div></div></div></div></div>");
+                $systemRow.click((function(selectedMarker){
+                    return function(){
+                        map.setView(selectedMarker.getLatLng(), map.getZoom());
+                    }
+                })(systemMarker));
+                $systemList.append($systemRow);
             }
             if (nearbySystemCount <= 1) {
                 $system.hide();
