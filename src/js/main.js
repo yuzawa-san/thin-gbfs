@@ -686,6 +686,17 @@ var Compass = window.Compass;
                 $row.click(function() {
                     var marker = markerMap[$(this).attr('data-id')];
                     map.setView(marker.getLatLng(), map.getZoom());
+                    var originalRadius = marker.options.radius;
+                    var pct = 0;
+                    var timer = setInterval(function() {
+                        marker.setStyle({
+                            radius: originalRadius +  originalRadius / 2 * (1 - pct)
+                        });
+                        pct += 0.1;
+                        if (pct >= 1.0) {
+                            clearInterval(timer);
+                        }
+                    }, 50);
                 }).dblclick(function() {
                     var marker = markerMap[$(this).attr('data-id')];
                     marker.openPopup();
