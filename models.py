@@ -1,10 +1,6 @@
 
 from google.appengine.ext import ndb
 
-class PrettyFloat(float):
-    def __repr__(self):
-        return '%.4f' % self
-
 class CompactElement(object):
     def __init__(self, header, id):
         self.header = header
@@ -33,7 +29,7 @@ class SystemListElement(CompactElement):
         self.lon = bike_network.lon
 
     def row(self):
-        return [self.id, self.name, PrettyFloat(self.lat), PrettyFloat(self.lon)]
+        return [self.id, self.name, float(self.lat), float(self.lon)]
 
 class SystemInfoElement(CompactElement):
     def __init__(self, id=None, name=None, lat=0.0, lon=0.0, region=None):
@@ -45,7 +41,7 @@ class SystemInfoElement(CompactElement):
         self.region = region
 
     def row(self):
-        out = [self.id, self.name, PrettyFloat(self.lat), PrettyFloat(self.lon)]
+        out = [self.id, self.name, float(self.lat), float(self.lon)]
         if self.region:
             out.append(self.region)
         return out

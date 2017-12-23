@@ -2,6 +2,10 @@ import webapp2
 import json
 import hashlib
 
+# encode floats to 4
+json.encoder.FLOAT_REPR = lambda f: ("%.4f" % f)
+json.encoder.c_make_encoder = None
+
 class RestHandler(webapp2.RequestHandler):
     
     def html_response(self, payload):
