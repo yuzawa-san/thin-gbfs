@@ -108,8 +108,8 @@ var Compass = window.Compass;
 
     var myIcon = L.divIcon({
         className: 'bearing-container',
-        iconSize: [20,20],
-        iconAnchor: [10,10],
+        iconSize: [20, 20],
+        iconAnchor: [10, 10],
         'html': '<img src="' + arrowUrl + '" class="your-bearing" width=20>'
     });
 
@@ -244,16 +244,36 @@ var Compass = window.Compass;
     };
     baseLayers[gridLabel] = gridLayer;
 
+    var systemsLayer = L.layerGroup();
     var stationLayer = L.layerGroup().addTo(map);
     var bikeLayer = L.layerGroup().addTo(map);
 
     var overlays = {
         "Stations": stationLayer,
-        "Floating Bikes": bikeLayer
+        "Floating Bikes": bikeLayer,
+        "Bike Systems": systemsLayer
     };
-    L.control.layers(baseLayers, overlays, {
+    var controls = L.control.layers(baseLayers, overlays, {
         "position": "bottomleft"
     }).addTo(map);
+
+    systemsLayer.on('add', function() {
+        setTimeout(function() {
+            controls.collapse();
+            stationLayer.remove();
+            bikeLayer.remove();
+            systemsLayer.addTo(map);
+            map.setZoom(6);
+        }, 100);
+    }).on('remove', function() {
+        setTimeout(function() {
+            controls.collapse();
+            stationLayer.addTo(map);
+            bikeLayer.addTo(map);
+            systemsLayer.remove();
+            map.setView([currentPosition.coords.latitude, currentPosition.coords.longitude], desktop ? 16 : 15);
+        }, 100);
+    });
 
     if (navigator.geolocation) {
         var geo_options = {
@@ -305,6 +325,16 @@ var Compass = window.Compass;
                     system = nearbySystem;
                     map.setView([nearbySystem.lat, nearbySystem.lon], map.getZoom());
                 }
+                var systemMarker = L.circleMarker([nearbySystem.lat, nearbySystem.lon], {
+                    radius: 15,
+                    weight: 2,
+                    fillColor: "rgb(253,77,2)",
+                    fillOpacity: 0.3,
+                    color: "rgb(253,77,2)",
+                    opacity: 1.0
+                });
+                systemMarker.bindTooltip(nearbySystem.name);
+                systemMarker.addTo(systemsLayer);
             }
             if (nearbySystemCount > 1) {
                 $toggle.show();
@@ -324,6 +354,7 @@ var Compass = window.Compass;
             youAccuracy.addTo(map);
             L.setOptions(youMarker, {
                 icon: myIcon,
+                interactive: false,
                 attribution: system.name
             });
             youMarker.addTo(map);
