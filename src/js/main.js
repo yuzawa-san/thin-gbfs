@@ -77,6 +77,24 @@ var Compass = window.Compass;
             };
 
         },
+        getDistanceString: function(meters) {
+            var distance;
+            if (imperialUnits) {
+                var miles = meters / 1609.34;
+                if (miles < 0.189) {
+                    distance = Math.round(miles * 5280) + "ft";
+                } else {
+                    distance = miles.toFixed(1) + "mi";
+                }
+            } else {
+                if (meters < 500) {
+                    distance = Math.round(meters) + "m";
+                } else {
+                    distance = (meters / 1e3).toFixed(1) + "km";
+                }
+            }
+            return distance;
+        },
         _toRad: function(deg) {
             return deg * Math.PI / 180;
         },
@@ -652,22 +670,7 @@ var Compass = window.Compass;
     }
 
     function stationRow(station, favorites) {
-        var distance;
-        if (imperialUnits) {
-            var miles = station.distance / 1609.34;
-            if (miles < 0.189) {
-                distance = Math.round(miles * 5280) + "ft";
-            } else {
-                distance = miles.toFixed(1) + "mi";
-            }
-        } else {
-            var meters = station.distance;
-            if (meters < 500) {
-                distance = Math.round(meters) + "m";
-            } else {
-                distance = (meters / 1e3).toFixed(1) + "km";
-            }
-        }
+        var distance = geo.getDistanceString(station.distance);
         var bearing = geo.cardinalDirection(station.bearing);
         if (station.type == 'bike') {
             return "<div class='station bike' data-id='bike" + station.id + "'><div class='station-body'><div class='health station-cell'>&#x1F6B2;</div><div class='station-cell'>" + "<div class='detail'>" + distance + " " + bearing + " | " + station.name + "</div></div></div></div></div>";
