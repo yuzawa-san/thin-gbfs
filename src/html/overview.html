@@ -28,7 +28,6 @@
     L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
     }).addTo(map);
-    
     $.get("/systems", function(response) {
         for(var i=1; i < response.length; i++){
             var station = response[i];

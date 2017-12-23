@@ -77,7 +77,7 @@ class PyBikesCodec(BikeNetworkCodec):
             fmt = "%Y-%m-%dT%H:%M:%S.%fZ"
         ts2 = datetime.datetime.strptime(ts, fmt)
         return calendar.timegm(ts2.utctimetuple())
-    
+
     def get_status(self, system):
         response_json = fetch_system_info(system.config['href'])
         station_statuses = []

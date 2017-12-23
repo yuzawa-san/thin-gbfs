@@ -40,7 +40,7 @@ def http_purge(uri):
         key = hashed_key(uri)
         memcache.delete(key)
     except Exception:
-        logging.error('Memcache purge failed %s' % url)
+        logging.error('Memcache remove failed %s' % url)
 
 def http_cached(etag=False, ttl=0):
     def decorator(handler_func):

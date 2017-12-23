@@ -1,5 +1,6 @@
 
 # do not ingest systems whose station statuses have not been updated in a long time (7 days)
+# they will not be ingested
 STALE_SYSTEM_SECONDS = 7*86400
 
 class BikeNetworkCodec(object):

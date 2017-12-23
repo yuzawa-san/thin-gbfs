@@ -2,7 +2,7 @@ import webapp2
 import json
 import hashlib
 
-# encode floats to 4
+# encode floats to 4 places
 json.encoder.FLOAT_REPR = lambda f: ("%.4f" % f)
 json.encoder.c_make_encoder = None
 
