@@ -253,6 +253,7 @@ var Compass = window.Compass;
     }).addTo(map);
 
     var $prefs = $("#prefs");
+    var $systemList = $("#system-list");
     var $toggle = $("#toggle").click(function() {
         if ($(this).hasClass("active")) {
             controls.addTo(map);
@@ -262,6 +263,8 @@ var Compass = window.Compass;
             map.setView([currentPosition.coords.latitude, currentPosition.coords.longitude], desktop ? 16 : 15);
             $(this).removeClass("active");
             $prefs.hide();
+            $systemList.hide();
+            $stationList.show();
         } else {
             controls.remove();
             stationLayer.remove();
@@ -270,6 +273,8 @@ var Compass = window.Compass;
             map.setZoom(6);
             $(this).addClass("active");
             $prefs.show();
+            $systemList.show();
+            $stationList.hide();
         }
     });
 
@@ -323,8 +328,8 @@ var Compass = window.Compass;
                     system = nearbySystem;
                     map.setView([nearbySystem.lat, nearbySystem.lon], map.getZoom());
                 }
-                var systemMarker = L.circleMarker([nearbySystem.lat, nearbySystem.lon], {
-                    radius: 12,
+                var systemMarker = L.circle([nearbySystem.lat, nearbySystem.lon], {
+                    radius: 15000,
                     weight: 1,
                     dashArray: "2, 2",
                     lineCap: "butt",
