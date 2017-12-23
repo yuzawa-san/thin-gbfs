@@ -346,8 +346,8 @@ var Compass = window.Compass;
                     system = nearbySystem;
                     map.setView([nearbySystem.lat, nearbySystem.lon], map.getZoom());
                 }
-                var systemMarker = L.circle([nearbySystem.lat, nearbySystem.lon], {
-                    radius: 15000,
+                var systemMarker = L.circleMarker([nearbySystem.lat, nearbySystem.lon], {
+                    radius: 10,
                     weight: 1,
                     dashArray: "2, 2",
                     lineCap: "butt",
@@ -364,6 +364,7 @@ var Compass = window.Compass;
                 $systemRow.click((function(selectedMarker){
                     return function(){
                         map.setView(selectedMarker.getLatLng(), map.getZoom());
+                        markerAnimation(selectedMarker);
                     }
                 })(systemMarker));
                 $systemList.append($systemRow);
@@ -626,6 +627,21 @@ var Compass = window.Compass;
         return pad(since.getMonth() + 1) + "/" + pad(since.getDate()) + ' ' + pad(since.getHours()) + ':' + pad(since.getMinutes())
     }
 
+    function markerAnimation(marker) {
+        console.log(marker);
+        var originalRadius = marker.options.radius;
+        var pct = 0;
+        var timer = setInterval(function() {
+            marker.setStyle({
+                radius: originalRadius + originalRadius / 2 * (1 - pct)
+            });
+            pct += 0.1;
+            if (pct >= 1.0) {
+                clearInterval(timer);
+            }
+        }, 50);
+    }
+
     function alertsRows(alertList) {
         var alerts = "";
         if (alertList) {
@@ -747,17 +763,7 @@ var Compass = window.Compass;
                 $row.click(function() {
                     var marker = markerMap[$(this).attr('data-id')];
                     map.setView(marker.getLatLng(), map.getZoom());
-                    var originalRadius = marker.options.radius;
-                    var pct = 0;
-                    var timer = setInterval(function() {
-                        marker.setStyle({
-                            radius: originalRadius + originalRadius / 2 * (1 - pct)
-                        });
-                        pct += 0.1;
-                        if (pct >= 1.0) {
-                            clearInterval(timer);
-                        }
-                    }, 50);
+                    markerAnimation(marker);
                 }).dblclick(function() {
                     var marker = markerMap[$(this).attr('data-id')];
                     marker.openPopup();
