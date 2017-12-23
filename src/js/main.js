@@ -224,7 +224,7 @@ var Compass = window.Compass;
         localStorage.setItem("base", "grid");
     });
 
-    function populateMap(){
+    function populateMap() {
         if (baseSelection == "retina") {
             retinaBase.addTo(map);
         } else if (baseSelection == "grid") {
@@ -692,7 +692,7 @@ var Compass = window.Compass;
                 });
                 $stationList.append($row);
             }
-            if(lastRender === 0){
+            if (lastRender === 0) {
                 populateMap();
             }
             lastRender = Date.now();
