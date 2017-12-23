@@ -38,6 +38,7 @@ var Compass = window.Compass;
     var stations = null;
     var currentPosition = null;
     var $stationList = $("#station-list");
+    var $toggle = $("#toggle");
 
     var geo = {
         nearby: function(lat, lon, items, count) {
@@ -272,14 +273,14 @@ var Compass = window.Compass;
 
     var $prefs = $("#prefs");
     var $systemList = $("#system-list");
-    var $toggle = $("#toggle").click(function() {
-        if ($(this).hasClass("active")) {
+    $toggle.click(function() {
+        if ($toggle.hasClass("active")) {
             controls.addTo(map);
             stationLayer.addTo(map);
             bikeLayer.addTo(map);
             systemsLayer.remove();
             map.setView([currentPosition.coords.latitude, currentPosition.coords.longitude], desktop ? 16 : 15);
-            $(this).removeClass("active");
+            $toggle.removeClass("active");
             $prefs.hide();
             $systemList.hide();
             $stationList.show();
@@ -289,7 +290,7 @@ var Compass = window.Compass;
             bikeLayer.remove();
             systemsLayer.addTo(map);
             map.setZoom(6);
-            $(this).addClass("active");
+            $toggle.addClass("active");
             $prefs.show();
             $systemList.show();
             $stationList.hide();
