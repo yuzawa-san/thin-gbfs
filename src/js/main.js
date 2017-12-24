@@ -392,6 +392,7 @@ var Compass = window.Compass;
             youMarker.addTo(map);
             if (!override && system.distance > 50000) {
                 $stationList.html('<div class="message">No bikeshare system with GBFS feed nearby!</div>');
+                populateMap();
             } else {
                 systemId = system.id
                 timerStart("system-info");
