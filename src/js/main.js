@@ -335,7 +335,7 @@ var Compass = window.Compass;
                 var nearbySystem = nearbySystems[i];
                 if (nearbySystem.distance < 50000) {
                     nearbySystemCount++;
-                    $system.append('<option value="' + nearbySystem.id + '">' + nearbySystem.name + '</option>');
+                    $system.append('<option value="' + nearbySystem.id + '">' + nearbySystem.city + ' - ' + nearbySystem.name + '</option>');
                     if (localStorage.getItem('system') === nearbySystem.id) {
                         system = nearbySystem;
                     }
@@ -359,7 +359,7 @@ var Compass = window.Compass;
                 systemMarker.addTo(systemsLayer);
                 var distance = geo.getDistanceString(nearbySystem.distance);
                 var bearing = geo.cardinalDirection(nearbySystem.bearing);
-                var $systemRow = $("<div class='station' data-lat='" + nearbySystem.lat + "' data-lon='" + nearbySystem.lon + "'><div class='station-body'><div class='health station-cell'>&#x1F307;</div><div class='station-cell'><div class='name'>" + nearbySystem.name + "</div>" + "<div class='detail'>" + distance + " " + bearing + "</div></div></div></div></div>");
+                var $systemRow = $("<div class='station' data-lat='" + nearbySystem.lat + "' data-lon='" + nearbySystem.lon + "'><div class='station-body'><div class='health station-cell'>&#x1F307;</div><div class='station-cell'><div class='name'>" + nearbySystem.city + "</div>" + "<div class='detail'>" + distance + " " + bearing + " | " + nearbySystem.name + "</div></div></div></div></div>");
                 $systemRow.click((function(selectedMarker) {
                     return function() {
                         map.setView(selectedMarker.getLatLng(), map.getZoom());
