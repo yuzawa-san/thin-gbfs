@@ -359,7 +359,7 @@ var Compass = window.Compass;
                 systemMarker.addTo(systemsLayer);
                 var distance = geo.getDistanceString(nearbySystem.distance);
                 var bearing = geo.cardinalDirection(nearbySystem.bearing);
-                var $systemRow = $("<div class='station' data-lat='" + nearbySystem.lat + "' data-lon='" + nearbySystem.lon + "'><div class='station-body'><div class='health station-cell'>&#x1F307;</div><div class='station-cell'><div class='name'>" + nearbySystem.name + "</div>" + "<div class='detail'>" + distance + " " + bearing + " | " + nearbySystem.id + "</div></div></div></div></div>");
+                var $systemRow = $("<div class='station' data-lat='" + nearbySystem.lat + "' data-lon='" + nearbySystem.lon + "'><div class='station-body'><div class='health station-cell'>&#x1F307;</div><div class='station-cell'><div class='name'>" + nearbySystem.name + "</div>" + "<div class='detail'>" + distance + " " + bearing + "</div></div></div></div></div>");
                 $systemRow.click((function(selectedMarker) {
                     return function() {
                         map.setView(selectedMarker.getLatLng(), map.getZoom());
