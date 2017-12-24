@@ -300,6 +300,21 @@ var Compass = window.Compass;
         }
     });
 
+    function systemSearch() {
+        var value = $(this).val();
+        var i = 0;
+        $(".station", $systemList).each(function() {
+            if (value && $(this).text().toLowerCase().indexOf(value.toLowerCase()) < 0) {
+                $(this).hide();
+            } else {
+                $(this).show();
+                i++;
+            }
+        });
+        $("#system-count").text(i + " systems available");
+    }
+    $("#system-search").change(systemSearch);
+
     if (navigator.geolocation) {
         var geo_options = {
             enableHighAccuracy: true,
@@ -381,6 +396,7 @@ var Compass = window.Compass;
                 })(systemMarker));
                 $systemList.append($systemRow);
             }
+            systemSearch();
             if (nearbySystemCount <= 1) {
                 $system.hide();
             }
