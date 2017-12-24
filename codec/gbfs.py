@@ -114,7 +114,7 @@ class GbfsCodec(BikeNetworkCodec):
         entities = []
         for line in reader:
             for attempt in range(3):
-                name = line['Name']
+                name = "%s, %s, %s" % (line['Name'], line['Location'], line['Country Code'])
                 logging.info("Processing %s, attempt %d" % (name,attempt))
                 try:
                     url = line['Auto-Discovery URL']
