@@ -5,9 +5,10 @@
   "author": "yuzawa-san",
   "license": "MIT",
   "dependencies": {
-    "npm-zepto": "1.1.7",
+    "compass.js": "ai/compass.js",
+    "emoji-flags": "^1.2.0",
     "leaflet": "1.2.0",
-    "compass.js": "ai/compass.js"
+    "npm-zepto": "1.1.7"
   },
   "repository": {
     "type": "git",

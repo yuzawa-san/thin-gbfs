@@ -1,5 +1,6 @@
 var $ = require('npm-zepto');
 var L = require('leaflet');
+var emojiFlags = require('emoji-flags');
 require('compass-js');
 var Compass = window.Compass;
 (function() {
@@ -349,6 +350,14 @@ var Compass = window.Compass;
                     system = nearbySystem;
                     map.setView([nearbySystem.lat, nearbySystem.lon], map.getZoom());
                 }
+                var emoji = "&#x1F307;";
+                var isoMatch = nearbySystem.city.match(/, ([A-Z]{2})$/);
+                if (isoMatch) {
+                    var emojiFlag = emojiFlags.countryCode(isoMatch[1]);
+                    if (emojiFlag) {
+                        emoji = emojiFlag.emoji;
+                    }
+                }
                 var systemMarker = L.circleMarker([nearbySystem.lat, nearbySystem.lon], {
                     radius: 10,
                     weight: 1,
@@ -359,11 +368,11 @@ var Compass = window.Compass;
                     color: "rgb(253,77,2)",
                     opacity: 1.0
                 });
-                systemMarker.bindTooltip("<strong>" + nearbySystem.city + "</strong><br>" + nearbySystem.name);
+                systemMarker.bindTooltip("<strong>" + nearbySystem.city + " " + emoji + "</strong><br>" + nearbySystem.name);
                 systemMarker.addTo(systemsLayer);
                 var distance = geo.getDistanceString(nearbySystem.distance);
                 var bearing = geo.cardinalDirection(nearbySystem.bearing);
-                var $systemRow = $("<div class='station' data-lat='" + nearbySystem.lat + "' data-lon='" + nearbySystem.lon + "'><div class='station-body'><div class='health station-cell'>&#x1F307;</div><div class='station-cell'><div class='name'>" + nearbySystem.city + "</div>" + "<div class='detail'>" + distance + " " + bearing + " | " + nearbySystem.name + "</div></div></div></div></div>");
+                var $systemRow = $("<div class='station' data-lat='" + nearbySystem.lat + "' data-lon='" + nearbySystem.lon + "'><div class='station-body'><div class='health station-cell'>" + emoji + "</div><div class='station-cell'><div class='name'>" + nearbySystem.city + "</div>" + "<div class='detail'>" + distance + " " + bearing + " | " + nearbySystem.name + "</div></div></div></div></div>");
                 $systemRow.click((function(selectedMarker) {
                     return function() {
                         map.setView(selectedMarker.getLatLng(), map.getZoom());

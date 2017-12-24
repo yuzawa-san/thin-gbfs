@@ -33,6 +33,7 @@ These projects have been utilized and bundled:
 * [zepto](https://github.com/madrobby/zepto) ([MIT](https://github.com/madrobby/zepto/blob/master/MIT-LICENSE))
 * [Leaflet](https://github.com/Leaflet/Leaflet) ([BSD 2-clause](https://github.com/Leaflet/Leaflet/blob/master/LICENSE))
 * [Compass.js](https://github.com/ai/compass.js) ([MIT](https://github.com/ai/compass.js/blob/master/LICENSE))
+* [emoji-flags](https://github.com/matiassingers/emoji-flags) ([MIT](https://github.com/matiassingers/emoji-flags/blob/master/license))
 
 This project uses the MIT License.
 
