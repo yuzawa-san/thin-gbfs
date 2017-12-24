@@ -269,7 +269,7 @@ var Compass = window.Compass;
     baseLayers[gridLabel] = gridLayer;
 
     var systemsLayer = L.layerGroup();
-    var stationLayer = L.layerGroup().addTo(map);
+    var stationLayer = L.layerGroup();
     var bikeLayer = L.layerGroup().addTo(map);
     var previewLayer = null;
 
@@ -358,7 +358,7 @@ var Compass = window.Compass;
             var override = window.location.hash;
             for (var i in nearbySystems) {
                 var nearbySystem = nearbySystems[i];
-                var selector = ' <button class="system-preview" data-id="' + nearbySystem.id + '" data-lat="' + nearbySystem.lat + '" data-lon="' + nearbySystem.lon + '">preview</button>';
+                var selector = ' <button class="system-preview" data-id="' + nearbySystem.id + '" data-name="' + nearbySystem.name + '" data-lat="' + nearbySystem.lat + '" data-lon="' + nearbySystem.lon + '">preview</button>';
                 if (nearbySystem.distance < 50000) {
                     if (localStorage.getItem('system') === nearbySystem.id) {
                         system = nearbySystem;
@@ -417,6 +417,7 @@ var Compass = window.Compass;
             });
             $(".system-preview").click(function() {
                 var systemId = $(this).attr('data-id');
+                var systemName = $(this).attr('data-name');
                 var systemLat = parseFloat($(this).attr('data-lat'));
                 var systemLon = parseFloat($(this).attr('data-lon'));
                 if (previewLayer) {
@@ -424,9 +425,14 @@ var Compass = window.Compass;
                 }
                 $.get("/systems/" + systemId + "/info", function(response, status, xhr) {
                     previewLayer = L.layerGroup();
+                    L.setOptions(previewLayer, {
+                        attribution: systemName
+                    });
                     response.stations = pivot(response.stations);
                     for (var i in response.stations) {
                         var station = response.stations[i];
+                        systemLat += station.lat;
+                        stationLon += station.lon;
                         var marker = L.circleMarker([station.lat, station.lon], {
                             radius: 5,
                             color: "rgb(253,77,2)",
@@ -439,7 +445,8 @@ var Compass = window.Compass;
                     }
                     systemsLayer.remove();
                     previewLayer.addTo(map);
-                    map.setView([systemLat, systemLon], 13);
+                    var ct = 1 + response.stations.length;
+                    map.setView([systemLat / ct, systemLon / ct], 13);
                 });
             });
             L.setOptions(youAccuracy, {
@@ -452,9 +459,12 @@ var Compass = window.Compass;
             youAccuracy.addTo(map);
             L.setOptions(youMarker, {
                 icon: myIcon,
-                interactive: false,
+                interactive: false
+            });
+            L.setOptions(stationLayer, {
                 attribution: system.name
             });
+            stationLayer.addTo(map);
             youMarker.addTo(map);
             if (!override && system.distance > 50000) {
                 $stationList.empty();
