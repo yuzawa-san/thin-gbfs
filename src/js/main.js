@@ -271,6 +271,7 @@ var Compass = window.Compass;
     var systemsLayer = L.layerGroup();
     var stationLayer = L.layerGroup().addTo(map);
     var bikeLayer = L.layerGroup().addTo(map);
+    var previewLayer = null;
 
     var controls = L.control.layers(baseLayers, [], {
         "position": "bottomleft"
@@ -279,6 +280,7 @@ var Compass = window.Compass;
     var $systemList = $("#system-list");
     var oldCenter = null;
     var oldZoom = null;
+    var systemZoom = null;
     $toggle.click(function() {
         if ($toggle.hasClass("active")) {
             stationLayer.addTo(map);
@@ -287,6 +289,9 @@ var Compass = window.Compass;
             map.setView(oldCenter, oldZoom);
             $toggle.removeClass("active");
             $systemList.hide();
+            if (previewLayer) {
+                previewLayer.remove();
+            }
             $stationList.show();
         } else {
             stationLayer.remove();
@@ -352,8 +357,8 @@ var Compass = window.Compass;
             var system = nearbySystems[0];
             var override = window.location.hash;
             for (var i in nearbySystems) {
-                var selector = "";
                 var nearbySystem = nearbySystems[i];
+                var selector = ' <button class="system-preview" data-id="' + nearbySystem.id + '" data-lat="' + nearbySystem.lat + '" data-lon="' + nearbySystem.lon + '">preview</button>';
                 if (nearbySystem.distance < 50000) {
                     if (localStorage.getItem('system') === nearbySystem.id) {
                         system = nearbySystem;
@@ -389,10 +394,18 @@ var Compass = window.Compass;
                 systemMarker.addTo(systemsLayer);
                 var distance = geo.getDistanceString(nearbySystem.distance);
                 var bearing = geo.cardinalDirection(nearbySystem.bearing);
-                var $systemRow = $("<div class='station' data-lat='" + nearbySystem.lat + "' data-lon='" + nearbySystem.lon + "'><div class='station-body'><div class='health station-cell'>" + emoji + "</div><div class='station-cell'><div class='name'>" + nearbySystem.city + selector + "</div>" + "<div class='detail'>" + distance + " " + bearing + " | " + nearbySystem.name + "</div></div></div></div></div>");
+                var $systemRow = $("<div class='station'><div class='station-body'><div class='health station-cell'>" + emoji + "</div><div class='station-cell'><div class='name'>" + nearbySystem.city + selector + "</div>" + "<div class='detail'>" + distance + " " + bearing + " | " + nearbySystem.name + "</div></div></div></div></div>");
                 $systemRow.click((function(selectedMarker) {
                     return function() {
-                        map.setView(selectedMarker.getLatLng(), map.getZoom());
+                        systemsLayer.addTo(map);
+                        if (previewLayer) {
+                            previewLayer.remove();
+                        }
+                        var newZoom = map.getZoom()
+                        if (systemZoom) {
+                            newZoom = systemZoom;
+                        }
+                        map.setView(selectedMarker.getLatLng(), newZoom);
                         markerAnimation(selectedMarker);
                     }
                 })(systemMarker));
@@ -402,6 +415,34 @@ var Compass = window.Compass;
             $(".system-select").click(function() {
                 localStorage.setItem('system', $(this).attr('data-id'));
                 window.location.reload();
+            });
+            $(".system-preview").click(function() {
+                var systemId = $(this).attr('data-id');
+                var systemLat = parseFloat($(this).attr('data-lat'));
+                var systemLon = parseFloat($(this).attr('data-lon'));
+                if (previewLayer) {
+                    previewLayer.remove();
+                }
+                $.get("/systems/" + systemId + "/info", function(response, status, xhr) {
+                    previewLayer = L.layerGroup();
+                    response.stations = pivot(response.stations);
+                    for (var i in response.stations) {
+                        var station = response.stations[i];
+                        var marker = L.circleMarker([station.lat, station.lon], {
+                            radius: 5,
+                            color: "rgb(253,77,2)",
+                            fillColor: '#fff',
+                            weight: 5,
+                            fillOpacity: 1.0
+                        });
+                        marker.bindTooltip(station.name);
+                        marker.addTo(previewLayer);
+                    }
+                    systemsLayer.remove();
+                    previewLayer.addTo(map);
+                    systemZoom = map.getZoom();
+                    map.setView([systemLat, systemLon], 13);
+                });
             });
             L.setOptions(youAccuracy, {
                 opacity: 0.3,
@@ -423,7 +464,7 @@ var Compass = window.Compass;
                 populateMap();
                 $toggle.trigger('click');
             } else {
-                systemId = system.id
+                systemId = system.id;
                 timerStart("system-info");
                 $.get("/systems/" + systemId + "/info", function(response, status, xhr) {
                     timerEnd("system-info", xhr);
