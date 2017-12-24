@@ -362,9 +362,9 @@ var Compass = window.Compass;
                 if (nearbySystem.distance < 50000) {
                     if (localStorage.getItem('system') === nearbySystem.id) {
                         system = nearbySystem;
-                        selector += " <button disabled>load</button>";
+                        selector += " <button disabled>use</button>";
                     } else {
-                        selector += ' <button class="system-select" data-id="' + nearbySystem.id + '">load</button>';
+                        selector += ' <button class="system-select" data-id="' + nearbySystem.id + '">use</button>';
                     }
                 }
                 if (override === "#" + nearbySystem.id) {
