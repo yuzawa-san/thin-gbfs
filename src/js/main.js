@@ -280,7 +280,7 @@ var Compass = window.Compass;
     var $systemList = $("#system-list");
     var oldCenter = null;
     var oldZoom = null;
-    var systemZoom = null;
+    var systemZoom = 6;
     $toggle.click(function() {
         if ($toggle.hasClass("active")) {
             stationLayer.addTo(map);
@@ -299,7 +299,7 @@ var Compass = window.Compass;
             systemsLayer.addTo(map);
             oldCenter = map.getCenter();
             oldZoom = map.getZoom();
-            map.setZoom(6);
+            map.setZoom(systemZoom);
             $toggle.addClass("active");
             $systemList.show();
             $stationList.hide();
@@ -396,16 +396,15 @@ var Compass = window.Compass;
                 var bearing = geo.cardinalDirection(nearbySystem.bearing);
                 var $systemRow = $("<div class='station'><div class='station-body'><div class='health station-cell'>" + emoji + "</div><div class='station-cell'><div class='name'>" + nearbySystem.city + selector + "</div>" + "<div class='detail'>" + distance + " " + bearing + " | " + nearbySystem.name + "</div></div></div></div></div>");
                 $systemRow.click((function(selectedMarker) {
-                    return function() {
+                    return function(e) {
+                        if (e.target.nodeName == "BUTTON") {
+                            return;
+                        }
                         systemsLayer.addTo(map);
                         if (previewLayer) {
                             previewLayer.remove();
                         }
-                        var newZoom = map.getZoom()
-                        if (systemZoom) {
-                            newZoom = systemZoom;
-                        }
-                        map.setView(selectedMarker.getLatLng(), newZoom);
+                        map.setView(selectedMarker.getLatLng(), systemZoom);
                         markerAnimation(selectedMarker);
                     }
                 })(systemMarker));
@@ -440,7 +439,6 @@ var Compass = window.Compass;
                     }
                     systemsLayer.remove();
                     previewLayer.addTo(map);
-                    systemZoom = map.getZoom();
                     map.setView([systemLat, systemLon], 13);
                 });
             });
