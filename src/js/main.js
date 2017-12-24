@@ -273,12 +273,14 @@ var Compass = window.Compass;
 
     var $prefs = $("#prefs");
     var $systemList = $("#system-list");
+    var oldCenter = null;
+    var oldZoom = null;
     $toggle.click(function() {
         if ($toggle.hasClass("active")) {
             stationLayer.addTo(map);
             bikeLayer.addTo(map);
             systemsLayer.remove();
-            map.setView([currentPosition.coords.latitude, currentPosition.coords.longitude], desktop ? 16 : 15);
+            map.setView(oldCenter, oldZoom);
             $toggle.removeClass("active");
             $prefs.hide();
             $systemList.hide();
@@ -287,6 +289,8 @@ var Compass = window.Compass;
             stationLayer.remove();
             bikeLayer.remove();
             systemsLayer.addTo(map);
+            oldCenter = map.getCenter();
+            oldZoom = map.getZoom();
             map.setZoom(6);
             $toggle.addClass("active");
             $prefs.show();
