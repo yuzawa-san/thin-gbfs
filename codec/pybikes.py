@@ -47,7 +47,7 @@ class PyBikesCodec(BikeNetworkCodec):
                             recent_ts = ts
                     name = network['name']
                     if 'city' in network['location']:
-                        name = "%s, %s" % (name, network['location']['city'])
+                        name = "%s: %s" % (name, network['location']['city'])
                     if 'country' in network['location']:
                         name = "%s, %s" % (name, network['location']['country'])
                     r = BikeNetwork(
