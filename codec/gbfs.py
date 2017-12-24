@@ -25,7 +25,8 @@ def process_station_info(url):
         )
         if 'region_id' in station:
             element.region = station['region_id']
-        out.append(element)
+        if station['lat'] and station['lon']:
+            out.append(element)
     return out
 
 @cache(ttl=POINTS_TTL)
@@ -135,10 +136,9 @@ class GbfsCodec(BikeNetworkCodec):
                     avg_lon = 0
                     station_count = 0
                     for station in stations:
-                        if station.lat:
-                            avg_lat += station.lat
-                            avg_lon += station.lon
-                            station_count += 1
+                        avg_lat += station.lat
+                        avg_lon += station.lon
+                        station_count += 1
                     if station_count > 0:
                         avg_lat = avg_lat / station_count
                         avg_lon = avg_lon / station_count
