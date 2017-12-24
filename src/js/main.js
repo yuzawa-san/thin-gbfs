@@ -359,7 +359,7 @@ var Compass = window.Compass;
                     color: "rgb(253,77,2)",
                     opacity: 1.0
                 });
-                systemMarker.bindTooltip(nearbySystem.name);
+                systemMarker.bindTooltip("<strong>" + nearbySystem.city + "</strong><br>" + nearbySystem.name);
                 systemMarker.addTo(systemsLayer);
                 var distance = geo.getDistanceString(nearbySystem.distance);
                 var bearing = geo.cardinalDirection(nearbySystem.bearing);
