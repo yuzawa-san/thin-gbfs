@@ -169,6 +169,7 @@ var Compass = window.Compass;
         $(this).addClass("active");
         draw();
         localStorage.setItem('filter', filter);
+        document.getElementById("content-scroll").scrollTop = 0;
     });
 
     var baseSelection = desktop ? "retina" : "default";
@@ -297,6 +298,7 @@ var Compass = window.Compass;
             $toggle.addClass("active");
             $systemList.show();
             $stationList.hide();
+            document.getElementById("content-scroll").scrollTop = 0;
         }
     });
 
@@ -356,7 +358,7 @@ var Compass = window.Compass;
                     if (localStorage.getItem('system') === nearbySystem.id) {
                         system = nearbySystem;
                         selector = " <button disabled>select</button>";
-                    }else{
+                    } else {
                         selector = ' <button class="system-select" data-id="' + nearbySystem.id + '">select</button>';
                     }
                 }
