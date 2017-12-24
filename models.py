@@ -22,13 +22,14 @@ class RegionListElement(CompactElement):
 
 class SystemListElement(CompactElement):
     def __init__(self, bike_network):
-        super(SystemListElement, self).__init__(("id","name","lat","lon"), bike_network.key.id())
+        super(SystemListElement, self).__init__(("id","name","lat","lon","city"), bike_network.key.id())
         self.name = bike_network.name
         self.lat = bike_network.lat
         self.lon = bike_network.lon
+        self.city = bike_network.city
 
     def row(self):
-        return [self.id, self.name, float(self.lat), float(self.lon)]
+        return [self.id, self.name, float(self.lat), float(self.lon), self.city]
 
 class SystemInfoElement(CompactElement):
     def __init__(self, id=None, name=None, lat=0.0, lon=0.0, region=None):
@@ -61,6 +62,7 @@ class SystemStatusElement(CompactElement):
 
 class BikeNetwork(ndb.Model):
     name = ndb.StringProperty()
+    city = ndb.StringProperty()
     codec = ndb.StringProperty()
     config = ndb.JsonProperty()
     lat = ndb.FloatProperty()

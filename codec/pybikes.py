@@ -45,16 +45,17 @@ class PyBikesCodec(BikeNetworkCodec):
                         ts = self._decode_timestamp(station['timestamp'])
                         if ts > recent_ts:
                             recent_ts = ts
-                    name = network['name']
+                    city = 'Unknown'
                     if 'city' in network['location']:
-                        name = "%s: %s" % (name, network['location']['city'])
+                        city = network['location']['city']
                     if 'country' in network['location']:
-                        name = "%s, %s" % (name, network['location']['country'])
+                        city = "%s, %s" % (city, network['location']['country'])
                     r = BikeNetwork(
                      id= "pybikes_%s" % network['id'],
-                     name=name,
+                     name=network['name'],
                      codec=PyBikesCodec.NAME,
                      config=network,
+                     city=city,
                      lat=network['location']['latitude'],
                      lon=network['location']['longitude'],
                      last_updated=recent_ts)

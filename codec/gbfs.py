@@ -114,7 +114,7 @@ class GbfsCodec(BikeNetworkCodec):
         entities = []
         for line in reader:
             for attempt in range(3):
-                name = "%s: %s, %s" % (line['Name'], line['Location'], line['Country Code'])
+                name = line['Name']
                 logging.info("Processing %s, attempt %d" % (name,attempt))
                 try:
                     url = line['Auto-Discovery URL']
@@ -126,7 +126,7 @@ class GbfsCodec(BikeNetworkCodec):
                     config = {}
                     for feed in response_json['data']['en']['feeds']:
                         config[feed['name']] = feed['url']
-                    
+                    city = "%s, %s" % (line['Location'], line['Country Code'])
                     stations = process_station_info(config['station_information'])
                     regions = []
                     if 'system_regions' in config:
@@ -153,6 +153,7 @@ class GbfsCodec(BikeNetworkCodec):
                         id= "gbfs_%s" % line['System ID'],
                         codec=GbfsCodec.NAME,
                         name=name,
+                        city=city,
                         config=config,
                         lat=avg_lat,
                         lon=avg_lon,
