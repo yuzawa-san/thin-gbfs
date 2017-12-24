@@ -4,6 +4,9 @@ var emojiFlags = require('emoji-flags');
 require('compass-js');
 var Compass = window.Compass;
 (function() {
+    window.onerror = function(message, source, lineno, colno, error) {
+        $("#footer").append($("<p>").text(message));
+    };
     // fetch the station info this often
     var fetchMs = 30000;
     // redraw the list this often
