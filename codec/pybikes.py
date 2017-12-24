@@ -91,8 +91,8 @@ class PyBikesCodec(BikeNetworkCodec):
             ts = self._decode_timestamp(station['timestamp'])
             station_statuses.append(SystemStatusElement(
                 id=station['id'],
-                bikes=station['free_bikes'],
-                docks=station['empty_slots'],
+                bikes=station['free_bikes'] or 0,
+                docks=station['empty_slots'] or 0,
                 mod=ts
             ))
         out = {"statuses": CompactElement.of(station_statuses), "alerts":[], 'bikes':[]}
