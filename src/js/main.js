@@ -192,7 +192,6 @@ var Compass = window.Compass;
     L.GridLayer.GridLines = L.GridLayer.extend({
         createTile: function(coords) {
             var tile = document.createElement('canvas');
-
             var tileSize = this.getTileSize();
             tile.setAttribute('width', tileSize.x);
             tile.setAttribute('height', tileSize.y);
@@ -206,6 +205,13 @@ var Compass = window.Compass;
             var ctx = tile.getContext('2d');
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, tileSize.x, tileSize.y);
+            if (coords.z < 12) {
+                ctx.font = '10px sans-serif';
+                ctx.fillStyle = "gray";
+                ctx.fillText('grid not available', 0, 15);
+                ctx.fillText('at this zoom level', 15, 30);
+                return tile;
+            }
             ctx.lineWidth = 1;
             ctx.strokeStyle = "#eee";
             ctx.beginPath();
@@ -229,9 +235,7 @@ var Compass = window.Compass;
     L.gridLayer.gridLines = function(opts) {
         return new L.GridLayer.GridLines(opts);
     };
-    var gridLayer = L.gridLayer.gridLines({
-        minZoom: 12
-    });
+    var gridLayer = L.gridLayer.gridLines();
     defaultBase.on('add', function() {
         localStorage.setItem("base", "default");
     });
@@ -263,11 +267,7 @@ var Compass = window.Compass;
     var stationLayer = L.layerGroup().addTo(map);
     var bikeLayer = L.layerGroup().addTo(map);
 
-    var overlays = {
-        "Stations": stationLayer,
-        "Floating Bikes": bikeLayer
-    };
-    var controls = L.control.layers(baseLayers, overlays, {
+    var controls = L.control.layers(baseLayers, [], {
         "position": "bottomleft"
     }).addTo(map);
 
@@ -275,7 +275,6 @@ var Compass = window.Compass;
     var $systemList = $("#system-list");
     $toggle.click(function() {
         if ($toggle.hasClass("active")) {
-            controls.addTo(map);
             stationLayer.addTo(map);
             bikeLayer.addTo(map);
             systemsLayer.remove();
@@ -285,7 +284,6 @@ var Compass = window.Compass;
             $systemList.hide();
             $stationList.show();
         } else {
-            controls.remove();
             stationLayer.remove();
             bikeLayer.remove();
             systemsLayer.addTo(map);
@@ -362,8 +360,8 @@ var Compass = window.Compass;
                 var distance = geo.getDistanceString(nearbySystem.distance);
                 var bearing = geo.cardinalDirection(nearbySystem.bearing);
                 var $systemRow = $("<div class='station' data-lat='" + nearbySystem.lat + "' data-lon='" + nearbySystem.lon + "'><div class='station-body'><div class='health station-cell'>&#x1F307;</div><div class='station-cell'><div class='name'>" + nearbySystem.name + "</div>" + "<div class='detail'>" + distance + " " + bearing + " | " + nearbySystem.id + "</div></div></div></div></div>");
-                $systemRow.click((function(selectedMarker){
-                    return function(){
+                $systemRow.click((function(selectedMarker) {
+                    return function() {
                         map.setView(selectedMarker.getLatLng(), map.getZoom());
                         markerAnimation(selectedMarker);
                     }
