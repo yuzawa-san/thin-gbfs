@@ -45,9 +45,12 @@ class PyBikesCodec(BikeNetworkCodec):
                         ts = self._decode_timestamp(station['timestamp'])
                         if ts > recent_ts:
                             recent_ts = ts
+                    name = network['name']
+                    if 'city' in network['location']:
+                        name = "%s, %s" % (name, network['location']['city'])
                     r = BikeNetwork(
                      id= "pybikes_%s" % network['id'],
-                     name=network['name'],
+                     name=name,
                      codec=PyBikesCodec.NAME,
                      config=network,
                      lat=network['location']['latitude'],
@@ -55,7 +58,7 @@ class PyBikesCodec(BikeNetworkCodec):
                      last_updated=recent_ts)
                     entities.append(r)
             except Exception as e:
-                logging.error("failed to load %s: %s", network['name'], e)
+                logging.error("failed to load %s: %s", network['id'], e)
         return entities
     
     def get_info(self, system):
