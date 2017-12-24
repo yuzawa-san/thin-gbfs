@@ -432,7 +432,7 @@ var Compass = window.Compass;
                     for (var i in response.stations) {
                         var station = response.stations[i];
                         systemLat += station.lat;
-                        stationLon += station.lon;
+                        systemLon += station.lon;
                         var marker = L.circleMarker([station.lat, station.lon], {
                             radius: 5,
                             color: "rgb(253,77,2)",
