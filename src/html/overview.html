@@ -37,7 +37,7 @@
                 fillColor: "rgb(253,77,2)",
                 fillOpacity: 1.0
             });
-            marker.bindPopup('<a href="/#'+station[0]+'" target="blank">'+station[1]+'</a>');
+            marker.bindPopup('<a href="/#'+station[0]+'" target="blank"><strong>'+station[4]+'</strong><br>'+station[1]+'</a>');
             marker.addTo(map);
         }
         map.setView([41,-95], 4);
