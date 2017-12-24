@@ -14,7 +14,7 @@ The goals of this project are:
 * cache system and station information server side to avoid hitting the source data API's too often.
 * limit number of TCP connections and number of hosts contacted
 * use HTTPS
-* privacy: a geolocation call is made, but this application does not collect such data
+* privacy: the HTML5 geolocation uri is used, but the location is not transmitted elsewhere.
 
 ## Development
 
@@ -48,4 +48,8 @@ This web app simple aggregates and transmits efficiently across the wire lots of
 Thank you for your work!
 
 Note: Since GBFS is an open standard, GBFS systems are hit directly rather than using Citibik.es.
+
+### Data Errors
+
+You will have to go to the respective projects / companies to their issue tracking systems. This project does not actually curate any data.
 
