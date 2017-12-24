@@ -84,17 +84,17 @@ def _process_station_status(url):
     stations = response_json['data']['stations']
     out = []
     for station in stations:
+        bikes = 0
+        docks = 0
         if station['is_installed'] > 0:
-            bikes = station['num_bikes_available']
-            if station['is_renting'] == 0:
-                bikes = 0
-            docks = station['num_docks_available']
-            if station['is_returning'] == 0:
-                docks = 0
-            mod = station['last_reported']
-            if mod > 10000000000:
-                mod = mod / 1000
-            out.append(SystemStatusElement(id=station['station_id'],bikes=bikes,docks=docks,mod=mod))
+            if station['is_renting'] == 1:
+                bikes = station['num_bikes_available']
+            if station['is_returning'] == 1:
+                docks = station['num_docks_available']
+        mod = station['last_reported']
+        if mod > 10000000000:
+            mod = mod / 1000
+        out.append(SystemStatusElement(id=station['station_id'],bikes=bikes,docks=docks,mod=mod))
     return out
 
 @cache(ttl=STATION_STATUS_TTL)
