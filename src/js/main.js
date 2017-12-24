@@ -358,13 +358,13 @@ var Compass = window.Compass;
             var override = window.location.hash;
             for (var i in nearbySystems) {
                 var nearbySystem = nearbySystems[i];
-                var selector = ' <button class="system-preview" data-id="' + nearbySystem.id + '" data-name="' + nearbySystem.name + '" data-lat="' + nearbySystem.lat + '" data-lon="' + nearbySystem.lon + '">preview</button>';
+                var selector = ' <button class="system-preview" data-id="' + nearbySystem.id + '" data-name="' + nearbySystem.name + '" data-lat="' + nearbySystem.lat + '" data-lon="' + nearbySystem.lon + '">view</button>';
                 if (nearbySystem.distance < 50000) {
                     if (localStorage.getItem('system') === nearbySystem.id) {
                         system = nearbySystem;
-                        selector = " <button disabled>select</button>";
+                        selector += " <button disabled>load</button>";
                     } else {
-                        selector = ' <button class="system-select" data-id="' + nearbySystem.id + '">select</button>';
+                        selector += ' <button class="system-select" data-id="' + nearbySystem.id + '">load</button>';
                     }
                 }
                 if (override === "#" + nearbySystem.id) {
