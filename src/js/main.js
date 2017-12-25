@@ -12,6 +12,14 @@ var Compass = window.Compass;
     // redraw the list this often
     var renderMs = 10000;
 
+    var isFront = true;
+    window.onblur = function() {
+        isFront = false;
+    };
+    window.onfocus = function() {
+        isFront = true;
+    };
+
     var languages = navigator.languages || [];
     var imperialUnits = languages.indexOf("en-US") >= 0;
 
@@ -657,7 +665,7 @@ var Compass = window.Compass;
             var span = fetchMs;
             var pct = Math.min(1.0, delta / span);
             progress(pct);
-            if (delta > span) {
+            if (delta > span && isFront) {
                 fetch();
                 lastFetch = now;
             }
