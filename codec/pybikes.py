@@ -39,25 +39,11 @@ class PyBikesCodec(BikeNetworkCodec):
             try:
                 if "gbfs_href" not in network:
                     logging.info("Processing %s" % network['name'])
-                    recent_ts = 0
-                    stations = []
-                    station_info = _fetch_system_info(network['href'])
-                    for station in station_info['network']['stations']:
-                        ts = self._decode_timestamp(station['timestamp'])
-                        if ts > recent_ts:
-                            recent_ts = ts
-                        stations.append(SystemInfoElement(
-                            id=station['id'],
-                            name=station['name'],
-                            lat=station['latitude'],
-                            lon=station['longitude']
-                        ))
                     city = 'Unknown'
                     if 'city' in network['location']:
                         city = network['location']['city']
                     if 'country' in network['location']:
                         city = "%s, %s" % (city, network['location']['country'])
-                    network['system_info'] = {"name": network['name'], "stations": CompactElement.of(stations), "regions":[]}
                     r = BikeNetwork(
                      id= "pybikes_%s" % network['id'],
                      name=network['name'],
@@ -66,7 +52,7 @@ class PyBikesCodec(BikeNetworkCodec):
                      city=city,
                      lat=network['location']['latitude'],
                      lon=network['location']['longitude'],
-                     last_updated=recent_ts)
+                     last_updated=time.time())
                     entities.append(r)
             except Exception as e:
                 logging.error("failed to load %s: %s", network['id'], e)
@@ -74,7 +60,17 @@ class PyBikesCodec(BikeNetworkCodec):
         return entities
     
     def get_info(self, system):
-        return system.config['system_info']
+        response_json = fetch_system_info(system.config['href'])
+        stations = []
+        for station in response_json['network']['stations']:
+            stations.append(SystemInfoElement(
+                id=station['id'],
+                name=station['name'],
+                lat=station['latitude'],
+                lon=station['longitude']
+            ))
+        out = {"name": system.name, "stations": CompactElement.of(stations), "regions":[]}
+        return out
     
     def _decode_timestamp(self, ts):
         fmt = "%Y-%m-%dT%H:%M:%SZ"
