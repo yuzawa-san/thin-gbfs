@@ -4,9 +4,14 @@ var emojiFlags = require('emoji-flags');
 require('compass-js');
 var Compass = window.Compass;
 (function() {
-    window.onerror = function(message, source, lineno, colno, error) {
-        $("#footer").append($("<p>").text(message));
-    };
+    function reportError(message){
+        $("#footer").prepend($("<p>").addClass("error").text(message));
+    }
+    window.onerror = reportError;
+    $(document).on('ajaxError', function(e, xhr, options) {
+        reportError("Failed to load " + xhr.responseURL + "\n" + xhr.status + " " + xhr.statusText);
+        console.error(xhr);
+    });
     // fetch the station info this often
     var fetchMs = 30000;
     // redraw the list this often

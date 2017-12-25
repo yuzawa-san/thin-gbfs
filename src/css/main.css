@@ -229,7 +229,9 @@ border-radius: 5px;
 animation: opacity-1 700ms infinite ease-in-out;
 margin: 0px 5px;
 }
-
+p.error {
+color:red;
+}
 #loading .bar1 {
 animation-delay: 100ms;
 }
