@@ -1,7 +1,7 @@
 cron:
 - description: load systems
   url: /load
-  schedule: every 72 hours
+  schedule: every 120 hours
   retry_parameters:
     min_backoff_seconds: 2.5
     max_doublings: 5
