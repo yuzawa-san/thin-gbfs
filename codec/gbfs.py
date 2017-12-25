@@ -159,7 +159,6 @@ class GbfsCodec(BikeNetworkCodec):
                         lon=avg_lon,
                         last_updated=recent_ts)
                     entities.append(r)
-                    time.sleep(0.2)
                     break
                 except Exception as e:
                     logging.error("failed to load %s: %s", name, e)
