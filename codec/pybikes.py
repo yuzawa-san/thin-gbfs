@@ -52,7 +52,7 @@ class PyBikesCodec(BikeNetworkCodec):
                      city=city,
                      lat=network['location']['latitude'],
                      lon=network['location']['longitude'],
-                     last_updated=time.time())
+                     last_updated=int(time.time()))
                     entities.append(r)
             except Exception as e:
                 logging.error("failed to load %s: %s", network['id'], e)
