@@ -4,7 +4,7 @@ var emojiFlags = require('emoji-flags');
 require('compass-js');
 var Compass = window.Compass;
 (function() {
-    function reportError(message){
+    function reportError(message) {
         $("#footer").prepend($("<p>").addClass("error").text(message));
     }
     window.onerror = reportError;
@@ -335,7 +335,7 @@ var Compass = window.Compass;
     }
     $("#system-search").change(systemSearch);
 
-    if (navigator.geolocation) {
+    if ("geolocation" in navigator) {
         var geo_options = {
             enableHighAccuracy: true,
             maximumAge: 30000,
@@ -354,9 +354,27 @@ var Compass = window.Compass;
                 map.setView(newLatLng, desktop ? 16 : 15);
                 determineSystem();
             }
-        }, function(e) {
-            alert("Sorry, no position available: " + e.message);
+        }, function(error) {
+            switch (error.code) {
+            case error.PERMISSION_DENIED:
+                reportError("User denied the request for Geolocation.");
+                break;
+            case error.POSITION_UNAVAILABLE:
+                reportError("Location information is unavailable.");
+                break;
+            case error.TIMEOUT:
+                reportError("The request to get user location timed out.");
+                break;
+            case error.UNKNOWN_ERROR:
+                reportError("An unknown error occurred.");
+                break;
+            default:
+                reportError("Geolocation error: " + e.message);
+                break;
+            }
         }, geo_options);
+    } else {
+        reportError("Geolocation not supported!");
     }
 
     function determineSystem() {
