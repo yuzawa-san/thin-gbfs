@@ -46,7 +46,12 @@ var Compass = window.Compass;
         var startMs = timers[key];
         var content = Math.round(Date.now() - startMs) + "ms";
         if (xhr) {
-            content += " (" + (xhr.responseText.length / 1024).toFixed(1) + "kb)";
+            var ageMs = Date.now() - new Date(xhr.getResponseHeader("date")).getTime();
+            var cached = "";
+            if (ageMs > 5000) {
+                cached = ", cached";
+            }
+            content += " (" + (xhr.responseText.length / 1024).toFixed(1) + "kb" + cached + ")";
         }
         $("#timing-" + key).text(content);
     }
