@@ -609,14 +609,17 @@ var Compass = window.Compass;
                     }
                     var marker = markerMap[stationId];
                     if (!marker) {
+                        var radius = desktop ? 12 : 10;
                         marker = L.circleMarker([station.lat, station.lon], {
-                            radius: desktop ? 12 : 10,
+                            radius: radius,
                             color: "rgb(253,77,2)",
                             weight: station.alerts.length > 0 ? 4 : 2,
                             fillOpacity: 1.0
                         });
                         markerMap[stationId] = marker;
-                        marker.bindPopup(station.name);
+                        marker.bindPopup(station.name, {
+                            offset: [0, -radius]
+                        });
                         marker.addTo(stationLayer);
                         var pointsIcon = L.divIcon({
                             className: 'points-icon'
