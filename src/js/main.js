@@ -870,9 +870,6 @@ var Compass = window.Compass;
                     var marker = markerMap[$(this).attr('data-id')];
                     map.setView(marker.getLatLng(), map.getZoom());
                     markerAnimation(marker);
-                }).dblclick(function() {
-                    var marker = markerMap[$(this).attr('data-id')];
-                    marker.openPopup();
                 });
                 $stationList.append($row);
             }
