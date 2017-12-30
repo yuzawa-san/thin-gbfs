@@ -366,10 +366,8 @@ var Compass = window.Compass;
                 reportError("The request to get user location timed out.");
                 break;
             case error.UNKNOWN_ERROR:
-                reportError("An unknown error occurred.");
-                break;
             default:
-                reportError("Geolocation error: " + e.message);
+                reportError("Unknown geolocation error: " + e.message);
                 break;
             }
         }, geo_options);
