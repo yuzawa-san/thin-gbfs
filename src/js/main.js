@@ -357,13 +357,13 @@ var Compass = window.Compass;
         }, function(error) {
             switch (error.code) {
             case error.PERMISSION_DENIED:
-                reportError("User denied the request for Geolocation.");
+                reportError("Please enable access to your device's location.");
                 break;
             case error.POSITION_UNAVAILABLE:
                 reportError("Location information is unavailable.");
                 break;
             case error.TIMEOUT:
-                reportError("The request to get user location timed out.");
+                reportError("Geolocation timed out.");
                 break;
             case error.UNKNOWN_ERROR:
             default:
