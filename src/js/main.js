@@ -650,7 +650,7 @@ var Compass = window.Compass;
                     if (favorites[station.id]) {
                         favorite = "&#x2606;";
                     }
-                    marker.setPopupContent("<strong>" + station.name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(station.alerts) + " " + points(station.pts) + "<br><button class='favorite-toggle' data-id='" + station.id + "'>" + favorite + "</button>")
+                    marker.setPopupContent("<strong>" + station.name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(station.alerts) + "<br><button class='favorite-toggle' data-id='" + station.id + "'>" + favorite + "</button>")
                 }
                 stations = stationList;
 
