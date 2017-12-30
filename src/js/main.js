@@ -735,15 +735,19 @@ var Compass = window.Compass;
     }
 
     function markerAnimation(marker) {
+        if (marker.animationTimer) {
+            return;
+        }
         var originalRadius = marker.options.radius;
         var pct = 0;
-        var timer = setInterval(function() {
+        marker.animationTimer = setInterval(function() {
             marker.setStyle({
                 radius: originalRadius + originalRadius / 2 * (1 - pct)
             });
             pct += 0.1;
             if (pct >= 1.0) {
-                clearInterval(timer);
+                clearInterval(marker.animationTimer);
+                marker.animationTimer = null;
             }
         }, 50);
     }
