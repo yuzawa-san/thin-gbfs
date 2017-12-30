@@ -182,7 +182,7 @@ var Compass = window.Compass;
         $(this).addClass("active");
         draw();
         localStorage.setItem('filter', filter);
-        document.getElementById("content-scroll").scrollTop = 0;
+        document.getElementById("content-scroll-inner").scrollTop = 0;
     });
 
     var baseSelection = desktop ? "retina" : "default";
@@ -316,7 +316,7 @@ var Compass = window.Compass;
             $toggle.addClass("active");
             $systemList.show();
             $stationList.hide();
-            document.getElementById("content-scroll").scrollTop = 0;
+            document.getElementById("content-scroll-inner").scrollTop = 0;
         }
     });
 
@@ -481,7 +481,7 @@ var Compass = window.Compass;
             youMarker.addTo(map);
             if (!override && system.distance > 50000) {
                 $stationList.empty();
-                $("#content-scroll").prepend('<div class="message">No bikeshare system with public feed nearby!</div>');
+                $("#content-scroll-inner").prepend('<div class="message">No bikeshare system with public feed nearby!</div>');
                 populateMap();
                 $toggle.trigger('click');
             } else {

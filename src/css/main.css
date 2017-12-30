@@ -88,12 +88,12 @@ height: 0;
 #content-scroll {
 height: 100%;
 }
-#content-scroll > div {
+#content-scroll-wrap {
 width: 100%;
 height: 100%;
 position: relative;
 }
-#content-scroll > div > div {
+#content-scroll-inner {
 position: absolute;
 top: 0;
 bottom: 0;
