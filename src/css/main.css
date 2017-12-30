@@ -79,7 +79,7 @@ height: 50%;
 width: 100%;
 display: table;
 }
-#content-fixed,#content-scoll {
+#content > div {
 display: table-row;
 }
 #content-fixed {
@@ -87,7 +87,20 @@ height: 0;
 }
 #content-scroll {
 height: 100%;
-overflow-y: auto;
+}
+#content-scroll > div {
+width: 100%;
+height: 100%;
+position: relative;
+}
+#content-scroll > div > div {
+position: absolute;
+top: 0;
+bottom: 0;
+left: 0;
+right: 0;
+overflow: auto;
+-webkit-overflow-scrolling: touch;
 }
 #app-name {
 display: none
@@ -152,15 +165,15 @@ box-shadow: inset 0 2px 4px rgba(0,0,0,0.15),0 1px 2px rgba(0,0,0,0.05);
 background-color: #e0e0e0;
 }
 #system-search-container {
-text-align:center;
+text-align: center;
 }
 #system-search {
-width:80%;
-margin-bottom:3px;
+width: 80%;
+margin-bottom: 3px;
 }
 #system-count {
-color:gray;
-font-size:0.8em;
+color: gray;
+font-size: 0.8em;
 }
 #progress-indicator {
 vertical-align: middle;
@@ -230,25 +243,25 @@ animation: opacity-1 700ms infinite ease-in-out;
 margin: 0px 5px;
 }
 p.error {
-color:red;
+color: red;
 }
 #loading .bar1 {
-animation-delay: 100ms;
+animation-delay: -100ms;
 }
 #loading .bar2 {
-animation-delay: 200ms;
+animation-delay: -200ms;
 }
 #loading .bar3 {
-animation-delay: 300ms;
+animation-delay: -300ms;
 }
 #loading .bar4 {
-animation-delay: 400ms;
+animation-delay: -400ms;
 }
 #loading .bar5 {
-animation-delay: 500ms;
+animation-delay: -500ms;
 }
 #loading .bar6 {
-animation-delay: 600ms;
+animation-delay: -600ms;
 }
 
 @keyframes opacity-1 {
