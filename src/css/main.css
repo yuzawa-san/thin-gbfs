@@ -192,6 +192,10 @@ progress[value]::-webkit-progress-value {
 background-color: rgb(253,77,2);
 border-radius: 2px;
 }
+.grid-label {
+font-size: 9px;
+padding: 1px !important;
+}
 .points-icon {
 font-size: 8px;
 line-height: 10px;

@@ -259,13 +259,15 @@ var Compass = window.Compass;
         return new L.GridLayer.GridLines(opts);
     };
     var gridLayer = L.gridLayer.gridLines();
+    var gridGroup = L.layerGroup();
+    gridLayer.addTo(gridGroup);
     defaultBase.on('add', function() {
         localStorage.setItem("base", "default");
     });
     retinaBase.on('add', function() {
         localStorage.setItem("base", "retina");
     });
-    gridLayer.on('add', function() {
+    gridGroup.on('add', function() {
         localStorage.setItem("base", "grid");
     });
 
@@ -273,7 +275,7 @@ var Compass = window.Compass;
         if (baseSelection == "retina") {
             retinaBase.addTo(map);
         } else if (baseSelection == "grid") {
-            gridLayer.addTo(map);
+            gridGroup.addTo(map);
         } else {
             defaultBase.addTo(map);
         }
@@ -284,7 +286,7 @@ var Compass = window.Compass;
         "Default": defaultBase,
         "Retina (High-Data)": retinaBase
     };
-    baseLayers[gridLabel] = gridLayer;
+    baseLayers[gridLabel] = gridGroup;
 
     var systemsLayer = L.layerGroup();
     var stationLayer = L.layerGroup();
@@ -629,7 +631,14 @@ var Compass = window.Compass;
                             interactive: false
                         }).addTo(stationLayer);
                         marker.pointsMarker = pointsMarker;
-
+                        var tooltip = L.tooltip({
+                            pane: 'overlayPane',
+                            permanent: true,
+                            offset: [0, -radius],
+                            direction: 'top',
+                            className: 'grid-label'
+                        }).setLatLng(marker.getLatLng()).setContent(station.name);
+                        tooltip.addTo(gridGroup);
                     }
                     var pointsIcon = L.divIcon({
                         html: points(station.pts),
