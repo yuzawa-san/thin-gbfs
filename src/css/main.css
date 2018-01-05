@@ -193,8 +193,9 @@ background-color: rgb(253,77,2);
 border-radius: 2px;
 }
 .grid-label {
-font-size: 9px;
+font-size: 8px;
 padding: 1px !important;
+line-height: 9px;
 }
 .points-icon {
 font-size: 8px;
