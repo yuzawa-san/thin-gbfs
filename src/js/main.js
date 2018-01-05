@@ -266,15 +266,30 @@ var Compass = window.Compass;
     var gridLayer = L.gridLayer.gridLines();
     var gridGroup = L.layerGroup();
     gridLayer.addTo(gridGroup);
+    var tooltipGroup = L.layerGroup();
     defaultBase.on('add', function() {
         localStorage.setItem("base", "default");
     });
     retinaBase.on('add', function() {
         localStorage.setItem("base", "retina");
     });
+    function conditionallyRenderTooltips() {
+        var zoomedIn = map.getZoom() > 14;
+        var bounds = map.getBounds();
+        tooltipGroup.eachLayer(function(tooltip) {
+            if (zoomedIn && bounds.contains(tooltip.getLatLng())) {
+                tooltip.addTo(gridGroup);
+            } else {
+                tooltip.removeFrom(gridGroup);
+            }
+        });
+    }
     gridGroup.on('add', function() {
         localStorage.setItem("base", "grid");
+        conditionallyRenderTooltips();
     });
+    map.on('zoomend', conditionallyRenderTooltips);
+    map.on('moveend', conditionallyRenderTooltips);
 
     function populateMap() {
         if (baseSelection == "retina") {
