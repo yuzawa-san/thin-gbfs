@@ -465,6 +465,7 @@ var Compass = window.Compass;
                         attribution: systemName
                     });
                     response.stations = pivot(response.stations);
+                    var coords = [];
                     for (var i in response.stations) {
                         var station = response.stations[i];
                         systemLat += station.lat;
@@ -478,11 +479,16 @@ var Compass = window.Compass;
                         });
                         marker.bindTooltip(station.name);
                         marker.addTo(previewLayer);
+                        coords.push([station.lat, station.lon]);
                     }
                     systemsLayer.remove();
                     previewLayer.addTo(map);
-                    var ct = 1 + response.stations.length;
-                    map.setView([systemLat / ct, systemLon / ct], 13);
+                    if (response.stations) {
+                        map.fitBounds(L.latLngBounds(coords));
+                    } else {
+                        // fall back on system center
+                        map.setView([systemLat, systemLon], 13);
+                    }
                 });
             });
             L.setOptions(youAccuracy, {
