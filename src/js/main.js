@@ -226,17 +226,17 @@ var Compass = window.Compass;
             var jump = Math.round(spacing / tileMeters);
 
             var ctx = tile.getContext('2d');
-            ctx.fillStyle = 'white';
+            ctx.fillStyle = '#eee';
             ctx.fillRect(0, 0, tileSize.x, tileSize.y);
             if (coords.z < 12) {
                 ctx.font = '10px sans-serif';
-                ctx.fillStyle = "gray";
+                ctx.fillStyle = "black";
                 ctx.fillText('grid not available', 0, 15);
                 ctx.fillText('at this zoom level', 15, 30);
                 return tile;
             }
             ctx.lineWidth = 1;
-            ctx.strokeStyle = "#eee";
+            ctx.strokeStyle = "white";
             ctx.beginPath();
             for (var x = 0; x < tileSize.x; x++) {
                 if ((coords.x * tileSize.x + x) % jump == 0) {
