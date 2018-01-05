@@ -1,3 +1,5 @@
+import geo from './geo.js';
+import TinyGridLayer from './grid.js';
 var $ = require('npm-zepto');
 var L = require('leaflet');
 var emojiFlags = require('emoji-flags');
@@ -24,9 +26,6 @@ var Compass = window.Compass;
     window.onfocus = function() {
         isFront = true;
     };
-
-    var languages = navigator.languages || [];
-    var imperialUnits = languages.indexOf("en-US") >= 0;
 
     var arrowUrl = URL.createObjectURL(new Blob(['<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path id="arrow" fill="#007BFF" d="M 50,0 L 100,100 L 50,70 L 0,100" /></svg>'], {
         type: 'image/svg+xml'
@@ -66,88 +65,6 @@ var Compass = window.Compass;
     var currentPosition = null;
     var $stationList = $("#station-list");
     var $toggle = $("#toggle");
-
-    var geo = {
-        nearby: function(lat, lon, items, count) {
-            var nearestStations = [];
-            for (var i in items) {
-                var item = items[i];
-                var delta = geo.delta(lat, lon, item.lat, item.lon);
-                item.distance = delta.distance;
-                item.bearing = delta.bearing;
-                nearestStations.push(item);
-            }
-            nearestStations.sort(function(a, b) {
-                return a.distance - b.distance;
-            });
-            if (count) {
-                nearestStations = nearestStations.slice(0, count);
-            }
-            return nearestStations;
-        },
-        closest: function(lat, lon, items) {
-            return this.nearby(lat, lon, items)[0];
-        },
-        delta: function(lat1, lon1, lat2, lon2) {
-            var R = 6371000.2161; // Radius of the earth in meters
-            var dLat = this._toRad(lat2 - lat1); // this._toRad below
-            var dLon = this._toRad(lon2 - lon1);
-            var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(this._toRad(lat1)) * Math.cos(this._toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            var d = R * c; // Distance in meters
-            var y = Math.sin(dLon) * Math.cos(this._toRad(lat2));
-            var x = Math.cos(this._toRad(lat1)) * Math.sin(this._toRad(lat2)) - Math.sin(this._toRad(lat1)) * Math.cos(this._toRad(lat2)) * Math.cos(dLon);
-            var brng = this._toDeg(Math.atan2(y, x));
-            var b = ((brng + 360) % 360);
-            return {
-                distance: d,
-                bearing: b
-            };
-
-        },
-        getDistanceString: function(meters) {
-            var distance;
-            if (imperialUnits) {
-                var miles = meters / 1609.34;
-                if (miles < 0.189) {
-                    distance = Math.round(miles * 5280) + "ft";
-                } else {
-                    distance = miles.toFixed(1) + "mi";
-                }
-            } else {
-                if (meters < 500) {
-                    distance = Math.round(meters) + "m";
-                } else {
-                    distance = (meters / 1e3).toFixed(1) + "km";
-                }
-            }
-            return distance;
-        },
-        _toRad: function(deg) {
-            return deg * Math.PI / 180;
-        },
-        _toDeg: function(rad) {
-            return rad * 180 / Math.PI;
-        },
-        cardinalDirection: function(angle) {
-            //easy to customize by changing the number of directions you have 
-            var directions = 8;
-
-            var degree = 360 / directions;
-            angle = angle + degree / 2;
-
-            if (angle >= 0 * degree && angle < 1 * degree) return "N";
-            if (angle >= 1 * degree && angle < 2 * degree) return "NE";
-            if (angle >= 2 * degree && angle < 3 * degree) return "E";
-            if (angle >= 3 * degree && angle < 4 * degree) return "SE";
-            if (angle >= 4 * degree && angle < 5 * degree) return "S";
-            if (angle >= 5 * degree && angle < 6 * degree) return "SW";
-            if (angle >= 6 * degree && angle < 7 * degree) return "W";
-            if (angle >= 7 * degree && angle < 8 * degree) return "NW";
-            //Should never happen: 
-            return "N";
-        }
-    };
 
     var map = L.map('map').setZoom(15);
     var desktop = window.innerWidth > 700;
@@ -217,53 +134,8 @@ var Compass = window.Compass;
     var retinaBase = L.tileLayer('https://' + subdomain + '.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>'
     });
-    L.GridLayer.GridLines = L.GridLayer.extend({
-        createTile: function(coords) {
-            var tile = document.createElement('canvas');
-            var tileSize = this.getTileSize();
-            tile.setAttribute('width', tileSize.x);
-            tile.setAttribute('height', tileSize.y);
-            tile.setAttribute("data-z", coords.z);
 
-            var y = map.getSize().y / 2;
-            var tileMeters = 40075016.686 * Math.abs(Math.cos(map.getCenter().lat * Math.PI / 180)) / Math.pow(2, coords.z + 8);
-            var spacing = imperialUnits ? 91.44 : 100;
-            var jump = Math.round(spacing / tileMeters);
-
-            var ctx = tile.getContext('2d');
-            ctx.fillStyle = '#eee';
-            ctx.fillRect(0, 0, tileSize.x, tileSize.y);
-            if (coords.z < 12) {
-                ctx.font = '10px sans-serif';
-                ctx.fillStyle = "black";
-                ctx.fillText('grid not available', 0, 15);
-                ctx.fillText('at this zoom level', 15, 30);
-                return tile;
-            }
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "white";
-            ctx.beginPath();
-            for (var x = 0; x < tileSize.x; x++) {
-                if ((coords.x * tileSize.x + x) % jump == 0) {
-                    ctx.moveTo(x + 0.5, 0);
-                    ctx.lineTo(x + 0.5, tileSize.y);
-                }
-            }
-            for (var y = 0; y < tileSize.y; y++) {
-                if ((coords.y * tileSize.y + y) % jump == 0) {
-                    ctx.moveTo(0, y + 0.5);
-                    ctx.lineTo(tileSize.x, y + 0.5);
-                }
-            }
-            ctx.stroke();
-            return tile;
-        }
-    });
-
-    L.gridLayer.gridLines = function(opts) {
-        return new L.GridLayer.GridLines(opts);
-    };
-    var gridLayer = L.gridLayer.gridLines();
+    var gridLayer = TinyGridLayer(map);
     var gridGroup = L.layerGroup();
     gridLayer.addTo(gridGroup);
     var tooltipGroup = L.layerGroup();
@@ -302,7 +174,7 @@ var Compass = window.Compass;
         }
     }
 
-    var gridLabel = (imperialUnits ? "300ft" : "100m") + " grid (No-Data)";
+    var gridLabel = (geo.useImperialUnits() ? "300ft" : "100m") + " grid (No-Data)";
     var baseLayers = {
         "Default": defaultBase,
         "Retina (High-Data)": retinaBase
