@@ -56,6 +56,11 @@ var Compass = window.Compass;
         $("#timing-" + key).text(content);
     }
 
+    function readableName(name) {
+        // break on common elements for readability
+        return name.replace(/([:&@\/]|\sat\s|\s-\s)/g, "$1<br>");
+    }
+
     var systemId = null;
     var stations = null;
     var currentPosition = null;
@@ -477,7 +482,10 @@ var Compass = window.Compass;
                             weight: 5,
                             fillOpacity: 1.0
                         });
-                        marker.bindTooltip(station.name);
+                        marker.bindTooltip(readableName(station.name), {
+                            offset: [10, 0],
+                            direction: 'right'
+                        });
                         marker.addTo(previewLayer);
                         coords.push([station.lat, station.lon]);
                     }
