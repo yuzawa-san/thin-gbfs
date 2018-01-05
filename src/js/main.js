@@ -645,6 +645,9 @@ var Compass = window.Compass;
                         className: 'points-icon'
                     });
                     marker.pointsMarker.setIcon(pointsIcon);
+                    if (station.pts) {
+                        marker.pointsMarker.addTo(stationLayer);
+                    }
                     var pct = NaN;
                     var bikes = station.bikes;
                     var docks = station.docks
