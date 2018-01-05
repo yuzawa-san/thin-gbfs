@@ -1,6 +1,8 @@
 var languages = navigator.languages || [];
 var imperialUnits = languages.indexOf("en-US") >= 0;
 var geo = {
+    EARTH_EQUATORIAL_CIRCUMFERENCE_METERS: 40075016.686,
+    EARTH_RADIUS_METERS: 6371000.2161,
     useImperialUnits: function() {
         return imperialUnits;
     },
@@ -25,12 +27,11 @@ var geo = {
         return this.nearby(lat, lon, items)[0];
     },
     delta: function(lat1, lon1, lat2, lon2) {
-        var R = 6371000.2161; // Radius of the earth in meters
         var dLat = this._toRad(lat2 - lat1); // this._toRad below
         var dLon = this._toRad(lon2 - lon1);
         var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(this._toRad(lat1)) * Math.cos(this._toRad(lat2)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
         var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        var d = R * c; // Distance in meters
+        var d = this.EARTH_RADIUS_METERS * c; // Distance in meters
         var y = Math.sin(dLon) * Math.cos(this._toRad(lat2));
         var x = Math.cos(this._toRad(lat1)) * Math.sin(this._toRad(lat2)) - Math.sin(this._toRad(lat1)) * Math.cos(this._toRad(lat2)) * Math.cos(dLon);
         var brng = this._toDeg(Math.atan2(y, x));

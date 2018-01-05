@@ -9,7 +9,7 @@ function TinyGridLayer(map, opts){
             tile.setAttribute("data-z", coords.z);
 
             var y = map.getSize().y / 2;
-            var tileMeters = 40075016.686 * Math.abs(Math.cos(map.getCenter().lat * Math.PI / 180)) / Math.pow(2, coords.z + 8);
+            var tileMeters = geo.EARTH_EQUATORIAL_CIRCUMFERENCE_METERS * Math.abs(Math.cos(map.getCenter().lat * Math.PI / 180)) / Math.pow(2, coords.z + 8);
             var spacing = geo.useImperialUnits() ? 91.44 : 100;
             var jump = Math.round(spacing / tileMeters);
 
