@@ -273,6 +273,7 @@ var Compass = window.Compass;
     retinaBase.on('add', function() {
         localStorage.setItem("base", "retina");
     });
+
     function conditionallyRenderTooltips() {
         var zoomedIn = map.getZoom() > 14;
         var bounds = map.getBounds();
@@ -544,8 +545,38 @@ var Compass = window.Compass;
                     response.stations = pivot(response.stations);
                     response.stationMap = {}
                     for (var i in response.stations) {
-                        var station = response.stations[i]
+                        var station = response.stations[i];
+                        var stationId = station.id;
                         response.stationMap[station.id] = station;
+                        var radius = desktop ? 12 : 10;
+                        var marker = L.circleMarker([station.lat, station.lon], {
+                            radius: radius,
+                            color: "rgb(253,77,2)",
+                            fillColor: "rgb(253,77,2)",
+                            weight: 2,
+                            fillOpacity: 1.0
+                        });
+                        markerMap[stationId] = marker;
+                        marker.bindPopup(station.name, {
+                            offset: [0, -radius]
+                        });
+                        marker.addTo(stationLayer);
+                        var pointsIcon = L.divIcon({
+                            className: 'points-icon'
+                        });
+                        var pointsMarker = L.marker([station.lat, station.lon], {
+                            icon: pointsIcon,
+                            interactive: false
+                        });
+                        marker.pointsMarker = pointsMarker;
+                        var tooltip = L.tooltip({
+                            pane: 'overlayPane',
+                            permanent: true,
+                            offset: [radius + 2, 0],
+                            direction: 'right',
+                            className: 'grid-label'
+                        }).setLatLng(marker.getLatLng()).setContent(readableName(station.name));
+                        tooltip.addTo(tooltipGroup);
                     }
                     loadSystem(response);
                 });
@@ -639,36 +670,6 @@ var Compass = window.Compass;
                         }
                     }
                     var marker = markerMap[stationId];
-                    if (!marker) {
-                        var radius = desktop ? 12 : 10;
-                        marker = L.circleMarker([station.lat, station.lon], {
-                            radius: radius,
-                            color: "rgb(253,77,2)",
-                            weight: station.alerts.length > 0 ? 4 : 2,
-                            fillOpacity: 1.0
-                        });
-                        markerMap[stationId] = marker;
-                        marker.bindPopup(station.name, {
-                            offset: [0, -radius]
-                        });
-                        marker.addTo(stationLayer);
-                        var pointsIcon = L.divIcon({
-                            className: 'points-icon'
-                        });
-                        var pointsMarker = L.marker([station.lat, station.lon], {
-                            icon: pointsIcon,
-                            interactive: false
-                        }).addTo(stationLayer);
-                        marker.pointsMarker = pointsMarker;
-                        var tooltip = L.tooltip({
-                            pane: 'overlayPane',
-                            permanent: true,
-                            offset: [0, -radius],
-                            direction: 'top',
-                            className: 'grid-label'
-                        }).setLatLng(marker.getLatLng()).setContent(station.name);
-                        tooltip.addTo(gridGroup);
-                    }
                     var pointsIcon = L.divIcon({
                         html: points(station.pts),
                         className: 'points-icon'
@@ -688,6 +689,7 @@ var Compass = window.Compass;
                     }
                     station.pct = pct;
                     marker.setStyle({
+                        weight: station.alerts.length > 0 ? 4 : 2,
                         fillColor: fillColor
                     });
                     var favorite = "&#x2605;";
