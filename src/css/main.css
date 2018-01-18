@@ -23,7 +23,7 @@ display: table-row
 }
 .station-cell {
 display: table-cell;
-padding: 7px 4px;
+padding: 5px;
 }
 .commute-split-cell .station-cell {
 display: table-cell;
@@ -32,7 +32,6 @@ vertical-align: middle;
 }
 .health {
 vertical-align: middle;
-font-size: 2em;
 line-height: 1em;
 }
 .health progress {
@@ -128,7 +127,8 @@ border-right: 1px solid black;
 .commute-header {
 background: gray;
 color: white;
-padding: 2px;
+padding: 1px;
+font-size: 0.9em;
 }
 @media (min-width: 700px) {
     body {
