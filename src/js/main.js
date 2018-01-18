@@ -486,9 +486,9 @@ var Compass = window.Compass;
     $("#map").on("click", ".favorite-toggle", function() {
         var stationId = $(this).attr("data-id");
         if (toggleFavorite(stationId)) {
-            $(this).html("&#x2606;");
+            $(this).html("&#x1F494;");
         } else {
-            $(this).html("&#x2605;");
+            $(this).html("&#x2764;&#xFE0F;");
         }
     }).on("click", ".location-toggle", function() {
         var stationId = $(this).attr("data-id");
@@ -598,9 +598,9 @@ var Compass = window.Compass;
                         weight: station.alerts.length > 0 ? 4 : 2,
                         fillColor: fillColor
                     });
-                    var favorite = "&#x2605;";
+                    var favorite = "&#x2764;&#xFE0F;";
                     if (favorites[station.id]) {
-                        favorite = "&#x2606;";
+                        favorite = "&#x1F494;";
                     }
                     marker.setPopupContent("<strong>" + station.name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(station.alerts) + "<br><button class='favorite-toggle' data-id='" + station.id + "'>" + favorite + "</button><button class='location-toggle' data-type='home' data-id='" + station.id + "'>&#x1F3E0;</button><button class='location-toggle' data-type='work' data-id='" + station.id + "'>&#x1F3E2;</button>")
                 }
@@ -785,7 +785,7 @@ var Compass = window.Compass;
         } else if (favoriteStatus == 2) {
             favorite = "&#x1F3E0; ";
         } else if (favoriteStatus == 1) {
-            favorite = "&#x2605; ";
+            favorite = "&#x2764;&#xFE0F; ";
         }
 
         return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='health station-cell'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><div class='name'>" + favorite + station.name + "</div>" + "<div class='detail'>" + pad(station.bikes) + " bikes" + bikePoints + " | " + pad(station.docks) + " docks" + dockPoints + " | " + distance + " " + bearing + " | " + lastMod + "</div>" + alerts + "</div></div></div>";
@@ -878,6 +878,9 @@ var Compass = window.Compass;
 
                         for (var i in effectiveStations) {
                             var station = effectiveStations[i];
+                            if (station.type == 'bike') {
+                                continue;
+                            }
                             if (geo.delta(home.lat, home.lng, station.lat, station.lon).distance < radius) {
                                 homeStations.push(station);
                             }
