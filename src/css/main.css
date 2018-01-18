@@ -25,13 +25,21 @@ display: table-row
 display: table-cell;
 padding: 7px 4px;
 }
+.commute-split-cell .station-cell {
+display: table-cell;
+padding: 2px;
+vertical-align: middle;
+}
 .health {
 vertical-align: middle;
 font-size: 2em;
 line-height: 1em;
 }
 .health progress {
-width: 50px
+width: 50px;
+}
+.commute-split-cell progress {
+width: 20px;
 }
 .inactive {
 text-decoration: line-through;
@@ -40,6 +48,9 @@ color: red
 .name {
 font-size: 1.2em;
 font-weight: bold;
+}
+.commute-split-cell .station-cell {
+font-size: 0.8em;
 }
 .detail {
 font-size: 0.8em;
@@ -104,6 +115,20 @@ overflow: auto;
 }
 #app-name {
 display: none
+}
+.commute-split {
+width: 100%;
+display: table;
+}
+.commute-split-cell {
+width: 50%;
+display: table-cell;
+border-right: 1px solid black;
+}
+.commute-header {
+background: gray;
+color: white;
+padding: 2px;
 }
 @media (min-width: 700px) {
     body {

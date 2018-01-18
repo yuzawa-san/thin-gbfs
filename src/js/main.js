@@ -111,6 +111,18 @@ var Compass = window.Compass;
         localStorage.setItem('filter', filter);
         document.getElementById("content-scroll-inner").scrollTop = 0;
     });
+    var $commute = $("#toggle-commute");
+    $commute.click(function() {
+        if ($commute.hasClass("active")) {
+            $commute.removeClass("active");
+            localStorage.removeItem('commute');
+        } else {
+            $commute.addClass("active");
+            localStorage.setItem('commute', 1);
+            document.getElementById("content-scroll-inner").scrollTop = 0;
+        }
+        draw();
+    });
 
     var baseSelection = desktop ? "retina" : "default";
     try {
@@ -121,6 +133,9 @@ var Compass = window.Compass;
         var selectedBase = localStorage.getItem("base");
         if (selectedBase) {
             baseSelection = selectedBase;
+        }
+        if (localStorage.getItem("commute")) {
+            $commute.addClass("active");
         }
     } catch (e) {}
     var subdomain = 'a';
@@ -475,12 +490,31 @@ var Compass = window.Compass;
         } else {
             $(this).html("&#x2605;");
         }
+    }).on("click", ".location-toggle", function() {
+        var stationId = $(this).attr("data-id");
+        var type = $(this).attr("data-type");
+        var value = localStorage.getItem("fave_" + systemId + "_" + type);
+        if (value == stationId) {
+            localStorage.removeItem("fave_" + systemId + "_" + type);
+        } else {
+            localStorage.setItem("fave_" + systemId + "_" + type, stationId);
+            alert(type + " is set.");
+        }
+        draw();
     });
 
     function getFavorites() {
         var faves = localStorage.getItem("fave_" + systemId);
         if (faves) {
             faves = JSON.parse(faves);
+            var home = localStorage.getItem("fave_" + systemId + "_home");
+            if (home) {
+                faves[home] = 2;
+            }
+            var work = localStorage.getItem("fave_" + systemId + "_work");
+            if (work) {
+                faves[work] = 3;
+            }
         } else {
             faves = {};
         }
@@ -568,7 +602,7 @@ var Compass = window.Compass;
                     if (favorites[station.id]) {
                         favorite = "&#x2606;";
                     }
-                    marker.setPopupContent("<strong>" + station.name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(station.alerts) + "<br><button class='favorite-toggle' data-id='" + station.id + "'>" + favorite + "</button>")
+                    marker.setPopupContent("<strong>" + station.name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(station.alerts) + "<br><button class='favorite-toggle' data-id='" + station.id + "'>" + favorite + "</button><button class='location-toggle' data-type='home' data-id='" + station.id + "'>&#x1F3E0;</button><button class='location-toggle' data-type='work' data-id='" + station.id + "'>&#x1F3E2;</button>")
                 }
                 stations = stationList;
 
@@ -745,11 +779,36 @@ var Compass = window.Compass;
             dockPoints = ", <span class='points-drop'>" + pts + "pts</span>";
         }
         var favorite = "";
-        if (favorites[station.id]) {
+        var favoriteStatus = favorites[station.id];
+        if (favoriteStatus == 3) {
+            favorite = "&#x1F3E2; ";
+        } else if (favoriteStatus == 2) {
+            favorite = "&#x1F3E0; ";
+        } else if (favoriteStatus == 1) {
             favorite = "&#x2605; ";
         }
 
         return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='health station-cell'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><div class='name'>" + favorite + station.name + "</div>" + "<div class='detail'>" + pad(station.bikes) + " bikes" + bikePoints + " | " + pad(station.docks) + " docks" + dockPoints + " | " + distance + " " + bearing + " | " + lastMod + "</div>" + alerts + "</div></div></div>";
+    }
+
+    function commuteStationRow(station, favorites) {
+        var bikePoints = "";
+        var dockPoints = "";
+        var pts = station.pts;
+        if (pts < 0) {
+            bikePoints = ", <span class='points-pick'>" + (-pts) + "pts</span>";
+        } else if (pts > 0) {
+            dockPoints = ", <span class='points-drop'>" + pts + "pts</span>";
+        }
+
+        var favorite = "";
+        var favoriteStatus = favorites[station.id];
+        if (favoriteStatus == 3) {
+            favorite = "&#x1F3E2; ";
+        } else if (favoriteStatus == 2) {
+            favorite = "&#x1F3E0; ";
+        }
+        return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='station-cell'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><strong>" + favorite + station.name + "</strong> " + bikePoints + dockPoints + "</div></div></div>";
     }
 
     var lastRender = 0;
@@ -785,20 +844,63 @@ var Compass = window.Compass;
                 }
                 return status;
             });
-            var nearestStations = geo.nearby(lat, lon, effectiveStations, 25);
-            $stationList.empty();
-            if (nearestStations.length === 0 && filter == "fave") {
-                $stationList.append("<p class='message'>No Favorites<br><em>Click a station on map or double click a station in list to mark it as favorite.</em></p>");
-            }
-            for (var i in nearestStations) {
-                var station = nearestStations[i];
-                var $row = $(stationRow(station, favorites));
-                $row.click(function() {
-                    var marker = markerMap[$(this).attr('data-id')];
-                    map.setView(marker.getLatLng(), map.getZoom());
-                    markerAnimation(marker);
-                });
-                $stationList.append($row);
+            if (effectiveStations.length === 0 && filter == "fave") {
+                $stationList.html("<p class='message'>No Favorites<br><em>Click a station on map to mark it as favorite.</em></p>");
+            } else {
+                $stationList.empty();
+
+                function renderStations($elem, nearestStations, renderRow) {
+                    for (var i in nearestStations) {
+                        var station = nearestStations[i];
+                        var $row = $(renderRow(station, favorites));
+                        $row.click(function() {
+                            var marker = markerMap[$(this).attr('data-id')];
+                            map.setView(marker.getLatLng(), map.getZoom());
+                            markerAnimation(marker);
+                        });
+                        $elem.append($row);
+                    }
+                }
+
+
+                if ($commute.hasClass("active")) {
+                    var home = localStorage.getItem("fave_" + systemId + "_home");
+                    var work = localStorage.getItem("fave_" + systemId + "_work");
+                    if (home && work) {
+                        home = markerMap[home].getLatLng();
+                        work = markerMap[work].getLatLng();
+
+                        var radius = geo.delta(home.lat, home.lng, work.lat, work.lng).distance / 3;
+
+                        var nearbyStations = geo.nearby(lat, lon, effectiveStations, 25);
+                        var homeStations = [];
+                        var workStations = [];
+
+                        for (var i in effectiveStations) {
+                            var station = effectiveStations[i];
+                            if (geo.delta(home.lat, home.lng, station.lat, station.lon).distance < radius) {
+                                homeStations.push(station);
+                            }
+                            if (geo.delta(work.lat, work.lng, station.lat, station.lon).distance < radius) {
+                                workStations.push(station);
+                            }
+                        }
+
+                        var $commuteSplit = $("<div class='commute-split' />");
+                        var $commuteHome = $("<div class='commute-split-cell'><div class='commute-header'>&#x1F3E0; Near Home</div></div>");
+                        var $commuteWork = $("<div class='commute-split-cell'><div class='commute-header'>&#x1F3E2; Near Work</div></div>");
+
+                        renderStations($commuteHome, geo.nearby(lat, lon, homeStations, 15), commuteStationRow);
+                        renderStations($commuteWork, geo.nearby(lat, lon, workStations, 15), commuteStationRow);
+                        $stationList.append($commuteSplit.append($commuteHome).append($commuteWork));
+                    } else {
+                        $stationList.html("<p class='message'>Home &amp; Work not set<br><em>Click the closest stations to your home and work on map to mark them.</em></p>");
+                    }
+
+                } else {
+                    var nearbyStations = geo.nearby(lat, lon, effectiveStations, 25);
+                    renderStations($stationList, nearbyStations, stationRow);
+                }
             }
             if (lastRender === 0) {
                 populateMap();
