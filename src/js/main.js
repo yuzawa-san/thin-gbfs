@@ -206,6 +206,7 @@ var Compass = window.Compass;
     }).addTo(map);
 
     var $systemList = $("#system-list");
+    var $systemsHidden = $(".system-list-disabled");
     var oldCenter = null;
     var oldZoom = null;
     var systemZoom = 6;
@@ -221,6 +222,7 @@ var Compass = window.Compass;
                 previewLayer.remove();
             }
             $stationList.show();
+            $systemsHidden.removeClass("disabled");
         } else {
             stationLayer.remove();
             bikeLayer.remove();
@@ -231,6 +233,7 @@ var Compass = window.Compass;
             $toggle.addClass("active");
             $systemList.show();
             $stationList.hide();
+            $systemsHidden.addClass("disabled");
             document.getElementById("content-scroll-inner").scrollTop = 0;
         }
     });

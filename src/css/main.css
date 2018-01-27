@@ -191,6 +191,13 @@ background-image: none;
 outline: 0;
 background-color: #ccc;
 }
+#selector div.disabled {
+pointer-events: none;
+color: rgba(0,0,0,0.4);
+background-image: none;
+outline: 0;
+background-color: #eee;
+}
 #system-search-container {
 text-align: center;
 }
