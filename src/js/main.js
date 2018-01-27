@@ -523,7 +523,12 @@ var Compass = window.Compass;
     }
 
     function toggleFavorite(id) {
-        var faves = getFavorites();
+        var faves = localStorage.getItem("fave_" + systemId);
+        if (faves) {
+            faves = JSON.parse(faves);
+        } else {
+            faves = {};
+        }
         if (faves[id]) {
             delete faves[id];
         } else {
