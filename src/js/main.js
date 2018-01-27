@@ -882,10 +882,15 @@ var Compass = window.Compass;
                             if (station.type == 'bike') {
                                 continue;
                             }
-                            if (geo.delta(home.lat, home.lng, station.lat, station.lon).distance < radius) {
+                            var delta;
+                            delta = geo.delta(home.lat, home.lng, station.lat, station.lon).distance;
+                            if (delta < radius) {
+                                station.commuteDistance = delta;
                                 homeStations.push(station);
                             }
-                            if (geo.delta(work.lat, work.lng, station.lat, station.lon).distance < radius) {
+                            delta = geo.delta(work.lat, work.lng, station.lat, station.lon).distance;
+                            if (delta < radius) {
+                                station.commuteDistance = delta;
                                 workStations.push(station);
                             }
                         }
@@ -894,8 +899,11 @@ var Compass = window.Compass;
                         var $commuteHome = $("<div class='commute-split-cell'><div class='commute-header'>&#x1F3E0; Near Home</div></div>");
                         var $commuteWork = $("<div class='commute-split-cell'><div class='commute-header'>&#x1F3E2; Near Work</div></div>");
 
-                        renderStations($commuteHome, geo.nearby(lat, lon, homeStations, 15), commuteStationRow);
-                        renderStations($commuteWork, geo.nearby(lat, lon, workStations, 15), commuteStationRow);
+                        function commuteSort(a, b) {
+                            return a.commuteDistance - b.commuteDistance;
+                        }
+                        renderStations($commuteHome, homeStations.sort(commuteSort).slice(0, 15), commuteStationRow);
+                        renderStations($commuteWork, workStations.sort(commuteSort).slice(0, 15), commuteStationRow);
                         $stationList.append($commuteSplit.append($commuteHome).append($commuteWork));
                     } else {
                         $stationList.html("<p class='message'>Home &amp; Work not set<br><em>Click the closest stations to your home and work on map to mark them.</em></p>");
