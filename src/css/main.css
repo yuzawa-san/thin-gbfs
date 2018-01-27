@@ -45,12 +45,6 @@ width: 50px;
 .commute-split-cell .health {
 width: 20px;
 }
-.commute-split-cell .points-pick {
-text-align: right;
-}
-.commute-split-cell .points-drop {
-text-align: right;
-}
 .inactive {
 text-decoration: line-through;
 color: red
@@ -61,6 +55,14 @@ font-weight: bold;
 }
 .commute-split-cell .station-cell {
 font-size: 0.8em;
+}
+.commute-split-cell .points-pick {
+text-align: right;
+font-size: 0.7em;
+}
+.commute-split-cell .points-drop {
+text-align: right;
+font-size: 0.7em;
 }
 .detail {
 font-size: 0.8em;
