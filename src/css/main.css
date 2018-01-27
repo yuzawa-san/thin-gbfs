@@ -40,10 +40,10 @@ width: 50px;
 width: 20px;
 }
 .commute-split-cell .points-pick {
-text-align:right;
+text-align: right;
 }
 .commute-split-cell .points-drop {
-text-align:right;
+text-align: right;
 }
 .inactive {
 text-decoration: line-through;
@@ -209,7 +209,7 @@ vertical-align: middle;
 display: inline-block;
 }
 progress {
-width:100%;
+width: 100%;
 }
 progress[value] {
 -webkit-appearance: none;
