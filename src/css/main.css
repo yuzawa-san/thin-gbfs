@@ -19,7 +19,8 @@ cursor: pointer;
 background-color: #FDF5F1;
 }
 .station-body {
-display: table-row
+width: 100%;
+display: table;
 }
 .station-cell {
 display: table-cell;
@@ -33,12 +34,16 @@ vertical-align: middle;
 .health {
 vertical-align: middle;
 line-height: 1em;
-}
-.health progress {
 width: 50px;
 }
-.commute-split-cell progress {
+.commute-split-cell .health {
 width: 20px;
+}
+.commute-split-cell .points-pick {
+text-align:right;
+}
+.commute-split-cell .points-drop {
+text-align:right;
 }
 .inactive {
 text-decoration: line-through;
@@ -59,7 +64,6 @@ color: gray;
 color: red
 }
 .bike .health {
-width: 50px;
 font-size: 1.0em;
 line-height: 1.0em;
 text-align: center;
@@ -203,6 +207,9 @@ font-size: 0.8em;
 #progress-indicator {
 vertical-align: middle;
 display: inline-block;
+}
+progress {
+width:100%;
 }
 progress[value] {
 -webkit-appearance: none;

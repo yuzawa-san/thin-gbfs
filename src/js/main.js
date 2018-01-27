@@ -794,7 +794,7 @@ var Compass = window.Compass;
             favorite = "&#x2764;&#xFE0F; ";
         }
 
-        return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='health station-cell'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><div class='name'>" + favorite + station.name + "</div>" + "<div class='detail'>" + pad(station.bikes) + " bikes" + bikePoints + " | " + pad(station.docks) + " docks" + dockPoints + " | " + distance + " " + bearing + " | " + lastMod + "</div>" + alerts + "</div></div></div>";
+        return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='station-cell health'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><div class='name'>" + favorite + station.name + "</div>" + "<div class='detail'>" + pad(station.bikes) + " bikes" + bikePoints + " | " + pad(station.docks) + " docks" + dockPoints + " | " + distance + " " + bearing + " | " + lastMod + "</div>" + alerts + "</div></div></div>";
     }
 
     function commuteStationRow(station, favorites) {
@@ -802,9 +802,9 @@ var Compass = window.Compass;
         var dockPoints = "";
         var pts = station.pts;
         if (pts < 0) {
-            bikePoints = ", <span class='points-pick'>" + (-pts) + "pts</span>";
+            bikePoints = "<div class='station-cell points-pick'>" + (-pts) + "pts</div>";
         } else if (pts > 0) {
-            dockPoints = ", <span class='points-drop'>" + pts + "pts</span>";
+            dockPoints = "<div class='station-cell points-drop'>" + pts + "pts</div>";
         }
 
         var favorite = "";
@@ -814,7 +814,7 @@ var Compass = window.Compass;
         } else if (favoriteStatus == 2) {
             favorite = "&#x1F3E0; ";
         }
-        return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='station-cell'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><strong>" + favorite + station.name + "</strong> " + bikePoints + dockPoints + "</div></div></div>";
+        return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='station-cell health'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><strong>" + favorite + station.name + "</strong></div>" + bikePoints + dockPoints + "</div></div>";
     }
 
     var lastRender = 0;
