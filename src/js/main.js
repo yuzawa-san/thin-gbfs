@@ -341,7 +341,7 @@ var Compass = window.Compass;
                 systemMarker.addTo(systemsLayer);
                 var distance = geo.getDistanceString(nearbySystem.distance);
                 var bearing = geo.cardinalDirection(nearbySystem.bearing);
-                var $systemRow = $("<div class='station'><div class='station-body'><div class='health station-cell'>" + emoji + "</div><div class='station-cell'><div class='name'>" + nearbySystem.city + selector + "</div>" + "<div class='detail'>" + distance + " " + bearing + " | " + nearbySystem.name + "</div></div></div></div></div>");
+                var $systemRow = $("<div class='station'><div class='station-body'><div class='station-cell flag'>" + emoji + "</div><div class='station-cell'><div class='name'>" + nearbySystem.city + selector + "</div>" + "<div class='detail'>" + distance + " " + bearing + " | " + nearbySystem.name + "</div></div></div></div></div>");
                 $systemRow.click((function(selectedMarker) {
                     return function(e) {
                         if (e.target.nodeName == "BUTTON") {

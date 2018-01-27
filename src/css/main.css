@@ -26,6 +26,12 @@ display: table;
 display: table-cell;
 padding: 5px;
 }
+.flag {
+vertical-align: middle;
+font-size: 2em;
+line-height: 1em;
+width: 25px;
+}
 .commute-split-cell .station-cell {
 display: table-cell;
 padding: 2px;
@@ -193,10 +199,7 @@ background-color: #ccc;
 }
 #selector div.disabled {
 pointer-events: none;
-color: rgba(0,0,0,0.4);
-background-image: none;
-outline: 0;
-background-color: #eee;
+opacity: 0.5;
 }
 #system-search-container {
 text-align: center;
