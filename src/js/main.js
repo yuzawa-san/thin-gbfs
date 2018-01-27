@@ -439,9 +439,10 @@ var Compass = window.Compass;
                         var marker = L.circleMarker([station.lat, station.lon], {
                             radius: radius,
                             color: "rgb(253,77,2)",
-                            fillColor: "rgb(253,77,2)",
+                            fillColor: "#999",
                             weight: 2,
-                            fillOpacity: 1.0
+                            opacity: 0.2,
+                            fillOpacity: 0.2
                         });
                         markerMap[stationId] = marker;
                         marker.bindPopup(station.name, {
