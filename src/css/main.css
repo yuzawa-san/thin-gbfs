@@ -182,10 +182,10 @@ padding: 10px;
 }
 .button {
 display: inline-block;
-min-width: 20px;
+min-width: 25px;
 padding: 5px;
-font-size: 14px;
-line-height: 20px;
+font-size: 20px;
+line-height: 25px;
 color: #333;
 text-align: center;
 text-shadow: 0 1px 1px rgba(255,255,255,0.75);
