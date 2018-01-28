@@ -6,9 +6,6 @@ skip_files:
 - ^\.git$
 
 handlers:
-- url: /(robots\.txt)
-  static_files: \1
-  upload: (robots\.txt)
 - url: /dist/images
   expiration: 1d
   static_dir: dist/images
