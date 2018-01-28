@@ -878,7 +878,31 @@ var Compass = window.Compass;
                     var home = localStorage.getItem("fave_" + systemId + "_home");
                     var work = localStorage.getItem("fave_" + systemId + "_work");
                     var commuteToHome = localStorage.getItem("commute_direction") == "1";
-                    if (home && work) {
+                    var $commuteSplit = $("<div class='commute-split' />");
+                    var $commuteHome = $("<div class='commute-split-cell' />");
+                    var $commuteWork = $("<div class='commute-split-cell' />");
+                    var $commuteHeader = $("<div class='commute-header' />");
+                    var $commuteSwitch = $("<div class='button'>&#x27A1;&#xFE0F;</div>").click(function() {
+                        if (commuteToHome) {
+                            localStorage.setItem("commute_direction", "0");
+                        } else {
+                            localStorage.setItem("commute_direction", "1");
+                        }
+                        draw();
+                    });
+                    if (commuteToHome) {
+                        $commuteHeader.append("<div class='icon'>&#x1F3E2;</div>");
+                        $commuteHeader.append($commuteSwitch)
+                        $commuteHeader.append("<div class='icon'>&#x1F3E0;</div>");
+                        $commuteSplit.append($commuteWork).append($commuteHome);
+                    } else {
+                        $commuteHeader.append("<div class='icon'>&#x1F3E0;</div>");
+                        $commuteHeader.append($commuteSwitch);
+                        $commuteHeader.append("<div class='icon'>&#x1F3E2;</div>");
+                        $commuteSplit.append($commuteHome).append($commuteWork)
+                    }
+                    $stationList.append($commuteHeader).append($commuteSplit);
+                    if (markerMap[home] && markerMap[work]) {
                         home = markerMap[home].getLatLng();
                         work = markerMap[work].getLatLng();
 
@@ -913,38 +937,18 @@ var Compass = window.Compass;
                             }
                         }
 
-                        var $commuteSplit = $("<div class='commute-split' />");
-                        var $commuteHome = $("<div class='commute-split-cell' />");
-                        var $commuteWork = $("<div class='commute-split-cell' />");
-                        var $commuteHeader = $("<div class='commute-header' />");
-                        var $commuteSwitch = $("<div class='button'>&#x2194;&#xFE0F;</div>").click(function() {
-                            if (commuteToHome) {
-                                localStorage.setItem("commute_direction", "0");
-                            } else {
-                                localStorage.setItem("commute_direction", "1");
-                            }
-                            draw();
-                        });
-                        if (commuteToHome) {
-                            $commuteHeader.append("<div class='icon'>&#x1F3E2;</div>");
-                            $commuteHeader.append($commuteSwitch)
-                            $commuteHeader.append("<div class='icon'>&#x1F3E0;</div>");
-                            $commuteSplit.append($commuteWork).append($commuteHome);
-                        } else {
-                            $commuteHeader.append("<div class='icon'>&#x1F3E0;</div>");
-                            $commuteHeader.append($commuteSwitch);
-                            $commuteHeader.append("<div class='icon'>&#x1F3E2;</div>");
-                            $commuteSplit.append($commuteHome).append($commuteWork)
-                        }
-
                         function commuteSort(a, b) {
                             return a.commuteDistance - b.commuteDistance;
                         }
                         renderStations($commuteHome, homeStations.sort(commuteSort).slice(0, 15), commuteStationRow);
                         renderStations($commuteWork, workStations.sort(commuteSort).slice(0, 15), commuteStationRow);
-                        $stationList.append($commuteHeader).append($commuteSplit);
                     } else {
-                        $stationList.html("<p class='message'>Home &amp; Work not set<br><em>Click the closest stations to your home and work on map to mark them.</em></p>");
+                        if (!markerMap[home]) {
+                            $commuteHome.append("<p class='message'>Home not set<br><em>Click the closest station to your home on map to mark it as your home station.</em></p>");
+                        }
+                        if (!markerMap[work]) {
+                            $commuteWork.append("<p class='message'>Work not set<br><em>Click the closest station to your work on map to mark it as your work station.</em></p>");
+                        }
                     }
 
                 } else {
