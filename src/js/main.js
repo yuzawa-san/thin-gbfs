@@ -611,7 +611,7 @@ var Compass = window.Compass;
                     if (favorites[station.id]) {
                         favorite = "&#x1F494;";
                     }
-                    marker.setPopupContent("<strong>" + station.name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(station.alerts) + "<br><button class='favorite-toggle' data-id='" + station.id + "'>" + favorite + "</button><button class='location-toggle' data-type='home' data-id='" + station.id + "'>&#x1F3E0;</button><button class='location-toggle' data-type='work' data-id='" + station.id + "'>&#x1F3E2;</button>")
+                    marker.setPopupContent("<strong>" + station.name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(station.alerts) + "<br><div class='button favorite-toggle' data-id='" + station.id + "'>" + favorite + "</div><div class='button location-toggle' data-type='home' data-id='" + station.id + "'>&#x1F3E0;</div><div class='button location-toggle' data-type='work' data-id='" + station.id + "'>&#x1F3E2;</div>")
                 }
                 stations = stationList;
 
