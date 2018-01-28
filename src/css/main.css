@@ -130,7 +130,6 @@ display: none
 .commute-split {
 width: 100%;
 display: table;
-border-top: 1px solid black;
 border-bottom: 1px solid black;
 }
 .commute-split-cell {
@@ -138,17 +137,16 @@ width: 50%;
 display: table-cell;
 border-right: 1px solid black;
 }
-.commute-header {
-background: gray;
-color: white;
-padding: 1px;
-text-align: center;
+#commute-header {
+padding-top:3px;
+display:none;
 }
-.commute-header .icon {
+#commute-header .icon {
 font-size: 20px;
 padding: 0px 15px;
 display: inline-block;
 vertical-align: middle;
+text-shadow: 0px 0px 5px white;
 }
 @media (min-width: 700px) {
     body {
@@ -207,7 +205,7 @@ background-image: none;
 outline: 0;
 background-color: #ccc;
 }
-.button.disabled {
+.disabled {
 pointer-events: none;
 opacity: 0.5;
 }
