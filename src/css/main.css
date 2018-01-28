@@ -138,8 +138,8 @@ display: table-cell;
 border-right: 1px solid black;
 }
 #commute-header {
-padding-top:3px;
-display:none;
+padding-top: 3px;
+display: none;
 }
 #commute-header .icon {
 font-size: 20px;
