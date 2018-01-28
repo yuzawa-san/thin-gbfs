@@ -123,6 +123,16 @@ var Compass = window.Compass;
         }
         draw();
     });
+    $("#commute-switch").click(function() {
+        if (localStorage.getItem("commute_direction") == "1") {
+            localStorage.setItem("commute_direction", "0");
+        } else {
+            localStorage.setItem("commute_direction", "1");
+        }
+        draw();
+    });
+    var $commuteFrom = $("#commute-from");
+    var $commuteTo = $("#commute-to");
 
     var baseSelection = desktop ? "retina" : "default";
     try {
@@ -881,24 +891,14 @@ var Compass = window.Compass;
                     var $commuteSplit = $("<div class='commute-split' />");
                     var $commuteHome = $("<div class='commute-split-cell' />");
                     var $commuteWork = $("<div class='commute-split-cell' />");
-                    var $commuteSwitch = $("<div class='button system-list-disabled'>&#x27A1;&#xFE0F;</div>").click(function() {
-                        if (commuteToHome) {
-                            localStorage.setItem("commute_direction", "0");
-                        } else {
-                            localStorage.setItem("commute_direction", "1");
-                        }
-                        draw();
-                    });
-                    $commuteHeader.empty().show();
+                    $commuteHeader.show();
                     if (commuteToHome) {
-                        $commuteHeader.append("<div class='icon system-list-disabled'>&#x1F3E2;</div>");
-                        $commuteHeader.append($commuteSwitch)
-                        $commuteHeader.append("<div class='icon system-list-disabled'>&#x1F3E0;</div>");
+                        $commuteFrom.html("&#x1F3E2;");
+                        $commuteTo.html("&#x1F3E0;");
                         $commuteSplit.append($commuteWork).append($commuteHome);
                     } else {
-                        $commuteHeader.append("<div class='icon system-list-disabled'>&#x1F3E0;</div>");
-                        $commuteHeader.append($commuteSwitch);
-                        $commuteHeader.append("<div class='icon system-list-disabled'>&#x1F3E2;</div>");
+                        $commuteFrom.html("&#x1F3E0;");
+                        $commuteTo.html("&#x1F3E2;");
                         $commuteSplit.append($commuteHome).append($commuteWork)
                     }
                     $stationList.append($commuteSplit);
