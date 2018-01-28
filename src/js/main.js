@@ -816,6 +816,8 @@ var Compass = window.Compass;
             favorite = "&#x1F3E2; ";
         } else if (favoriteStatus == 2) {
             favorite = "&#x1F3E0; ";
+        } else if (filter != "fave" && favoriteStatus == 1) {
+            favorite = "&#x2764;&#xFE0F; ";
         }
         return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='station-cell health'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><strong>" + favorite + station.name + "</strong></div>" + bikePoints + dockPoints + "</div></div>";
     }
@@ -875,6 +877,7 @@ var Compass = window.Compass;
                 if ($commute.hasClass("active")) {
                     var home = localStorage.getItem("fave_" + systemId + "_home");
                     var work = localStorage.getItem("fave_" + systemId + "_work");
+                    var commuteToHome = localStorage.getItem("commute_direction") == "1";
                     if (home && work) {
                         home = markerMap[home].getLatLng();
                         work = markerMap[work].getLatLng();
@@ -885,34 +888,61 @@ var Compass = window.Compass;
                         var homeStations = [];
                         var workStations = [];
 
-                        for (var i in effectiveStations) {
-                            var station = effectiveStations[i];
+                        for (var i in stations) {
+                            var station = stations[i];
                             if (station.type == 'bike') {
+                                continue;
+                            }
+                            if (filter == "fave" && !favorites[station.id]) {
                                 continue;
                             }
                             var delta;
                             delta = geo.delta(home.lat, home.lng, station.lat, station.lon).distance;
                             if (delta < radius) {
                                 station.commuteDistance = delta;
-                                homeStations.push(station);
+                                if ((!commuteToHome && (station.pct > 0.05)) || (commuteToHome && (station.pct < 0.95))) {
+                                    homeStations.push(station);
+                                }
                             }
                             delta = geo.delta(work.lat, work.lng, station.lat, station.lon).distance;
                             if (delta < radius) {
                                 station.commuteDistance = delta;
-                                workStations.push(station);
+                                if ((commuteToHome && (station.pct > 0.05)) || (!commuteToHome && (station.pct < 0.95))) {
+                                    workStations.push(station);
+                                }
                             }
                         }
 
                         var $commuteSplit = $("<div class='commute-split' />");
-                        var $commuteHome = $("<div class='commute-split-cell'><div class='commute-header'>&#x1F3E0; Near Home</div></div>");
-                        var $commuteWork = $("<div class='commute-split-cell'><div class='commute-header'>&#x1F3E2; Near Work</div></div>");
+                        var $commuteHome = $("<div class='commute-split-cell' />");
+                        var $commuteWork = $("<div class='commute-split-cell' />");
+                        var $commuteHeader = $("<div class='commute-header' />");
+                        var $commuteSwitch = $("<div class='button'>&#x2194;&#xFE0F;</div>").click(function() {
+                            if (commuteToHome) {
+                                localStorage.setItem("commute_direction", "0");
+                            } else {
+                                localStorage.setItem("commute_direction", "1");
+                            }
+                            draw();
+                        });
+                        if (commuteToHome) {
+                            $commuteHeader.append("<div class='icon'>&#x1F3E2;</div>");
+                            $commuteHeader.append($commuteSwitch)
+                            $commuteHeader.append("<div class='icon'>&#x1F3E0;</div>");
+                            $commuteSplit.append($commuteWork).append($commuteHome);
+                        } else {
+                            $commuteHeader.append("<div class='icon'>&#x1F3E0;</div>");
+                            $commuteHeader.append($commuteSwitch);
+                            $commuteHeader.append("<div class='icon'>&#x1F3E2;</div>");
+                            $commuteSplit.append($commuteHome).append($commuteWork)
+                        }
 
                         function commuteSort(a, b) {
                             return a.commuteDistance - b.commuteDistance;
                         }
                         renderStations($commuteHome, homeStations.sort(commuteSort).slice(0, 15), commuteStationRow);
                         renderStations($commuteWork, workStations.sort(commuteSort).slice(0, 15), commuteStationRow);
-                        $stationList.append($commuteSplit.append($commuteHome).append($commuteWork));
+                        $stationList.append($commuteHeader).append($commuteSplit);
                     } else {
                         $stationList.html("<p class='message'>Home &amp; Work not set<br><em>Click the closest stations to your home and work on map to mark them.</em></p>");
                     }

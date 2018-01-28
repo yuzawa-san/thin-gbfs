@@ -130,6 +130,8 @@ display: none
 .commute-split {
 width: 100%;
 display: table;
+border-top: 1px solid black;
+border-bottom: 1px solid black;
 }
 .commute-split-cell {
 width: 50%;
@@ -140,7 +142,13 @@ border-right: 1px solid black;
 background: gray;
 color: white;
 padding: 1px;
-font-size: 0.9em;
+text-align: center;
+}
+.commute-header .icon {
+font-size: 20px;
+padding: 0px 15px;
+display: inline-block;
+vertical-align: middle;
 }
 @media (min-width: 700px) {
     body {
@@ -172,7 +180,7 @@ font-size: 1.5em;
 .message {
 padding: 10px;
 }
-#selector div {
+.button {
 display: inline-block;
 min-width: 20px;
 padding: 5px;
@@ -194,12 +202,12 @@ border-bottom-color: #b3b3b3;
     -webkit-user-select: none; /* Safari */
             user-select: none;
 }
-#selector div.active {
+.button.active {
 background-image: none;
 outline: 0;
 background-color: #ccc;
 }
-#selector div.disabled {
+.button.disabled {
 pointer-events: none;
 opacity: 0.5;
 }
