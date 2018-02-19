@@ -240,6 +240,11 @@ progress[value]::-webkit-progress-value {
 background-color: rgb(253,77,2);
 border-radius: 2px;
 }
+.commute-label {
+font-size: 13px;
+padding: 1px !important;
+line-height: 13px;
+}
 .grid-label {
 font-size: 8px;
 padding: 1px !important;

@@ -27,6 +27,46 @@ var Compass = window.Compass;
         isFront = true;
     };
 
+    var commuteEmoji = [ // list of emoji
+    "1F3E0", // home
+    "1F3E2", // work
+    "1F498", // lover
+    "1F4AA", // gym
+    "1F46A", // family
+    "1F3BD", // other gym
+    "1F393", // school
+    "1F689", // metro station
+    "1F6A2", // ferry
+    "1F17F", // parking lot
+    "1F332", // park
+    "1F37A", // bar
+    "1F45C", // mall
+    "1F35E", // food store
+    "1F374", // restaurant
+    "26EA", // church 
+    ];
+
+    function htmlEmoji(emoji) {
+        return "&#x" + emoji + ";&#xFE0F;";
+    }
+
+    function commuteSelect(id) {
+        var locations = getCommuteLocations();
+        var out = "";
+        if (id) {
+            out += "<option value=''>" + htmlEmoji("26AA") + "</option>";
+        }
+        for (var i in commuteEmoji) {
+            var emoji = commuteEmoji[i];
+            out += "<option value='" + emoji + "'";
+            if (id && locations[emoji] == id) {
+                out += " selected";
+            }
+            out += ">" + htmlEmoji(emoji) + "</option>";
+        }
+        return out;
+    }
+
     var arrowUrl = URL.createObjectURL(new Blob(['<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><path id="arrow" fill="#007BFF" d="M 50,0 L 100,100 L 50,70 L 0,100" /></svg>'], {
         type: 'image/svg+xml'
     }));
@@ -123,16 +163,21 @@ var Compass = window.Compass;
         }
         draw();
     });
-    $("#commute-switch").click(function() {
-        if (localStorage.getItem("commute_direction") == "1") {
-            localStorage.setItem("commute_direction", "0");
-        } else {
-            localStorage.setItem("commute_direction", "1");
-        }
+    var $commuteFrom = $("#commute-from").change(saveCommute);
+    var $commuteTo = $("#commute-to").change(saveCommute);
+
+    function saveCommute() {
+        localStorage.setItem("commute_" + systemId + "_from", $commuteFrom.val());
+        localStorage.setItem("commute_" + systemId + "_to", $commuteTo.val());
         draw();
+    }
+    $("#commute-switch").click(function() {
+        var from = $commuteFrom.val();
+        var to = $commuteTo.val();
+        $commuteFrom.val(to);
+        $commuteTo.val(from);
+        saveCommute();
     });
-    var $commuteFrom = $("#commute-from");
-    var $commuteTo = $("#commute-to");
 
     var baseSelection = desktop ? "retina" : "default";
     try {
@@ -329,7 +374,7 @@ var Compass = window.Compass;
                     system = nearbySystem;
                     map.setView([nearbySystem.lat, nearbySystem.lon], map.getZoom());
                 }
-                var emoji = "&#x1F307;";
+                var emoji = htmlEmoji("1F307");
                 var isoMatch = nearbySystem.city.match(/, ([A-Z]{2})$/);
                 if (isoMatch) {
                     var emojiFlag = emojiFlags.countryCode(isoMatch[1]);
@@ -439,6 +484,7 @@ var Compass = window.Compass;
                 $toggle.trigger('click');
             } else {
                 systemId = system.id;
+                populateCommuteList();
                 timerStart("system-info");
                 $.get("/systems/" + systemId + "/info", function(response, status, xhr) {
                     timerEnd("system-info", xhr);
@@ -497,38 +543,94 @@ var Compass = window.Compass;
 
     var lastFetch = 0;
 
+    var commuteLocationTooltips = {};
+
     $("#map").on("click", ".favorite-toggle", function() {
         var stationId = $(this).attr("data-id");
         if (toggleFavorite(stationId)) {
-            $(this).html("&#x1F494;");
+            $(this).html(htmlEmoji("1F494"));
         } else {
-            $(this).html("&#x2764;&#xFE0F;");
+            $(this).html(htmlEmoji("2764"));
         }
-    }).on("click", ".location-toggle", function() {
+    }).on("change", ".commute-location-select", function() {
         var stationId = $(this).attr("data-id");
-        var type = $(this).attr("data-type");
-        var value = localStorage.getItem("fave_" + systemId + "_" + type);
-        if (value == stationId) {
-            localStorage.removeItem("fave_" + systemId + "_" + type);
-        } else {
-            localStorage.setItem("fave_" + systemId + "_" + type, stationId);
-            alert(type + " is set.");
+        var type = $(this).val();
+        var locations = getCommuteLocations();
+        for (var i in locations) {
+            if (locations[i] == stationId) {
+                delete locations[i];
+                if (commuteLocationTooltips[i]) {
+                    commuteLocationTooltips[i].remove();
+                }
+            }
         }
+        if (type) {
+            locations[type] = stationId;
+        }
+        localStorage.setItem("commute_" + systemId, JSON.stringify(locations));
+        populateCommuteList();
         draw();
     });
+
+    function populateCommuteList() {
+        var optimalCommuteList = "";
+        var remainder = "";
+        // TODO: remove
+        migrateCommute();
+        var locations = getCommuteLocations();
+        for (var i in commuteEmoji) {
+            var emoji = commuteEmoji[i];
+            var row = "<option value='" + emoji + "'>" + htmlEmoji(emoji) + "</option>";
+            if (locations[emoji]) {
+                optimalCommuteList += row;
+            } else {
+                remainder += row;
+            }
+        }
+        if(!optimalCommuteList){
+            optimalCommuteList = remainder;
+        }else {
+            optimalCommuteList += "<option disabled>" + htmlEmoji("2796") + "</option>";
+            optimalCommuteList += remainder;
+        }
+        $commuteFrom.html(optimalCommuteList);
+        $commuteTo.html(optimalCommuteList);
+        $commuteFrom.val(localStorage.getItem("commute_" + systemId + "_from") || commuteEmoji[0]);
+        $commuteTo.val(localStorage.getItem("commute_" + systemId + "_to") || commuteEmoji[1]);
+    }
+
+    // TODO: remove
+
+    function migrateCommute() {
+        var home = localStorage.getItem("fave_" + systemId + "_home");
+        var work = localStorage.getItem("fave_" + systemId + "_work");
+        var locations = getCommuteLocations();
+        if (home) {
+            locations["1F3E0"] = home;
+            localStorage.removeItem("fave_" + systemId + "_home");
+        }
+        if (work) {
+            locations["1F3E2"] = work;
+            localStorage.removeItem("fave_" + systemId + "_work");
+        }
+        localStorage.setItem("commute_" + systemId, JSON.stringify(locations));
+        localStorage.removeItem("commute_direction");
+    }
+
+    function getCommuteLocations() {
+        var locations = localStorage.getItem("commute_" + systemId);
+        if (locations) {
+            locations = JSON.parse(locations);
+        } else {
+            locations = {};
+        }
+        return locations;
+    }
 
     function getFavorites() {
         var faves = localStorage.getItem("fave_" + systemId);
         if (faves) {
             faves = JSON.parse(faves);
-            var home = localStorage.getItem("fave_" + systemId + "_home");
-            if (home) {
-                faves[home] = 2;
-            }
-            var work = localStorage.getItem("fave_" + systemId + "_work");
-            if (work) {
-                faves[work] = 3;
-            }
         } else {
             faves = {};
         }
@@ -569,7 +671,6 @@ var Compass = window.Compass;
                     }
                 }
                 var stationList = [];
-                var favorites = getFavorites();
                 for (var i in statuses) {
                     var station = statuses[i];
                     var stationInfo = systemInfo.stationMap[station.id];
@@ -605,7 +706,7 @@ var Compass = window.Compass;
                     }
                     var pct = NaN;
                     var bikes = station.bikes;
-                    var docks = station.docks
+                    var docks = station.docks;
                     var total = bikes + docks;
                     var fillColor = "#999";
                     if (total > 0) {
@@ -617,11 +718,22 @@ var Compass = window.Compass;
                         weight: station.alerts.length > 0 ? 4 : 2,
                         fillColor: fillColor
                     });
-                    var favorite = "&#x2764;&#xFE0F;";
-                    if (favorites[station.id]) {
-                        favorite = "&#x1F494;";
-                    }
-                    marker.setPopupContent("<strong>" + station.name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(station.alerts) + "<br><div class='button favorite-toggle' data-id='" + station.id + "'>" + favorite + "</div><div class='button location-toggle' data-type='home' data-id='" + station.id + "'>&#x1F3E0;</div><div class='button location-toggle' data-type='work' data-id='" + station.id + "'>&#x1F3E2;</div>")
+                    var popupContent = function(station) {
+                            var id = station.id;
+                            var name = station.name;
+                            var alerts = station.alerts;
+                            var bikes = station.bikes;
+                            var docks = station.docks;
+                            return function() {
+                                var favorite = htmlEmoji("2764");
+                                var favorites = getFavorites();
+                                if (favorites[id]) {
+                                    favorite = htmlEmoji("1F494");
+                                }
+                                return "<table><tr><td><strong>" + name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(alerts) + "</td><td><div class='button favorite-toggle' data-id='" + id + "'>" + favorite + "</div></td></tr><tr><td>Commute Label:</td><td><select class='button commute-location-select' data-id=" + id + ">" + commuteSelect(id) + "</select></td></tr></table>";
+                            };
+                        }
+                    marker.bindPopup(popupContent(station));
                 }
                 stations = stationList;
 
@@ -780,11 +892,11 @@ var Compass = window.Compass;
         }
     }
 
-    function stationRow(station, favorites) {
+    function stationRow(station, favorites, commuteLocations) {
         var distance = geo.getDistanceString(station.distance);
         var bearing = geo.cardinalDirection(station.bearing);
         if (station.type == 'bike') {
-            return "<div class='station bike' data-id='bike" + station.id + "'><div class='station-body'><div class='health station-cell'>&#x1F6B2;</div><div class='station-cell'>" + "<div class='detail'>" + distance + " " + bearing + " | " + station.name + "</div></div></div></div></div>";
+            return "<div class='station bike' data-id='bike" + station.id + "'><div class='station-body'><div class='health station-cell'>" + htmlEmoji("1F6B2") + "</div><div class='station-cell'>" + "<div class='detail'>" + distance + " " + bearing + " | " + station.name + "</div></div></div></div></div>";
         }
         var lastMod = timeDelta(station.mod);
 
@@ -798,19 +910,19 @@ var Compass = window.Compass;
             dockPoints = ", <span class='points-drop'>" + pts + "pts</span>";
         }
         var favorite = "";
-        var favoriteStatus = favorites[station.id];
-        if (favoriteStatus == 3) {
-            favorite = "&#x1F3E2; ";
-        } else if (favoriteStatus == 2) {
-            favorite = "&#x1F3E0; ";
-        } else if (favoriteStatus == 1) {
-            favorite = "&#x2764;&#xFE0F; ";
+        if (favorites[station.id]) {
+            favorite = htmlEmoji("2764") + " ";
         }
-
+        for (var i in commuteLocations) {
+            var emoji = commuteLocations[i];
+            if (emoji == station.id) {
+                favorite = htmlEmoji(i) + " ";
+            }
+        }
         return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='station-cell health'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><div class='name'>" + favorite + station.name + "</div>" + "<div class='detail'>" + pad(station.bikes) + " bikes" + bikePoints + " | " + pad(station.docks) + " docks" + dockPoints + " | " + distance + " " + bearing + " | " + lastMod + "</div>" + alerts + "</div></div></div>";
     }
 
-    function commuteStationRow(station, favorites) {
+    function commuteStationRow(station, favorites, commuteLocations) {
         var bikePoints = "";
         var dockPoints = "";
         var pts = station.pts;
@@ -821,13 +933,15 @@ var Compass = window.Compass;
         }
 
         var favorite = "";
-        var favoriteStatus = favorites[station.id];
-        if (favoriteStatus == 3) {
-            favorite = "&#x1F3E2; ";
-        } else if (favoriteStatus == 2) {
-            favorite = "&#x1F3E0; ";
-        } else if (filter != "fave" && favoriteStatus == 1) {
-            favorite = "&#x2764;&#xFE0F; ";
+        var favorite = "";
+        if (filter != "fave" && favorites[station.id]) {
+            favorite = htmlEmoji("2764") + " ";
+        }
+        for (var i in commuteLocations) {
+            var emoji = commuteLocations[i];
+            if (emoji == station.id) {
+                favorite = htmlEmoji(i) + " ";
+            }
         }
         return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='station-cell health'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><strong>" + favorite + station.name + "</strong></div>" + bikePoints + dockPoints + "</div></div>";
     }
@@ -839,6 +953,7 @@ var Compass = window.Compass;
             var lat = currentPosition.coords.latitude;
             var lon = currentPosition.coords.longitude;
             var favorites = getFavorites();
+            var commuteLocations = getCommuteLocations();
             var effectiveStations = stations.filter(function(station) {
                 var status;
                 if (filter == "fave") {
@@ -865,6 +980,28 @@ var Compass = window.Compass;
                 }
                 return status;
             });
+
+            for (var i in commuteLocations) {
+                var stationMarker = markerMap[commuteLocations[i]];
+                var commuteTooltip = commuteLocationTooltips[i];
+                if (!commuteTooltip) {
+                    var radius = desktop ? 12 : 10;
+                    var commuteTooltip = L.tooltip({
+                        pane: 'overlayPane',
+                        permanent: true,
+                        offset: [-(radius + 2), 0],
+                        direction: 'left',
+                        className: 'commute-label'
+                    }).setContent(htmlEmoji(i));
+                    commuteLocationTooltips[i] = commuteTooltip;
+
+                }
+                if (stationMarker) {
+                    commuteTooltip.setLatLng(stationMarker.getLatLng());
+                    commuteTooltip.addTo(stationLayer);
+                }
+            }
+
             if (effectiveStations.length === 0 && filter == "fave") {
                 $stationList.html("<p class='message'>No Favorites<br><em>Click a station on map to mark it as favorite.</em></p>");
             } else {
@@ -873,7 +1010,7 @@ var Compass = window.Compass;
                 function renderStations($elem, nearestStations, renderRow) {
                     for (var i in nearestStations) {
                         var station = nearestStations[i];
-                        var $row = $(renderRow(station, favorites));
+                        var $row = $(renderRow(station, favorites, commuteLocations));
                         $row.click(function() {
                             var marker = markerMap[$(this).attr('data-id')];
                             map.setView(marker.getLatLng(), map.getZoom());
@@ -885,32 +1022,27 @@ var Compass = window.Compass;
 
                 var $commuteHeader = $("#commute-header");
                 if ($commute.hasClass("active")) {
-                    var home = localStorage.getItem("fave_" + systemId + "_home");
-                    var work = localStorage.getItem("fave_" + systemId + "_work");
-                    var commuteToHome = localStorage.getItem("commute_direction") == "1";
+                    var fromType = $commuteFrom.val();
+                    var toType = $commuteTo.val();
+                    var from = commuteLocations[fromType];
+                    var to = commuteLocations[toType];
                     var $commuteSplit = $("<div class='commute-split' />");
-                    var $commuteHome = $("<div class='commute-split-cell' />");
-                    var $commuteWork = $("<div class='commute-split-cell' />");
+                    var $commuteFromCell = $("<div class='commute-split-cell' />");
+                    var $commuteToCell = $("<div class='commute-split-cell' />");
                     $commuteHeader.show();
-                    if (commuteToHome) {
-                        $commuteFrom.html("&#x1F3E2;");
-                        $commuteTo.html("&#x1F3E0;");
-                        $commuteSplit.append($commuteWork).append($commuteHome);
-                    } else {
-                        $commuteFrom.html("&#x1F3E0;");
-                        $commuteTo.html("&#x1F3E2;");
-                        $commuteSplit.append($commuteHome).append($commuteWork)
-                    }
+                    $commuteSplit.append($commuteFromCell).append($commuteToCell);
                     $stationList.append($commuteSplit);
-                    if (markerMap[home] && markerMap[work]) {
-                        home = markerMap[home].getLatLng();
-                        work = markerMap[work].getLatLng();
+                    if (fromType == toType) {
+                        $commuteSplit.html("<p class='message'>Please select different origin and destinations.</p>");
+                    } else if (markerMap[from] && markerMap[to]) {
+                        from = markerMap[from].getLatLng();
+                        to = markerMap[to].getLatLng();
 
-                        var radius = geo.delta(home.lat, home.lng, work.lat, work.lng).distance / 3;
+                        var radius = geo.delta(from.lat, from.lng, to.lat, to.lng).distance / 3;
 
                         var nearbyStations = geo.nearby(lat, lon, effectiveStations, 25);
-                        var homeStations = [];
-                        var workStations = [];
+                        var fromStations = [];
+                        var toStations = [];
 
                         for (var i in stations) {
                             var station = stations[i];
@@ -921,18 +1053,18 @@ var Compass = window.Compass;
                                 continue;
                             }
                             var delta;
-                            delta = geo.delta(home.lat, home.lng, station.lat, station.lon).distance;
+                            delta = geo.delta(from.lat, from.lng, station.lat, station.lon).distance;
                             if (delta < radius) {
                                 station.commuteDistance = delta;
-                                if ((!commuteToHome && (station.pct > 0.05)) || (commuteToHome && (station.pct < 0.95))) {
-                                    homeStations.push(station);
+                                if (station.pct > 0.05) {
+                                    fromStations.push(station);
                                 }
                             }
-                            delta = geo.delta(work.lat, work.lng, station.lat, station.lon).distance;
+                            delta = geo.delta(to.lat, to.lng, station.lat, station.lon).distance;
                             if (delta < radius) {
                                 station.commuteDistance = delta;
-                                if ((commuteToHome && (station.pct > 0.05)) || (!commuteToHome && (station.pct < 0.95))) {
-                                    workStations.push(station);
+                                if (station.pct < 0.95) {
+                                    toStations.push(station);
                                 }
                             }
                         }
@@ -940,14 +1072,15 @@ var Compass = window.Compass;
                         function commuteSort(a, b) {
                             return a.commuteDistance - b.commuteDistance;
                         }
-                        renderStations($commuteHome, homeStations.sort(commuteSort).slice(0, 15), commuteStationRow);
-                        renderStations($commuteWork, workStations.sort(commuteSort).slice(0, 15), commuteStationRow);
+                        renderStations($commuteFromCell, fromStations.sort(commuteSort).slice(0, 15), commuteStationRow);
+                        renderStations($commuteToCell, toStations.sort(commuteSort).slice(0, 15), commuteStationRow);
                     } else {
-                        if (!markerMap[home]) {
-                            $commuteHome.append("<p class='message'>Home not set<br><em>Click the closest station to your home on map to mark it as your home station.</em></p>");
+                        var message = "<em>Click on the nearest station to that location on the map to mark it with this commute label.</em>";
+                        if (!from || !markerMap[from]) {
+                            $commuteFromCell.append("<p class='message'>" + htmlEmoji(fromType) + " not set<br>" + message + "</p>");
                         }
-                        if (!markerMap[work]) {
-                            $commuteWork.append("<p class='message'>Work not set<br><em>Click the closest station to your work on map to mark it as your work station.</em></p>");
+                        if (!to || !markerMap[to]) {
+                            $commuteToCell.append("<p class='message'>" + htmlEmoji(toType) + " not set<br>" + message + "</p>");
                         }
                     }
 
