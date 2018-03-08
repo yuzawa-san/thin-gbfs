@@ -7,7 +7,6 @@ import logging
 STATION_INFO_TTL = 86400
 STATION_STATUS_TTL = 20
 ALERTS_TTL = 600
-POINTS_TTL = 60
 
 def hashed_key(url):
     return md5(url).hexdigest()

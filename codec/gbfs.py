@@ -6,7 +6,7 @@ import json
 import time
 from StringIO import StringIO
 from models import BikeNetwork
-from caching import cache, STATION_STATUS_TTL, STATION_INFO_TTL, POINTS_TTL, ALERTS_TTL
+from caching import cache, STATION_STATUS_TTL, STATION_INFO_TTL, ALERTS_TTL
 from models import SystemInfoElement, SystemStatusElement, RegionListElement, CompactElement
 
 def process_station_info(url):
@@ -27,18 +27,6 @@ def process_station_info(url):
             element.region = station['region_id']
         if station['lat'] and station['lon']:
             out.append(element)
-    return out
-
-@cache(ttl=POINTS_TTL)
-def process_points(url):
-    result = urlfetch.fetch(url, validate_certificate=True)
-    if result.status_code != 200:
-        return {}
-    response_json = json.loads(result.content)
-    out = {}
-    for station,pts in response_json['stations'].items():
-        if pts != 0:
-            out[station] = pts
     return out
 
 def process_regions(url):
@@ -76,7 +64,41 @@ def process_alerts(url):
     response_json = json.loads(result.content)
     return response_json['data']['alerts']
 
+def process_citibike_status():
+    url = "https://layer.bicyclesharing.net/map/v1/nyc/stations"
+    result = urlfetch.fetch(url, validate_certificate=True)
+    if result.status_code != 200:
+        return {}
+    response_json = json.loads(result.content)
+    out = []
+    for feature in response_json['features']:
+        station = feature['properties']
+        bikes = 0
+        docks = 0
+        if station['installed']:
+            if station['renting']:
+                bikes = station['bikes_available']
+            if station['returning']:
+                docks = station['docks_available']
+        point_action = station.get('bike_angels_action', None)
+        point_value = station.get('bike_angels_points', 0)
+        if point_action == 'take':
+            pts = -point_value
+        elif point_action == 'give':
+            pts = point_value
+        else:
+            pts = None
+        out.append(SystemStatusElement(
+            id=station['station_id'],
+            bikes=bikes,
+            docks=docks,
+            mod=station['last_reported'],
+            pts=pts))
+    return out
+
 def _process_station_status(url):
+    if "citibike" in url:
+        return process_citibike_status()
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
         return None
@@ -171,12 +193,6 @@ class GbfsCodec(BikeNetworkCodec):
     def get_status(self, system):
         status_header = [["id","bikes","docks","mod","pts"]]
         station_statuses = process_station_status(system.config['station_status'])
-        if "citibike" in system.config['station_status']:
-            points = process_points("https://bikeangels-api.citibikenyc.com/bikeangels/v1/scores")
-            for station_status in station_statuses:
-                station_id = station_status.id
-                if station_id in points:
-                    station_status.pts = points[station_id]
         alerts = []
         if 'system_alerts' in system.config:
             alerts = process_alerts(system.config['system_alerts'])
