@@ -260,6 +260,12 @@ font-family: sans-serif;
 text-align: center;
 white-space: nowrap;
 }
+.leaflet-popup-content .points-pick {
+color: green;
+}
+.leaflet-popup-content .points-drop {
+color: red;
+}
 .points-icon .points-pick {
 color: white
 }

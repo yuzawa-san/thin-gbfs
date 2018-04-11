@@ -752,7 +752,14 @@ var Compass = window.Compass;
                                 if (favorites[id]) {
                                     favorite = htmlEmoji("1F494");
                                 }
-                                return "<table><tr><td><strong>" + name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(alerts) + "</td><td><div class='button favorite-toggle' data-id='" + id + "'>" + favorite + "</div></td></tr><tr><td>Commute Label:</td><td><select class='button commute-location-select' data-id=" + id + ">" + commuteSelect(id) + "</select></td></tr></table>";
+                                var pointsLabel = "";
+                                var pts = station.pts;
+                                if (pts < 0) {
+                                    pointsLabel = ", <span class='points-pick'>" + (-pts) + "pts</span>";
+                                } else if (pts > 0) {
+                                    pointsLabel = ", <span class='points-drop'>" + pts + "pts</span>";
+                                }
+                                return "<table><tr><td><strong>" + name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(alerts) + pointsLabel + "</td><td><div class='button favorite-toggle' data-id='" + id + "'>" + favorite + "</div></td></tr><tr><td>Commute Label:</td><td><select class='button commute-location-select' data-id=" + id + ">" + commuteSelect(id) + "</select></td></tr></table>";
                             };
                         }
                     marker.bindPopup(popupContent(station));
