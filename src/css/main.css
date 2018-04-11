@@ -79,7 +79,6 @@ text-align: center;
 #header {
 padding: 3px;
 font-size: 1.2em;
-background: linear-gradient(to bottom, rgb(253,128,75) 0%,rgb(253,77,2) 100%);
 border-bottom: 1px solid black;
 border-top: 1px solid black;
 text-align: center;
@@ -175,6 +174,12 @@ float: right
 #loading {
 font-size: 1.5em;
 }
+#hue-sample {
+width: 10px;
+height: 10px;
+margin: 0px 3px;
+display: inline-block;
+}
 .message {
 padding: 10px;
 }
@@ -237,7 +242,6 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.25) inset;
 height: 6px;
 }
 progress[value]::-webkit-progress-value {
-background-color: rgb(253,77,2);
 border-radius: 2px;
 }
 .commute-label {
@@ -294,7 +298,6 @@ text-align: center;
 display: inline-block;
 width: 10px;
 height: 10px;
-background: rgb(253,128,75);
 margin-right: 1px;
 border-radius: 5px;
 animation: opacity-1 700ms infinite ease-in-out;

@@ -26,6 +26,28 @@ var Compass = window.Compass;
     window.onfocus = function() {
         isFront = true;
     };
+    var hue = parseInt(localStorage.getItem("hue") || 18, 10);
+    var mainColor = "hsl(" + hue + ", 100%, 50%)";
+    var altColor = "hsl(" + hue + ", 100%, 65%)";
+    var css = "";
+    css += "#header { background: linear-gradient(to bottom, " + altColor + " 0%," + mainColor + " 100%); }\n";
+    css += "progress[value]::-webkit-progress-value { background-color: " + mainColor + "; }\n";
+    css += "#loading .bar { background: " + altColor + "; }\n";
+    $("#palette").html(css);
+    var $hueSample = $("#hue-sample");
+    $hueSample.css("background", altColor);
+    var $hue = $("#hue").val(hue).change(function() {
+        $hueSample.css("background", "hsl(" + $(this).val() + ", 100%, 50%)");
+    });
+    $("#hue-save").click(function() {
+        hue = $hue.val();
+        localStorage.setItem("hue", hue);
+        window.location.reload();
+    });
+    $("#hue-reset").click(function() {
+        localStorage.removeItem("hue");
+        window.location.reload();
+    });
 
     var commuteEmoji = [ // list of emoji
     "1F3E0", // home
@@ -387,9 +409,9 @@ var Compass = window.Compass;
                     weight: 1,
                     dashArray: "2, 2",
                     lineCap: "butt",
-                    fillColor: "rgb(253,77,2)",
+                    fillColor: mainColor,
                     fillOpacity: 0.3,
-                    color: "rgb(253,77,2)",
+                    color: mainColor,
                     opacity: 1.0
                 });
                 systemMarker.bindTooltip("<strong>" + nearbySystem.city + " " + emoji + "</strong><br>" + nearbySystem.name);
@@ -438,7 +460,7 @@ var Compass = window.Compass;
                         systemLon += station.lon;
                         var marker = L.circleMarker([station.lat, station.lon], {
                             radius: 5,
-                            color: "rgb(253,77,2)",
+                            color: mainColor,
                             fillColor: '#fff',
                             weight: 5,
                             fillOpacity: 1.0
@@ -497,7 +519,7 @@ var Compass = window.Compass;
                         var radius = desktop ? 12 : 10;
                         var marker = L.circleMarker([station.lat, station.lon], {
                             radius: radius,
-                            color: "rgb(253,77,2)",
+                            color: mainColor,
                             fillColor: "#999",
                             weight: 2,
                             opacity: 0.2,
@@ -587,9 +609,9 @@ var Compass = window.Compass;
                 remainder += row;
             }
         }
-        if(!optimalCommuteList){
+        if (!optimalCommuteList) {
             optimalCommuteList = remainder;
-        }else {
+        } else {
             optimalCommuteList += "<option disabled>" + htmlEmoji("2796") + "</option>";
             optimalCommuteList += remainder;
         }
@@ -711,7 +733,7 @@ var Compass = window.Compass;
                     var fillColor = "#999";
                     if (total > 0) {
                         pct = bikes / total;
-                        fillColor = "hsl(18, 100%, " + (100 - pct * 50).toFixed(1) + "%)";
+                        fillColor = "hsl(" + hue + ", 100%, " + (100 - pct * 50).toFixed(1) + "%)";
                     }
                     station.pct = pct;
                     marker.setStyle({
@@ -746,7 +768,7 @@ var Compass = window.Compass;
                         marker = L.circleMarker([bike.lat, bike.lon], {
                             radius: desktop ? 5 : 3,
                             weight: 0,
-                            fillColor: "rgb(253,77,2)",
+                            fillColor: mainColor,
                             fillOpacity: 1.0
                         });
                         markerMap['bike' + bike.id] = marker;
