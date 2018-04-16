@@ -3,6 +3,7 @@ import TinyGridLayer from './grid.js';
 var $ = require('npm-zepto');
 var L = require('leaflet');
 var emojiFlags = require('emoji-flags');
+var d3color = require('d3-color');
 require('compass-js');
 var Compass = window.Compass;
 (function() {
@@ -26,26 +27,26 @@ var Compass = window.Compass;
     window.onfocus = function() {
         isFront = true;
     };
-    var hue = parseInt(localStorage.getItem("hue") || 18, 10);
-    var mainColor = "hsl(" + hue + ", 100%, 50%)";
-    var altColor = "hsl(" + hue + ", 100%, 65%)";
+    var hue = parseInt(localStorage.getItem("color") || 46, 10);
+    var mainColor = d3color.hcl(hue, 100, 58).toString();
+    var altColor = d3color.hcl(hue, 100, 85).toString();
     var css = "";
     css += "#header { background: linear-gradient(to bottom, " + altColor + " 0%," + mainColor + " 100%); }\n";
     css += "progress[value]::-webkit-progress-value { background-color: " + mainColor + "; }\n";
     css += "#loading .bar { background: " + altColor + "; }\n";
     $("#palette").html(css);
     var $hueSample = $("#hue-sample");
-    $hueSample.css("background", altColor);
+    $hueSample.css("background", mainColor);
     var $hue = $("#hue").val(hue).change(function() {
-        $hueSample.css("background", "hsl(" + $(this).val() + ", 100%, 50%)");
+        $hueSample.css("background", d3color.hcl($(this).val(), 100, 58).toString());
     });
     $("#hue-save").click(function() {
         hue = $hue.val();
-        localStorage.setItem("hue", hue);
+        localStorage.setItem("color", hue);
         window.location.reload();
     });
     $("#hue-reset").click(function() {
-        localStorage.removeItem("hue");
+        localStorage.removeItem("color");
         window.location.reload();
     });
 
@@ -733,7 +734,7 @@ var Compass = window.Compass;
                     var fillColor = "#999";
                     if (total > 0) {
                         pct = bikes / total;
-                        fillColor = "hsl(" + hue + ", 100%, " + (100 - pct * 50).toFixed(1) + "%)";
+                        fillColor = d3color.hcl(hue, 100 * pct, (100 - pct * 42)).toString();
                     }
                     station.pct = pct;
                     marker.setStyle({

@@ -6,6 +6,7 @@
   "license": "MIT",
   "dependencies": {
     "compass.js": "ai/compass.js",
+    "d3-color": "^1.0.3",
     "emoji-flags": "^1.2.0",
     "leaflet": "1.2.0",
     "npm-zepto": "1.1.7"
