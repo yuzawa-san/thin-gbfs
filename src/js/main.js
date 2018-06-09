@@ -50,6 +50,7 @@ var Compass = window.Compass;
         window.location.reload();
     });
 
+    var currentLocationEmoji = "1f535";
     var commuteEmoji = [ // list of emoji
     "1F3E0", // home
     "1F3E2", // work
@@ -595,7 +596,7 @@ var Compass = window.Compass;
     });
 
     function populateCommuteList() {
-        var optimalCommuteList = "<option value='1f535'>" + htmlEmoji('1f535') + "</option>";
+        var optimalCommuteList = "<option value='" + currentLocationEmoji + "'>" + htmlEmoji(currentLocationEmoji) + "</option>";
         var remainder = "";
         var locations = getCommuteLocations();
         for (var i in commuteEmoji) {
@@ -1061,7 +1062,7 @@ var Compass = window.Compass;
                             commuteLatLngs[i] = val.getLatLng();
                         }
                     }
-                    commuteLatLngs['1f535'] = L.latLng(lat, lon);
+                    commuteLatLngs[currentLocationEmoji] = L.latLng(lat, lon);
                     var fromType = $commuteFrom.val();
                     var toType = $commuteTo.val();
                     var from = commuteLatLngs[fromType];
@@ -1109,10 +1110,10 @@ var Compass = window.Compass;
                         function commuteSort(a, b) {
                             return a.commuteDistance - b.commuteDistance;
                         }
-                        var heading = '<div class="station"><div class="station-body"><div class="station-cell health">&nbsp;</div><div class="station-cell"><strong>' + htmlEmoji('1f535') + 'Your Location</strong></div></div></div>';
-                        if (fromType == '1f535') {
+                        var heading = '<div class="station"><div class="station-body"><div class="station-cell health">&nbsp;</div><div class="station-cell"><strong>' + htmlEmoji(currentLocationEmoji) + 'Your Location</strong></div></div></div>';
+                        if (fromType == currentLocationEmoji) {
                             $commuteFromCell.append(heading);
-                        } else if (toType == '1f535') {
+                        } else if (toType == currentLocationEmoji) {
                             $commuteToCell.append(heading);
                         }
                         renderStations($commuteFromCell, fromStations.sort(commuteSort).slice(0, 15), commuteStationRow);
