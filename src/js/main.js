@@ -694,6 +694,7 @@ var Compass = window.Compass;
                     }
                 }
                 var stationList = [];
+                var modList = [];
                 for (var i in statuses) {
                     var station = statuses[i];
                     var stationInfo = systemInfo.stationMap[station.id];
@@ -735,11 +736,30 @@ var Compass = window.Compass;
                     if (total > 0) {
                         pct = bikes / total;
                         fillColor = d3color.hcl(hue, 100 * pct, (100 - pct * 42)).toString();
+                        modList.push(station.mod);
                     }
                     station.pct = pct;
                     marker.setStyle({
-                        weight: station.alerts.length > 0 ? 4 : 2,
                         fillColor: fillColor
+                    });
+                    station.marker = marker;
+                }
+                modList.sort()
+                var modAlarm = 0;
+                if (modList && modList[0] != modList[modList.length - 1]) {
+                    modAlarm = modList[Math.floor(modList.length * 0.01)];
+                }
+                for (var i in stationList) {
+                    var station = stationList[i];
+                    if (station.mod && !isNaN(station.pct) && station.mod < modAlarm) {
+                        station.alerts.push({
+                            type: "OUTDATED",
+                            summary: "Station info may be out of date."
+                        });
+                    }
+                    var marker = station.marker;
+                    marker.setStyle({
+                        weight: station.alerts.length > 0 ? 4 : 2
                     });
                     var popupContent = function(station) {
                             var id = station.id;
@@ -760,9 +780,9 @@ var Compass = window.Compass;
                                 } else if (pts > 0) {
                                     pointsLabel = ", <span class='points-drop'>" + pts + "pts</span>";
                                 }
-                                return "<table><tr><td><strong>" + name + "</strong><br>" + bikes + " bikes " + docks + " docks" + alertsRows(alerts) + pointsLabel + "</td><td><div class='button favorite-toggle' data-id='" + id + "'>" + favorite + "</div></td></tr><tr><td>Commute Label:</td><td><select class='button commute-location-select' data-id=" + id + ">" + commuteSelect(id) + "</select></td></tr></table>";
+                                return "<table><tr><td><strong>" + name + "</strong><br>" + bikes + " bikes " + docks + " docks" + pointsLabel + alertsRows(alerts) + "</td><td><div class='button favorite-toggle' data-id='" + id + "'>" + favorite + "</div></td></tr><tr><td>Commute Label:</td><td><select class='button commute-location-select' data-id=" + id + ">" + commuteSelect(id) + "</select></td></tr></table>";
                             };
-                        }
+                        };
                     marker.bindPopup(popupContent(station));
                 }
                 stations = stationList;
@@ -830,10 +850,10 @@ var Compass = window.Compass;
     }
 
     function timeDelta(seconds) {
-        var lastMod = "?";
-        if (seconds > 0) {
-            lastMod = Math.round(((Date.now() / 1000) - seconds) / 60);
+        if (!seconds) {
+            return "";
         }
+        var lastMod = Math.round(((Date.now() / 1000) - seconds) / 60);
         var out = lastMod + "m ago";
         if (lastMod > 1440) {
             out = "<span style='color:red'>" + out + "</span>";
@@ -963,14 +983,16 @@ var Compass = window.Compass;
         }
 
         var favorite = "";
-        var favorite = "";
+        if(station.alerts.length){
+            favorite = htmlEmoji("26A0");
+        }
         if (filter != "fave" && favorites[station.id]) {
-            favorite = htmlEmoji("2764") + " ";
+            favorite += htmlEmoji("2764") + " ";
         }
         for (var i in commuteLocations) {
             var emoji = commuteLocations[i];
             if (emoji == station.id) {
-                favorite = htmlEmoji(i) + " ";
+                favorite += htmlEmoji(i) + " ";
             }
         }
         return "<div class='station' data-id='" + station.id + "'><div class='station-body'>" + "<div class='station-cell health'><progress value=" + station.bikes + " max=" + (station.bikes + station.docks) + "></progress></div><div class='station-cell'><strong>" + favorite + station.name + "</strong></div>" + bikePoints + dockPoints + "</div></div>";
