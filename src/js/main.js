@@ -96,7 +96,6 @@ var Compass = window.Compass;
     var dotUrl = URL.createObjectURL(new Blob(['<svg xmlns="http://www.w3.org/2000/svg" width="175" height="175"><circle cx="85" cy="85" r="63" fill="#00ccff" stroke="#007BFF" stroke-width="44"/></svg>'], {
         type: 'image/svg+xml'
     }));
-    $("#center-icon").attr('src', dotUrl);
 
     var timers = {};
 
@@ -596,10 +595,8 @@ var Compass = window.Compass;
     });
 
     function populateCommuteList() {
-        var optimalCommuteList = "";
+        var optimalCommuteList = "<option value='1f535'>" + htmlEmoji('1f535') + "</option>";
         var remainder = "";
-        // TODO: remove
-        migrateCommute();
         var locations = getCommuteLocations();
         for (var i in commuteEmoji) {
             var emoji = commuteEmoji[i];
@@ -620,24 +617,6 @@ var Compass = window.Compass;
         $commuteTo.html(optimalCommuteList);
         $commuteFrom.val(localStorage.getItem("commute_" + systemId + "_from") || commuteEmoji[0]);
         $commuteTo.val(localStorage.getItem("commute_" + systemId + "_to") || commuteEmoji[1]);
-    }
-
-    // TODO: remove
-
-    function migrateCommute() {
-        var home = localStorage.getItem("fave_" + systemId + "_home");
-        var work = localStorage.getItem("fave_" + systemId + "_work");
-        var locations = getCommuteLocations();
-        if (home) {
-            locations["1F3E0"] = home;
-            localStorage.removeItem("fave_" + systemId + "_home");
-        }
-        if (work) {
-            locations["1F3E2"] = work;
-            localStorage.removeItem("fave_" + systemId + "_work");
-        }
-        localStorage.setItem("commute_" + systemId, JSON.stringify(locations));
-        localStorage.removeItem("commute_direction");
     }
 
     function getCommuteLocations() {
@@ -983,7 +962,7 @@ var Compass = window.Compass;
         }
 
         var favorite = "";
-        if(station.alerts.length){
+        if (station.alerts.length) {
             favorite = htmlEmoji("26A0");
         }
         if (filter != "fave" && favorites[station.id]) {
@@ -1075,10 +1054,18 @@ var Compass = window.Compass;
 
                 var $commuteHeader = $("#commute-header");
                 if ($commute.hasClass("active")) {
+                    var commuteLatLngs = []
+                    for (var i in commuteLocations) {
+                        var val = markerMap[commuteLocations[i]];
+                        if (val) {
+                            commuteLatLngs[i] = val.getLatLng();
+                        }
+                    }
+                    commuteLatLngs['1f535'] = L.latLng(lat, lon);
                     var fromType = $commuteFrom.val();
                     var toType = $commuteTo.val();
-                    var from = commuteLocations[fromType];
-                    var to = commuteLocations[toType];
+                    var from = commuteLatLngs[fromType];
+                    var to = commuteLatLngs[toType];
                     var $commuteSplit = $("<div class='commute-split' />");
                     var $commuteFromCell = $("<div class='commute-split-cell' />");
                     var $commuteToCell = $("<div class='commute-split-cell' />");
@@ -1087,10 +1074,7 @@ var Compass = window.Compass;
                     $stationList.append($commuteSplit);
                     if (fromType == toType) {
                         $commuteSplit.html("<p class='message'>Please select different origin and destinations.</p>");
-                    } else if (markerMap[from] && markerMap[to]) {
-                        from = markerMap[from].getLatLng();
-                        to = markerMap[to].getLatLng();
-
+                    } else if (from && to) {
                         var radius = geo.delta(from.lat, from.lng, to.lat, to.lng).distance / 3;
 
                         var nearbyStations = geo.nearby(lat, lon, effectiveStations, 25);
@@ -1125,14 +1109,20 @@ var Compass = window.Compass;
                         function commuteSort(a, b) {
                             return a.commuteDistance - b.commuteDistance;
                         }
+                        var heading = '<div class="station"><div class="station-body"><div class="station-cell health">&nbsp;</div><div class="station-cell"><strong>' + htmlEmoji('1f535') + 'Your Location</strong></div></div></div>';
+                        if (fromType == '1f535') {
+                            $commuteFromCell.append(heading);
+                        } else if (toType == '1f535') {
+                            $commuteToCell.append(heading);
+                        }
                         renderStations($commuteFromCell, fromStations.sort(commuteSort).slice(0, 15), commuteStationRow);
                         renderStations($commuteToCell, toStations.sort(commuteSort).slice(0, 15), commuteStationRow);
                     } else {
                         var message = "<em>Click on the nearest station to that location on the map to mark it with this commute label.</em>";
-                        if (!from || !markerMap[from]) {
+                        if (!from) {
                             $commuteFromCell.append("<p class='message'>" + htmlEmoji(fromType) + " not set<br>" + message + "</p>");
                         }
-                        if (!to || !markerMap[to]) {
+                        if (!to) {
                             $commuteToCell.append("<p class='message'>" + htmlEmoji(toType) + " not set<br>" + message + "</p>");
                         }
                     }
