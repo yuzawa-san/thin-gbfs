@@ -1007,15 +1007,16 @@ var Compass = window.Compass;
             var favorites = getFavorites();
             var commuteLocations = getCommuteLocations();
             var effectiveStations = stations.filter(function(station) {
-                var status;
+                var status = true;
                 if (filter == "fave") {
                     status = favorites[station.id];
                 } else if (filter == 'bike') {
                     status = station.pct > 0.05 || station.type == 'bike';
                 } else if (filter == 'dock') {
                     status = station.pct < 0.95 && station.type == 'station';
-                } else {
-                    status = !isNaN(station.pct);
+                }
+                if (isNaN(station.pct)) {
+                    status = false;
                 }
                 var id = station.id;
                 if (station.type == 'bike') {
