@@ -6,6 +6,9 @@ skip_files:
 - ^\.git/.*
 
 handlers:
+- url: /manifest.json
+  static_files: manifest.json
+  upload: manifest.json
 - url: /dist/images
   expiration: 1d
   static_dir: dist/images
