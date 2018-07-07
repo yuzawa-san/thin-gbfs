@@ -78,12 +78,12 @@
     </div></div></div>
 </div>
 <style id="palette"></style>
-<script>
-  navigator.serviceWorker.register('/sw.js')
-    .then(reg => console.log('SW registered!', reg))
-    .catch(err => console.log('Boo!', err));
-</script>
 <!-- build:js -->
 <!-- endbuild -->
+<script>
+    navigator.serviceWorker.register('/sw.js')
+        .then(reg => console.log('SW registered!', reg))
+        .catch(err => console.log('Boo!', err));
+</script>
 </body>
 </html>
