@@ -29,6 +29,13 @@ def process_station_info(url):
             out.append(element)
     return out
 
+def process_system_info(url):
+    result = urlfetch.fetch(url, validate_certificate=True)
+    if result.status_code != 200:
+        return None
+    response_json = json.loads(result.content)
+    return response_json['data']['url']
+
 def process_regions(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
@@ -165,12 +172,18 @@ class GbfsCodec(BikeNetworkCodec):
                         avg_lat = avg_lat / station_count
                         avg_lon = avg_lon / station_count
                     recent_ts = 0
+                    url = process_system_info(config['system_information'])
                     station_statuses = _process_station_status(config['station_status'])
                     for station in station_statuses:
                         ts = station.mod
                         if ts > recent_ts:
                             recent_ts = ts
-                    config['system_info'] = {"name": name, "stations": CompactElement.of(stations), "regions":CompactElement.of(regions)}
+                    config['system_info'] = {
+                        "name": name,
+                        "url": url,
+                        "stations": CompactElement.of(stations),
+                        "regions":CompactElement.of(regions)
+                    }
                     r = BikeNetwork(
                         id= "gbfs_%s" % line['System ID'],
                         codec=GbfsCodec.NAME,

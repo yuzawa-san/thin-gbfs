@@ -52,22 +52,22 @@ var Compass = window.Compass;
 
     var currentLocationEmoji = "1f535";
     var commuteEmoji = [ // list of emoji
-    "1F3E0", // home
-    "1F3E2", // work
-    "1F498", // lover
-    "1F4AA", // gym
-    "1F46A", // family
-    "1F3BD", // other gym
-    "1F393", // school
-    "1F689", // metro station
-    "1F6A2", // ferry
-    "1F17F", // parking lot
-    "1F332", // park
-    "1F37A", // bar
-    "1F45C", // mall
-    "1F35E", // food store
-    "1F374", // restaurant
-    "26EA", // church 
+        "1F3E0", // home
+        "1F3E2", // work
+        "1F498", // lover
+        "1F4AA", // gym
+        "1F46A", // family
+        "1F3BD", // other gym
+        "1F393", // school
+        "1F689", // metro station
+        "1F6A2", // ferry
+        "1F17F", // parking lot
+        "1F332", // park
+        "1F37A", // bar
+        "1F45C", // mall
+        "1F35E", // food store
+        "1F374", // restaurant
+        "26EA", // church 
     ];
 
     function htmlEmoji(emoji) {
@@ -316,6 +316,15 @@ var Compass = window.Compass;
         }
     });
 
+    function systemAttribution(system) {
+        var name = system.name;
+        var url = system.url;
+        if (!url) {
+            return name;
+        }
+        return '<a href="' + url + '">' + name + '</a>';
+    }
+
     function systemSearch() {
         var value = $(this).val();
         var i = 0;
@@ -352,19 +361,19 @@ var Compass = window.Compass;
             }
         }, function(error) {
             switch (error.code) {
-            case error.PERMISSION_DENIED:
-                reportError("Please enable access to your device's location.");
-                break;
-            case error.POSITION_UNAVAILABLE:
-                reportError("Location information is unavailable.");
-                break;
-            case error.TIMEOUT:
-                reportError("Geolocation timed out.");
-                break;
-            case error.UNKNOWN_ERROR:
-            default:
-                reportError("Unknown geolocation error: " + e.message);
-                break;
+                case error.PERMISSION_DENIED:
+                    reportError("Please enable access to your device's location.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    reportError("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    reportError("Geolocation timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                default:
+                    reportError("Unknown geolocation error: " + e.message);
+                    break;
             }
         }, geo_options);
     } else {
@@ -451,7 +460,7 @@ var Compass = window.Compass;
                 $.get("/systems/" + systemId + "/info", function(response, status, xhr) {
                     previewLayer = L.layerGroup();
                     L.setOptions(previewLayer, {
-                        attribution: systemName
+                        attribution: systemAttribution(response)
                     });
                     response.stations = pivot(response.stations);
                     var coords = [];
@@ -495,10 +504,6 @@ var Compass = window.Compass;
                 icon: myIcon,
                 interactive: false
             });
-            L.setOptions(stationLayer, {
-                attribution: system.name
-            });
-            stationLayer.addTo(map);
             youMarker.addTo(map);
             if (!override && system.distance > 50000) {
                 $stationList.empty();
@@ -511,6 +516,10 @@ var Compass = window.Compass;
                 timerStart("system-info");
                 $.get("/systems/" + systemId + "/info", function(response, status, xhr) {
                     timerEnd("system-info", xhr);
+                    L.setOptions(stationLayer, {
+                        attribution: systemAttribution(response)
+                    });
+                    stationLayer.addTo(map);
                     response.stations = pivot(response.stations);
                     response.stationMap = {}
                     for (var i in response.stations) {
@@ -742,27 +751,27 @@ var Compass = window.Compass;
                         weight: station.alerts.length > 0 ? 4 : 2
                     });
                     var popupContent = function(station) {
-                            var id = station.id;
-                            var name = station.name;
-                            var alerts = station.alerts;
-                            var bikes = station.bikes;
-                            var docks = station.docks;
-                            return function() {
-                                var favorite = htmlEmoji("2764");
-                                var favorites = getFavorites();
-                                if (favorites[id]) {
-                                    favorite = htmlEmoji("1F494");
-                                }
-                                var pointsLabel = "";
-                                var pts = station.pts;
-                                if (pts < 0) {
-                                    pointsLabel = ", <span class='points-pick'>" + (-pts) + "pts</span>";
-                                } else if (pts > 0) {
-                                    pointsLabel = ", <span class='points-drop'>" + pts + "pts</span>";
-                                }
-                                return "<table><tr><td><strong>" + name + "</strong><br>" + bikes + " bikes " + docks + " docks" + pointsLabel + alertsRows(alerts) + "</td><td><div class='button favorite-toggle' data-id='" + id + "'>" + favorite + "</div></td></tr><tr><td>Commute Label:</td><td><select class='button commute-location-select' data-id=" + id + ">" + commuteSelect(id) + "</select></td></tr></table>";
-                            };
+                        var id = station.id;
+                        var name = station.name;
+                        var alerts = station.alerts;
+                        var bikes = station.bikes;
+                        var docks = station.docks;
+                        return function() {
+                            var favorite = htmlEmoji("2764");
+                            var favorites = getFavorites();
+                            if (favorites[id]) {
+                                favorite = htmlEmoji("1F494");
+                            }
+                            var pointsLabel = "";
+                            var pts = station.pts;
+                            if (pts < 0) {
+                                pointsLabel = ", <span class='points-pick'>" + (-pts) + "pts</span>";
+                            } else if (pts > 0) {
+                                pointsLabel = ", <span class='points-drop'>" + pts + "pts</span>";
+                            }
+                            return "<table><tr><td><strong>" + name + "</strong><br>" + bikes + " bikes " + docks + " docks" + pointsLabel + alertsRows(alerts) + "</td><td><div class='button favorite-toggle' data-id='" + id + "'>" + favorite + "</div></td></tr><tr><td>Commute Label:</td><td><select class='button commute-location-select' data-id=" + id + ">" + commuteSelect(id) + "</select></td></tr></table>";
                         };
+                    };
                     marker.bindPopup(popupContent(station));
                 }
                 stations = stationList;
@@ -877,18 +886,18 @@ var Compass = window.Compass;
                 var alert = alertList[i];
                 var typeName;
                 switch (alert.type) {
-                case 'SYSTEM_CLOSURE':
-                    typeName = "System Closure";
-                    break;
-                case 'STATION_CLOSURE':
-                    typeName = "Station Closure";
-                    break;
-                case 'STATION_MOVE':
-                    typeName = "Station Move";
-                    break;
-                default:
-                    typeName = "Notice";
-                    break;
+                    case 'SYSTEM_CLOSURE':
+                        typeName = "System Closure";
+                        break;
+                    case 'STATION_CLOSURE':
+                        typeName = "Station Closure";
+                        break;
+                    case 'STATION_MOVE':
+                        typeName = "Station Move";
+                        break;
+                    default:
+                        typeName = "Notice";
+                        break;
                 }
                 if (alert.times) {
                     for (var i in alert.times) {
