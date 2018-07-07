@@ -2,8 +2,8 @@ runtime: python27
 api_version: 1
 threadsafe: yes
 skip_files:
-- ^node_modules$
-- ^\.git$
+- ^node_modules/.*
+- ^\.git/.*
 
 handlers:
 - url: /dist/images
