@@ -14,12 +14,18 @@ var filenames = require("gulp-filenames");
 // create task
 gulp.task("default", ["html"]);
 
-gulp.task('css', function(){
-    gulp.src('dist/bundle*.css', {read: false})
+gulp.task('css', function() {
+    gulp.src('dist/bundle*.css', {
+            read: false
+        })
         .pipe(clean())
-    gulp.src(['src/css/*.css','node_modules/leaflet/dist/*.css'])
-        .pipe(embed({extension: ['jpg', 'png', 'svg']}))
-        .pipe(minifyCSS({rebase: false}))
+    gulp.src(['src/css/*.css', 'node_modules/leaflet/dist/*.css'])
+        .pipe(embed({
+            extension: ['jpg', 'png', 'svg']
+        }))
+        .pipe(minifyCSS({
+            rebase: false
+        }))
         .pipe(concat('bundle.css'))
         .pipe(hash())
         .pipe(filenames("css"))
@@ -30,28 +36,31 @@ gulp.task('css', function(){
         .pipe(gulp.dest('dist/images'))
 });
 
-gulp.task('js', function(){
-    gulp.src('dist/bundle*.js', {read: false})
+gulp.task('js', function() {
+    gulp.src('dist/bundle*.js', {
+            read: false
+        })
         .pipe(clean())
-    
+
     // modify some webpack config options
     var webpackConfig = require('./webpack.config.js')
     webpackConfig.plugins = [
-    new webpack.DefinePlugin({
-        "process.env": {
-            // This has effect on the react lib size
-            "NODE_ENV": JSON.stringify("production")
-        }
-    }), new webpack.optimize.UglifyJsPlugin()];
+        new webpack.DefinePlugin({
+            "process.env": {
+                // This has effect on the react lib size
+                "NODE_ENV": JSON.stringify("production")
+            }
+        }), new webpack.optimize.UglifyJsPlugin()
+    ];
 
     // run webpack
-    return gulp.src('src/js/main.js')
-      .pipe(gulpWebpack( webpackConfig ))
-      .pipe(hash())
-      .pipe(gulp.dest('dist')).pipe(filenames("js"));
+    return gulpWebpack(webpackConfig)
+        .pipe(gulp.dest('dist')).pipe(filenames("js"))
+        .pipe(hash())
+        .pipe(gulp.dest('dist')).pipe(filenames("js"));
 });
 
-gulp.task('html',["css","js"], function(){
+gulp.task('html', ["css", "js"], function() {
     return gulp.src('src/html/index.html')
         .pipe(htmlReplace({
             'css': {
@@ -63,6 +72,8 @@ gulp.task('html',["css","js"], function(){
                 tpl: '<script src="dist/%s"></script>'
             }
         }))
-        .pipe(htmlmin({collapseWhitespace: true}))
+        .pipe(htmlmin({
+            collapseWhitespace: true
+        }))
         .pipe(gulp.dest('dist'));
 });

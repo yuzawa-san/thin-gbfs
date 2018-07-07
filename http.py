@@ -19,6 +19,10 @@ class RestHandler(webapp2.RequestHandler):
     def text_response(self, payload):
         self.response.headers['Content-Type'] = 'text/plain'
         self.response.write(payload)
+
+    def js_response(self, payload):
+        self.response.headers['Content-Type'] = 'application/javascript'
+        self.response.write(payload)
     
     def json_response(self, obj):
         payload = json.dumps(obj,separators=(',', ':'))

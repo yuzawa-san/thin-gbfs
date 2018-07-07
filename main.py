@@ -25,6 +25,11 @@ class MainPage(RestHandler):
         payload= template.render('dist/index.html',{})
         self.html_response(payload)
 
+class ServiceWorker(RestHandler):
+    def get(self):
+        payload= template.render('dist/sw.js',{})
+        self.js_response(payload)
+
 class OverviewPage(RestHandler):
     @http_cached(etag=True)
     def get(self):
@@ -91,6 +96,7 @@ class UpdateSystemsHandler(webapp2.RequestHandler):
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
+    ('/sw.js', ServiceWorker),
     ('/overview', OverviewPage),
     ('/systems/([^/]+)/info', BikeNetworkInfoApi),
     ('/systems/([^/]+)/status', BikeNetworkStatusApi),

@@ -23,6 +23,9 @@
     "deploy": "./node_modules/gulp/bin/gulp.js && gcloud app deploy app.yaml cron.yaml"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^7.1.5",
+    "babel-preset-env": "^1.7.0",
     "gulp": "~3.9.1",
     "gulp-clean": "^0.3.2",
     "gulp-clean-css": "^3.9.0",

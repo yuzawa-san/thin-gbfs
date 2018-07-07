@@ -1048,6 +1048,9 @@ var Compass = window.Compass;
                 $stationList.html("<p class='message'>No Favorites<br><em>Click a station on map to mark it as favorite.</em></p>");
             } else {
                 $stationList.empty();
+                if (navigator.onLine === false) {
+                    $stationList.append("<p class='message'>You are offline!<br><em>This data is from the last time your were online.</em></p>");
+                }
 
                 function renderStations($elem, nearestStations, renderRow) {
                     for (var i in nearestStations) {
