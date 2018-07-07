@@ -68,7 +68,7 @@ gulp.task('html', ["css", "js"], function() {
                 tpl: '<link href="dist/%s" rel="stylesheet" type="text/css">'
             },
             'js': {
-                src: filenames.get("js"),
+                src: filenames.get("js").filter(x => (x.search("bundle-") === 0)),
                 tpl: '<script src="dist/%s"></script>'
             }
         }))
