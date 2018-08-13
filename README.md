@@ -53,3 +53,4 @@ Note: Since GBFS is an open standard, GBFS systems are hit directly rather than 
 
 You will have to go to the respective projects / companies to their issue tracking systems. This project does not actually curate any data.
 
+
