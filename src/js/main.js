@@ -388,8 +388,9 @@ var Compass = window.Compass;
             timerEnd("system-list", xhr);
             var systems = pivot(response);
             var nearbySystems = geo.nearby(lat, lon, systems);
-            var system = nearbySystems[0];
+            var system = null;
             var override = window.location.hash;
+            var warningMessage = "No bikeshare system with public feed nearby!";
             for (var i in nearbySystems) {
                 var nearbySystem = nearbySystems[i];
                 var selector = ' <button class="system-preview" data-id="' + nearbySystem.id + '" data-name="' + nearbySystem.name + '" data-lat="' + nearbySystem.lat + '" data-lon="' + nearbySystem.lon + '">view</button>';
@@ -400,6 +401,7 @@ var Compass = window.Compass;
                     } else {
                         selector += ' <button class="system-select" data-id="' + nearbySystem.id + '">use</button>';
                     }
+                    warningMessage = "Please select a nearby bikeshare system to use:";
                 }
                 if (override === "#" + nearbySystem.id) {
                     // manual override 
@@ -505,9 +507,9 @@ var Compass = window.Compass;
                 interactive: false
             });
             youMarker.addTo(map);
-            if (!override && system.distance > 50000) {
+            if (!system) {
                 $stationList.empty();
-                $("#content-scroll-inner").prepend('<div class="message">No bikeshare system with public feed nearby!</div>');
+                $("#content-scroll-inner").prepend('<div class="message">' + warningMessage + '</div>');
                 populateMap();
                 $toggle.trigger('click');
             } else {
