@@ -190,8 +190,8 @@ class GbfsCodec(BikeNetworkCodec):
                         name=name,
                         city=city,
                         config=config,
-                        lat=avg_lat,
-                        lon=avg_lon,
+                        lat=round(avg_lat, 2),
+                        lon=round(avg_lon, 2),
                         last_updated=recent_ts)
                     entities.append(r)
                     break
