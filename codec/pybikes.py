@@ -30,7 +30,7 @@ class PyBikesCodec(BikeNetworkCodec):
     NAME = "pybikes"
     def load(self):
         url = "%s/v2/networks" % API_ROOT
-        result = urlfetch.fetch(url)
+        result = urlfetch.fetch(url, validate_certificate=True)
         if result.status_code != 200:
             return []
         data = json.loads(result.content)
@@ -55,7 +55,7 @@ class PyBikesCodec(BikeNetworkCodec):
                      last_updated=int(time.time()))
                     entities.append(r)
             except Exception as e:
-                logging.error("failed to load %s: %s", network['id'], e)
+                logging.exception("failed to load %s: %s", network['id'], e)
                 time.sleep(1)
         return entities
     

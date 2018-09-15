@@ -135,7 +135,7 @@ class GbfsCodec(BikeNetworkCodec):
     NAME = "gbfs"
     def load(self):
         url = "https://raw.githubusercontent.com/NABSA/gbfs/master/systems.csv"
-        result = urlfetch.fetch(url)
+        result = urlfetch.fetch(url, validate_certificate=True)
         if result.status_code != 200:
             return []
         buffer = StringIO(result.content)
@@ -196,7 +196,7 @@ class GbfsCodec(BikeNetworkCodec):
                     entities.append(r)
                     break
                 except Exception as e:
-                    logging.error("failed to load %s: %s", name, e)
+                    logging.exception("failed to load %s: %s", name, e)
                     time.sleep(1)
         return entities
     
