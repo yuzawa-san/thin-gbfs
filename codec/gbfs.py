@@ -188,7 +188,7 @@ class GbfsCodec(BikeNetworkCodec):
                         ts = station.mod
                         if ts > recent_ts:
                             recent_ts = ts
-                    full_name = sys_info.get("name", name)
+                    full_name = sys_info.get("name") or name
                     config['system_info'] = {
                         "name": full_name,
                         "url": sys_info.get("url"),
