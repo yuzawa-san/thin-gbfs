@@ -188,8 +188,9 @@ class GbfsCodec(BikeNetworkCodec):
                         ts = station.mod
                         if ts > recent_ts:
                             recent_ts = ts
+                    full_name = sys_info.get("name", name)
                     config['system_info'] = {
-                        "name": sys_info.get("name", name),
+                        "name": full_name,
                         "url": sys_info.get("url"),
                         "stations": CompactElement.of(stations),
                         "regions":CompactElement.of(regions)
@@ -197,7 +198,7 @@ class GbfsCodec(BikeNetworkCodec):
                     r = BikeNetwork(
                         id=system_id,
                         codec=GbfsCodec.NAME,
-                        name=name,
+                        name=full_name,
                         city=city,
                         config=config,
                         lat=round(avg_lat, 2),
