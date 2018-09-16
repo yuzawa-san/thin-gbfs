@@ -867,18 +867,27 @@ var Compass = window.Compass;
         if (marker.animationTimer) {
             return;
         }
+        marker.animationTimer = true;
         var originalRadius = marker.options.radius;
-        var pct = 0;
-        marker.animationTimer = setInterval(function() {
+        var start = null;
+        var duration = 500;
+
+        function step(timestamp) {
+            if (!start) {
+                start = timestamp;
+            }
+            var elapsed = timestamp - start;
+            var pct = elapsed / duration;
             marker.setStyle({
                 radius: originalRadius + originalRadius / 2 * (1 - pct)
             });
-            pct += 0.1;
             if (pct >= 1.0) {
-                clearInterval(marker.animationTimer);
                 marker.animationTimer = null;
+            } else {
+                window.requestAnimationFrame(step);
             }
-        }, 50);
+        }
+        window.requestAnimationFrame(step);
     }
 
     function alertsRows(alertList) {
