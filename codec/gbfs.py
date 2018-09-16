@@ -9,6 +9,16 @@ from models import BikeNetwork
 from caching import cache, STATION_STATUS_TTL, STATION_INFO_TTL, ALERTS_TTL
 from models import SystemInfoElement, SystemStatusElement, RegionListElement, CompactElement
 
+# motivate provides point information via their own API id's
+# maybe one day the point information will be in the station_status.json
+MOTIVATE_IDS = {
+    "gbfs_NYC": "nyc",
+    "gbfs_hubway": "bos", # this will be phased out
+    "gbfs_bluebikes": "bos", 
+    "gbfs_cabi": "wdc",
+    "gbfs_BA": "fgb"
+}
+
 def process_station_info(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
@@ -71,8 +81,8 @@ def process_alerts(url):
     response_json = json.loads(result.content)
     return response_json['data']['alerts']
 
-def process_citibike_status():
-    url = "https://layer.bicyclesharing.net/map/v1/nyc/stations"
+def process_motivate_status(motivate_id):
+    url = "https://layer.bicyclesharing.net/map/v1/%s/stations" % motivate_id
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
         return {}
@@ -103,9 +113,9 @@ def process_citibike_status():
             pts=pts))
     return out
 
-def _process_station_status(url):
-    if "citibike" in url:
-        return process_citibike_status()
+def _process_station_status(url, system_id):
+    if system_id in MOTIVATE_IDS:
+        return process_motivate_status(MOTIVATE_IDS[system_id])
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
         return None
@@ -127,8 +137,8 @@ def _process_station_status(url):
     return out
 
 @cache(ttl=STATION_STATUS_TTL)
-def process_station_status(url):
-    return _process_station_status(url)
+def process_station_status(url, system_id):
+    return _process_station_status(url, system_id)
 
 
 class GbfsCodec(BikeNetworkCodec):
@@ -145,6 +155,7 @@ class GbfsCodec(BikeNetworkCodec):
         for line in reader:
             for attempt in range(3):
                 name = line['Name']
+                system_id = "gbfs_%s" % line['System ID']
                 logging.info("Processing %s, attempt %d" % (name,attempt))
                 try:
                     url = line['Auto-Discovery URL']
@@ -173,7 +184,7 @@ class GbfsCodec(BikeNetworkCodec):
                         avg_lon = avg_lon / station_count
                     recent_ts = 0
                     url = process_system_info(config['system_information'])
-                    station_statuses = _process_station_status(config['station_status'])
+                    station_statuses = _process_station_status(config['station_status'], system_id)
                     for station in station_statuses:
                         ts = station.mod
                         if ts > recent_ts:
@@ -185,7 +196,7 @@ class GbfsCodec(BikeNetworkCodec):
                         "regions":CompactElement.of(regions)
                     }
                     r = BikeNetwork(
-                        id= "gbfs_%s" % line['System ID'],
+                        id=system_id,
                         codec=GbfsCodec.NAME,
                         name=name,
                         city=city,
@@ -205,7 +216,7 @@ class GbfsCodec(BikeNetworkCodec):
     
     def get_status(self, system):
         status_header = [["id","bikes","docks","mod","pts"]]
-        station_statuses = process_station_status(system.config['station_status'])
+        station_statuses = process_station_status(system.config['station_status'], system.key.id())
         alerts = []
         if 'system_alerts' in system.config:
             alerts = process_alerts(system.config['system_alerts'])
