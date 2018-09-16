@@ -13,7 +13,6 @@ from models import SystemInfoElement, SystemStatusElement, RegionListElement, Co
 # maybe one day the point information will be in the station_status.json
 MOTIVATE_IDS = {
     "gbfs_NYC": "nyc",
-    "gbfs_hubway": "bos", # this will be phased out
     "gbfs_bluebikes": "bos", 
     "gbfs_cabi": "wdc",
     "gbfs_BA": "fgb"
@@ -44,7 +43,7 @@ def process_system_info(url):
     if result.status_code != 200:
         return None
     response_json = json.loads(result.content)
-    return response_json['data']['url']
+    return response_json['data']
 
 def process_regions(url):
     result = urlfetch.fetch(url, validate_certificate=True)
@@ -155,7 +154,6 @@ class GbfsCodec(BikeNetworkCodec):
         for line in reader:
             for attempt in range(3):
                 name = line['Name']
-                system_id = "gbfs_%s" % line['System ID']
                 logging.info("Processing %s, attempt %d" % (name,attempt))
                 try:
                     url = line['Auto-Discovery URL']
@@ -183,15 +181,16 @@ class GbfsCodec(BikeNetworkCodec):
                         avg_lat = avg_lat / station_count
                         avg_lon = avg_lon / station_count
                     recent_ts = 0
-                    url = process_system_info(config['system_information'])
+                    sys_info = process_system_info(config['system_information'])
+                    system_id = "gbfs_%s" % sys_info.get("system_id", line['System ID'])
                     station_statuses = _process_station_status(config['station_status'], system_id)
                     for station in station_statuses:
                         ts = station.mod
                         if ts > recent_ts:
                             recent_ts = ts
                     config['system_info'] = {
-                        "name": name,
-                        "url": url,
+                        "name": sys_info.get("name", name),
+                        "url": sys_info.get("url"),
                         "stations": CompactElement.of(stations),
                         "regions":CompactElement.of(regions)
                     }
