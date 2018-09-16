@@ -50,8 +50,8 @@ class PyBikesCodec(BikeNetworkCodec):
                      codec=PyBikesCodec.NAME,
                      config=network,
                      city=city,
-                     lat=network['location']['latitude'],
-                     lon=network['location']['longitude'],
+                     lat=round(network['location']['latitude'], 2),
+                     lon=round(network['location']['longitude'], 2),
                      last_updated=int(time.time()))
                     entities.append(r)
             except Exception as e:
