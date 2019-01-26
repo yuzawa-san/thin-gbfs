@@ -74,7 +74,7 @@ class StationList extends React.Component {
 				.map((code) => {
 					const labeledStation = labeledStations[code];
 					const distance = labeledStation.delta.distance < AT_DESTINATION_METERS ?
-						"You are here" :
+						"\u2705 You are here" :
 						`${geo.getDistanceString(labeledStation.delta.distance)} ${geo.cardinalDirection(labeledStation.delta.bearing)}`
 					return <div key={code} className={classes.row} onClick={(e) => onDestination(code)}>
 							<div className={classes.destinationLeft}>{emojiString(code)}</div>
