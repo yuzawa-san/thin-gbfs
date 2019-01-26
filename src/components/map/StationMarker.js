@@ -9,9 +9,10 @@ import { FAVORITE_EMOJI, UNFAVORITE_EMOJI, STATION_EMOJI_CODES, emojiString } fr
 
 const styles = {
 	stationLabel: {
-		'font-size': '13px',
+		'font-size': '16px',
 		padding: '1px !important',
-		'line-height': '13px'
+		'line-height': '16px',
+		width: '16px'
 	},
 	icon: {
 		'font-size': '1.5em'
