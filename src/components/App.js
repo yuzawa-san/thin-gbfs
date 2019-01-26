@@ -82,6 +82,9 @@ const styles = {
 	}
 }
 
+const POSITION_THRESHOLD_METERS = 300;
+const NEARBY_SYSTEM_METERS = 25000;
+
 class App extends React.Component {
 	constructor(props){
 		super(props);
@@ -313,11 +316,11 @@ class App extends React.Component {
 						currentPosition: latLon,
 						positionAccuracy: accuracy
 					});
-					if (!this.state.centerPosition) {
+					if (!this.state.centerPosition && accuracy < POSITION_THRESHOLD_METERS) {
 						const nearbySystems = geo.nearby(latitude, longitude, systems);
 						const selectedSystemId = localStorage.getItem('system');
 						const selectedSystem = nearbySystems.find((system) => {
-							system.nearby = system.distance < 25000;
+							system.nearby = system.distance < NEARBY_SYSTEM_METERS;
 							return system.nearby && selectedSystemId === system.id;
 						});
 						this.setState({systems: nearbySystems, currentSystem: selectedSystem, centerPosition: latLon});
