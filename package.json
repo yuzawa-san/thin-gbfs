@@ -20,15 +20,20 @@
   },
   "homepage": "http://localhost:8080/new",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "concurrently 'dev_appserver.py app.yaml' 'react-scripts start'",
+    "build": "react-scripts build && cd oldui && ./node_modules/gulp/bin/gulp.js",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "react-scripts build && cd oldui && ./node_modules/gulp/bin/gulp.js && cd .. && gcloud app deploy app.yaml cron.yaml"
   },
+  "proxy": "http://localhost:8080/",
   "browserslist": [
     ">0.2%",
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "concurrently": "^4.1.0"
+  }
 }

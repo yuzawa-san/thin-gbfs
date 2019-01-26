@@ -2,13 +2,14 @@ runtime: python27
 api_version: 1
 threadsafe: yes
 skip_files:
-- node_modules
+- ^node_modules/(.*/)?
+- ^oldui/node_modules/(.*/)?
 - ^\.git/.*
 
 
 handlers:
 - url: /new
-  static_dir: ui/build
+  static_dir: build
 - url: /manifest.json
   static_files: manifest.json
   upload: manifest.json

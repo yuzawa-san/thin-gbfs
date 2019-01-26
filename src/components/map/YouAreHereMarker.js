@@ -1,5 +1,5 @@
 import React from 'react';
-import { Circle, Marker } from 'react-leaflet';
+import { Circle, Marker, FeatureGroup } from 'react-leaflet';
 import { DivIcon } from 'leaflet'
 import L from 'leaflet';
 
@@ -14,17 +14,21 @@ export default class YouAreHereMarker extends React.Component {
 
 	render(){
 		const { positionAccuracy, currentPosition } = this.props;
+		console.log(positionAccuracy, currentPosition);
+		if (!currentPosition) {
+		    return null;
+		}
 		// L.setOptions(this.icon, {
 		// 	html: "x"
 		// });
 		return (
-			<React.Fragment>
+			<FeatureGroup>
 				<Circle
 					radius={positionAccuracy}
 					center={currentPosition}
 					opacity={0.3}
 					weight={1}
-					interactive={false}
+					interactive={true}
 					fillColor="#00ccff"
 					color="#007BFF"
 				/>
@@ -33,7 +37,7 @@ export default class YouAreHereMarker extends React.Component {
 					interactive={false}
 					icon={this.icon}>
 				</Marker>
-			</React.Fragment>
+			</FeatureGroup>
 		);
 	}
 }
