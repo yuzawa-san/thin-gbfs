@@ -2,20 +2,23 @@ runtime: python27
 api_version: 1
 threadsafe: yes
 skip_files:
-- ^node_modules/.*
+- node_modules
 - ^\.git/.*
 
+
 handlers:
+- url: /new
+  static_dir: ui/build
 - url: /manifest.json
   static_files: manifest.json
   upload: manifest.json
 - url: /dist/images
   expiration: 1d
-  static_dir: dist/images
+  static_dir: oldui/dist/images
 - url: /dist
   expiration: 365d
   application_readable: true
-  static_dir: dist
+  static_dir: oldui/dist
 - url: /load
   script: main.app
   login: admin

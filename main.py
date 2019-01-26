@@ -22,18 +22,18 @@ CODECS = {
 class MainPage(RestHandler):
     @http_cached(etag=True)
     def get(self):
-        payload= template.render('dist/index.html',{})
+        payload= template.render('oldui/dist/index.html',{})
         self.html_response(payload)
 
 class ServiceWorker(RestHandler):
     def get(self):
-        payload= template.render('dist/sw.js',{})
+        payload= template.render('oldui/dist/sw.js',{})
         self.js_response(payload)
 
 class OverviewPage(RestHandler):
     @http_cached(etag=True)
     def get(self):
-        payload= template.render('src/html/overview.html',{})
+        payload= template.render('oldui/src/html/overview.html',{})
         self.html_response(payload)
 
 class BikeNetworkStatusApi(RestHandler):
