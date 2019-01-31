@@ -23,11 +23,21 @@ const styles = {
 		'font-size': '10px'
 	},
 	tripHeader: {
-		flex: '1',
-		'border-right': '1px solid black',
-		'font-size': '10px',
-		padding: '2px',
-		background: "#ccc"
+		background: '#ccc',
+		padding: '2px'
+	},
+	split: {
+		width: '100%',
+		display: 'table',
+	},
+	splitRight: {
+		display: 'table-cell',
+		'vertical-align': 'middle',
+		'text-align': 'right'
+	},
+	splitLeft: {
+		display: 'table-cell',
+		'vertical-align': 'middle'
 	},
 	tripPoints: {
 		float: 'right'
@@ -106,19 +116,27 @@ class StationList extends React.Component {
 					return <div
 						key={station.id}
 						className={classes.row} onClick={(e) => onCenter(e,station.coords)}>
-							<Progress width="20px" mainColor={mainColor} value={station.status.pct}/> {station.emoji} <strong>{station.name}</strong>
-							<div className={classes.tripPoints}><PointsLabel pts={station.status.pts}/></div>
+							<div className={classes.split}>
+								<div className={classes.splitLeft}>
+									<Progress width="20px" mainColor={mainColor} value={station.status.pct}/> {station.emoji} <strong>{station.name}</strong>
+								</div>
+								<div className={classes.splitRight}>
+									<PointsLabel pts={station.status.pts}/>
+								</div>
+							</div>
 					</div>
 				});
 		};
 		return <div>
 			{destinationSelect}
-			<div className={classes.tripContainer}>
-				<div className={classes.tripHeader}>
-					Bikes near you
-				</div>
-				<div className={classes.tripHeader}>
-					Docks near {emojiString(destination)} {destinationButton}
+			<div className={classes.tripHeader}>
+				<div className={classes.split}>
+					<div className={classes.splitLeft}>
+						Bikes near you
+					</div>
+					<div className={classes.splitRight}>
+						Docks near {emojiString(destination)} {destinationButton}
+					</div>
 				</div>
 			</div>
 			<div className={classes.tripContainer}>

@@ -20,7 +20,6 @@ export default class YouAreHereMarker extends React.Component {
 			iconAnchor: [10, 10],
 			html: ARROW_SVG
 		});
-		console.log(document.getElementById("xxx"))
 	}
 	
 	componentDidMount() {
