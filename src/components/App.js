@@ -7,7 +7,7 @@ import SegmentControl from './SegmentControl';
 import SystemMarker from './map/SystemMarker';
 import StationMarker  from './map/StationMarker';
 import YouAreHereMarker from './map/YouAreHereMarker';
-import { Map, Circle, CircleMarker, Popup, TileLayer, ScaleControl } from 'react-leaflet';
+import { Map, Circle, CircleMarker, Popup, TileLayer, ScaleControl, LayerGroup } from 'react-leaflet';
 import { hcl } from 'd3-color';
 import EmojiFlags from 'emoji-flags';
 import geo from '../geo';
@@ -387,9 +387,10 @@ class App extends React.Component {
 						onCenter={this.setCenter}
 					/>
 				}
-				markers = locations.map((location) => {
+				const markersList = locations.map((location) => {
 					return <StationMarker key={location.id} station={location} mainColor={mainColor} hue={hue} onFavorite={this.setFavorite} onLabel={this.setLabel} />;
 				});
+				markers = <LayerGroup>{markersList}</LayerGroup>
 			} else {
 				content = (<div>Loading System...</div>);
 			}
@@ -414,7 +415,6 @@ class App extends React.Component {
 							url="https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png"
 							attribution={attribution}
 						/>
-						<ScaleControl />
 						<YouAreHereMarker key='here'
 							positionAccuracy={positionAccuracy}
 							currentPosition={currentPosition}

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CircleMarker, Tooltip, Popup, Marker } from 'react-leaflet';
+import { CircleMarker, Tooltip, Popup, Marker, FeatureGroup } from 'react-leaflet';
 import { hcl } from 'd3-color';
 import { DivIcon } from 'leaflet'
 import PointsLabel from '../PointsLabel';
@@ -11,8 +11,7 @@ const styles = {
 	stationLabel: {
 		'font-size': '16px',
 		padding: '1px !important',
-		'line-height': '16px',
-		width: '16px'
+		'line-height': '16px'
 	},
 	icon: {
 		'font-size': '1.5em'
@@ -63,7 +62,7 @@ class StationMarker extends React.Component {
 	render(){
 		const radius = 10
 		const { station, mainColor, hue, classes } = this.props;
-		const { isBike, coords, emoji, isFavorite, label, status, name, distance, bearing, active, alerts } = station;
+		const { isBike, coords, emoji, isFavorite, label, status, name } = station;
 		if (isBike) {
 			return <CircleMarker
 				center={coords}
@@ -108,7 +107,7 @@ class StationMarker extends React.Component {
 			return <option key={code} value={code}>{emojiString(code)}</option>
 		})
 		return (
-			<React.Fragment>
+			<FeatureGroup>
 				<CircleMarker
 					center={coords}
 					radius={radius}
@@ -117,19 +116,19 @@ class StationMarker extends React.Component {
 					fillOpacity={opacity}
 					color={mainColor}
 					opacity={opacity}>
-					<Popup offset={[0, -radius]}>
-						<strong>{name}</strong> <button onClick={this.toggleFavorite} className={classes.icon}>{isFavorite?UNFAVORITE_EMOJI:FAVORITE_EMOJI}</button><br/>
-						{bikes||0} bikes, {docks||0} docks
-						<PointsLabel prefix=", " pts={pts}/><br/>
-						Label: <select className={classes.icon} onChange={this.setLabel} value={label||""}>
-							<option value="">none</option>
-							{labelOptions}
-						</select>
-					</Popup>
 					{labelTooltip}
 				</CircleMarker>
+				<Popup offset={[0, -radius]}>
+					<strong>{name}</strong> <button onClick={this.toggleFavorite} className={classes.icon}>{isFavorite?UNFAVORITE_EMOJI:FAVORITE_EMOJI}</button><br/>
+					{bikes||0} bikes, {docks||0} docks
+					<PointsLabel prefix=", " pts={pts}/><br/>
+					Label: <select className={classes.icon} onChange={this.setLabel} value={label||""}>
+						<option value="">none</option>
+						{labelOptions}
+					</select>
+				</Popup>
 				{pointsMarker}
-			</React.Fragment>
+			</FeatureGroup>
 		);
 	}
 	toggleFavorite = () => {

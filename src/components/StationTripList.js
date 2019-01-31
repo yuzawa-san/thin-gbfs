@@ -6,8 +6,8 @@ import geo from '../geo';
 import { emojiString, STATION_EMOJI_CODES } from '../emoji';
 import { FILTER_BIKES, FILTER_DOCKS } from '../filters.js';
 
-const LIMIT = 10;
-const AT_DESTINATION_METERS = 300;
+const LIMIT = 15;
+const AT_DESTINATION_METERS = 500;
 
 const styles = {
 	message: {
