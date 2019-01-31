@@ -173,7 +173,8 @@ class App extends React.Component {
 				currentSystem.statuses = statuses;
 				// trigger a redraw
 				this.setState({
-					currentSystem: currentSystem
+					currentPosition: this.currentPosition,
+					positionAccuracy: this.positionAccuracy
 				})
 			})
 			.catch((error) =>{
@@ -312,10 +313,8 @@ class App extends React.Component {
 				navigator.geolocation.watchPosition((position) => {
 					const {latitude, longitude, accuracy} = position.coords;
 					const latLon = [latitude, longitude];
-					this.setState({
-						currentPosition: latLon,
-						positionAccuracy: accuracy
-					});
+					this.currentPosition = latLon;
+					this.positionAccuracy = accuracy;
 					if (!this.state.centerPosition && accuracy < POSITION_THRESHOLD_METERS) {
 						const nearbySystems = geo.nearby(latitude, longitude, systems);
 						const selectedSystemId = localStorage.getItem('system');
@@ -323,7 +322,13 @@ class App extends React.Component {
 							system.nearby = system.distance < NEARBY_SYSTEM_METERS;
 							return system.nearby && selectedSystemId === system.id;
 						});
-						this.setState({systems: nearbySystems, currentSystem: selectedSystem, centerPosition: latLon});
+						this.setState({
+							systems: nearbySystems,
+							currentSystem: selectedSystem,
+							centerPosition: latLon,
+							currentPosition: latLon,
+							positionAccuracy: accuracy
+						});
 						if (selectedSystem) {
 							this.selectSystem(selectedSystem);
 						}
@@ -407,10 +412,11 @@ class App extends React.Component {
 		}
 		const attribution = "fsdf";
 		const header = "head";
+		const mod = Date.now();
 		return (
 			<div className={classes.container}>
 				<div className={classes.map}>
-					<Map className={classes.leafletMap} center={centerPosition} zoom={zoomLevel}>
+					<Map className={classes.leafletMap} animate={false} center={centerPosition} zoom={zoomLevel}>
 						<TileLayer
 							url="https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png"
 							attribution={attribution}
@@ -434,6 +440,7 @@ class App extends React.Component {
 							<option value="dock">Docks</option>
 							<option value="trip">Trip</option>
 						</select>
+						{mod}
 						</div>
 					</div>
 					<div className={classes.scroll}>
