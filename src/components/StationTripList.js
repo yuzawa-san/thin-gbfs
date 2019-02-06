@@ -107,13 +107,15 @@ class StationList extends React.Component {
 				</div>
 			</div>
 		}
-		const process = (filter, deltaName) => {
+		const process = (filter, modifier, affinity) => {
 			return stations
-				.filter(filter)
-				.sort((a,b) => (a[deltaName].distance - b[deltaName].distance))
+				.filter((station) => station.active && filter(station))
+				.sort((a,b) => {
+					return (a[affinity] - b[affinity]);
+				})
 				.slice(0, LIMIT)
 				.map((station) => {
-					return <div
+					return (<div
 						key={station.id}
 						className={classes.row} onClick={(e) => onCenter(e,station.coords)}>
 							<div className={classes.split}>
@@ -124,8 +126,16 @@ class StationList extends React.Component {
 									<PointsLabel pts={station.status.pts}/>
 								</div>
 							</div>
-					</div>
+					</div>);
 				});
+		};
+		const MODIFIER_BIKES = (station) => {
+			const pts = station.status.pts || 0;
+			return pts * 200;
+		};
+		const MODIFIER_DOCKS = (station) => {
+			const pts = station.status.pts || 0;
+			return -pts * 200;
 		};
 		return <div>
 			{destinationSelect}
@@ -141,10 +151,10 @@ class StationList extends React.Component {
 			</div>
 			<div className={classes.tripContainer}>
 				<div className={classes.tripCell}>
-					{process(FILTER_BIKES, 'delta')}
+					{process(FILTER_BIKES, MODIFIER_BIKES, 'bikeAffinity')}
 				</div>
 				<div className={classes.tripCell}>
-					{process(FILTER_DOCKS, 'deltaDestination')}
+					{process(FILTER_DOCKS, MODIFIER_DOCKS, 'dockAffinity')}
 				</div>
 			</div>
 		</div>;

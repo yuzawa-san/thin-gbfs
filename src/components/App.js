@@ -121,12 +121,19 @@ class App extends React.Component {
 		});
 		const destinationStation = info.idToStations[labels[destination]] || {};
 		const filter = getFilter(displayMode);
+		const METERS_PER_POINT = 250;
 		return info.stations.concat(bikes).map((station) => {
 			const {isBike, id, name, lat, lon} = station;
 			const isFavorite = !!favorites[id];
 			const label = stationLabels[id];
 			const emoji = emojiString(label, isFavorite) || "";
 			const status = statuses[id] || {};
+			const delta = geo.delta(currentPosition[0], currentPosition[1], lat, lon);
+			const deltaDestination = geo.delta(destinationStation.lat, destinationStation.lon, lat, lon);
+			const pts = (status.pts || 0);
+			const pct = (status.pct || 0);
+			const bikeAffinity = delta.distance + pts * METERS_PER_POINT;
+			const dockAffinity = deltaDestination.distance - pts * METERS_PER_POINT;
 			const out = {
 				id,
 				name,
@@ -136,8 +143,10 @@ class App extends React.Component {
 				isFavorite,
 				label,
 				emoji,
-				delta: geo.delta(currentPosition[0], currentPosition[1], lat, lon),
-				deltaDestination: geo.delta(destinationStation.lat, destinationStation.lon, lat, lon),
+				delta,
+				deltaDestination,
+				bikeAffinity,
+				dockAffinity,
 				alerts: []
 			};
 			
