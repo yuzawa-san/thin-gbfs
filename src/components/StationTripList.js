@@ -68,7 +68,7 @@ const styles = {
 
 class StationList extends React.Component {
 	render() {
-		const { stations, mainColor, onCenter, trip, classes, destination, onDestination } = this.props;
+		const { stations, mainColor, onCenter, classes, destination, onDestination } = this.props;
 		const labeledStations = {};
 		stations.forEach((station) => {
 			if (station.label ) {
