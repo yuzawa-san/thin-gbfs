@@ -9,6 +9,7 @@ skip_files:
 
 handlers:
 - url: /new
+  application_readable: true
   static_dir: build
 - url: /manifest.json
   static_files: manifest.json
