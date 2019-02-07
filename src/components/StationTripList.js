@@ -75,7 +75,7 @@ class StationList extends React.Component {
 				labeledStations[station.label] = station;
 			}
 		});
-		let destinationButton = <button onClick={(e) => onDestination("")}>Change</button>
+		let destinationButton = (<button onClick={(e) => onDestination("")}>Change</button>);
 		let destinationSelect = null;
 		const destinationStation = labeledStations[destination];
 		if (!destinationStation || destinationStation.delta.distance < AT_DESTINATION_METERS) {
@@ -86,16 +86,16 @@ class StationList extends React.Component {
 					const distance = labeledStation.delta.distance < AT_DESTINATION_METERS ?
 						"\u2705 You are here" :
 						`${geo.getDistanceString(labeledStation.delta.distance)} ${geo.cardinalDirection(labeledStation.delta.bearing)}`
-					return <div key={code} className={classes.row} onClick={(e) => onDestination(code)}>
+					return (<div key={code} className={classes.row} onClick={(e) => onDestination(code)}>
 							<div className={classes.destinationLeft}>{emojiString(code)}</div>
 							<div className={classes.destinationRight}>
 								<strong>{labeledStation.name}</strong>
 								<div className={classes.destinationInfo}>{distance}</div>
 							</div>
-						</div>
+						</div>);
 				});
 			destinationButton = null;
-			destinationSelect = <div>
+			destinationSelect = (<div>
 				<div className={classes.message}>Select trip destination:</div>
 				<div>
 					{destinations}
@@ -105,7 +105,7 @@ class StationList extends React.Component {
 						Select a station marker in the map to set a label which can be used as a destination.
 					</span>
 				</div>
-			</div>
+			</div>);
 		}
 		const process = (filter, modifier, affinity) => {
 			return stations
@@ -137,7 +137,7 @@ class StationList extends React.Component {
 			const pts = station.status.pts || 0;
 			return -pts * 200;
 		};
-		return <div>
+		return (<div>
 			{destinationSelect}
 			<div className={classes.tripHeader}>
 				<div className={classes.split}>
@@ -157,7 +157,7 @@ class StationList extends React.Component {
 					{process(FILTER_DOCKS, MODIFIER_DOCKS, 'dockAffinity')}
 				</div>
 			</div>
-		</div>;
+		</div>);
 	}
 }
 

@@ -39,7 +39,7 @@ class StationList extends React.Component {
 			.sort((a,b) => (a.delta.distance - b.delta.distance))
 			.slice(0, LIMIT)
 			.map((station) => {
-				return <div
+				return (<div
 					key={station.id}
 					className={classes.row}
 					onClick={(e) => onCenter(e,station.coords)}>
@@ -53,7 +53,7 @@ class StationList extends React.Component {
 								<PointsLabel prefix=", " pts={station.status.pts}/>
 							</div>
 						</div>
-					</div>
+					</div>);
 			});
 		return <div>{items}</div>;
 	}

@@ -24,9 +24,9 @@ class Progress extends React.Component {
 			width: ((value || 0) * 100).toFixed(1) + "%",
 			background: mainColor
 		}
-		return <div className={classes.progressBar} style={{width: width}}>
+		return (<div className={classes.progressBar} style={{width: width}}>
 			<div className={classes.progressBarValue} style={inlineStyle}></div>
-		</div>
+		</div>);
 	}
 }
 

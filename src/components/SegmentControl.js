@@ -31,11 +31,11 @@ class SegmentControl extends React.Component {
 		const { segments, classes } = this.props;
 		const segmentElements = segments.map((segment, i) => {
 			const className = (i === this.state.selectedSegment) ? `${classes.segment} ${classes.selected}` : classes.segment;
-			return <div key={segment} className={className} onClick={() => this.onChange(i)}>{segment}</div>
+			return (<div key={segment} className={className} onClick={() => this.onChange(i)}>{segment}</div>);
 		});
-		return <div className={classes.container}>
+		return (<div className={classes.container}>
 			{segmentElements}
-		</div>
+		</div>);
 	}
 	onChange = selectedSegment => {
 		this.setState({ selectedSegment });

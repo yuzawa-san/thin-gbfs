@@ -387,37 +387,38 @@ class App extends React.Component {
 				destination = this.state.currentSystem.destination || "";
 				const locations = this._joinStatuses();
 				if (this.state.displayMode==='trip') {
-					content = <StationTripList
+					content = (<StationTripList
 						stations={locations}
 						mainColor={mainColor}
 						onCenter={this.setCenter}
 						destination={destination}
 						onDestination={this.setDestination}
-					/>
+					/>);
 				} else {
-					content = <StationList
+					content = (<StationList
 						stations={locations}
 						mainColor={mainColor}
 						onCenter={this.setCenter}
-					/>
+					/>);
 				}
 				const markersList = locations.map((location) => {
-					return <StationMarker key={location.id} station={location} mainColor={mainColor} hue={hue} onFavorite={this.setFavorite} onLabel={this.setLabel} />;
+					return (<StationMarker key={location.id} station={location} mainColor={mainColor} hue={hue} onFavorite={this.setFavorite} onLabel={this.setLabel} />);
 				});
-				markers = <LayerGroup>{markersList}</LayerGroup>
+				markers = (<LayerGroup>{markersList}</LayerGroup>)
 			} else {
 				content = (<div>Loading System...</div>);
 			}
 		}else if (this.state.systems) {
 			zoomLevel = 10;
 			content = this.state.systems.map((system) => {
-				return <SystemListItem key={system.id} system={system} onSystemSelect={this.selectSystem} onCenter={this.setCenter} />
+				return (<SystemListItem key={system.id} system={system} onSystemSelect={this.selectSystem} onCenter={this.setCenter} />);
 			});
-			markers = this.state.systems.map((system) => {
-				return <SystemMarker key={system.id} system={system} mainColor={mainColor} />
+			const systemMarkers = this.state.systems.map((system) => {
+				return (<SystemMarker key={system.id} system={system} mainColor={mainColor} />);
 			});
+			markers = (<LayerGroup>{systemMarkers}</LayerGroup>)
 		}else {
-			content = <div>Loading...</div>
+			content = (<div>Loading...</div>);
 		}
 		const attribution = "fsdf";
 		const header = "head";

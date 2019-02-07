@@ -4,7 +4,7 @@ import { CircleMarker, Tooltip } from 'react-leaflet';
 export default function SystemMarker(props){
 	const {system, mainColor} = props;
 	const {lat, lon, city, emoji, name} = system;
-	return <CircleMarker
+	return (<CircleMarker
 		center={[lat, lon]}
 		radius={10}
 		weight={1}
@@ -19,5 +19,5 @@ export default function SystemMarker(props){
 			<br/>
 			{name}
 		</Tooltip>
-	</CircleMarker>;
+	</CircleMarker>);
 }

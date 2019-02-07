@@ -3,7 +3,7 @@ import React from 'react';
 
 export default class SystemListItem extends React.Component {
 	render() {
-		const { system } = this.props
+		const { system } = this.props;
 		const button = system.nearby ? <button onClick={this.selectSystem}>Use</button> : ""
 		return (
 			<div onClick={this.setCenter}>
@@ -11,10 +11,10 @@ export default class SystemListItem extends React.Component {
 		</div>);
 	}
 	selectSystem = () => {
-		this.props.onSystemSelect(this.props.system)
+		this.props.onSystemSelect(this.props.system);
 	};
 	setCenter = (e) => {
 		const {lat, lon} = this.props.system;
-		this.props.onCenter(e,[lat, lon])
+		this.props.onCenter(e,[lat, lon]);
 	};
 }

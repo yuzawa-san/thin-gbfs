@@ -60,11 +60,11 @@ class StationMarker extends React.Component {
 	}
 
 	render(){
-		const radius = 10
+		const radius = 10;
 		const { station, mainColor, hue, classes } = this.props;
 		const { isBike, coords, emoji, isFavorite, label, status, name } = station;
 		if (isBike) {
-			return <CircleMarker
+			return (<CircleMarker
 				center={coords}
 				radius={3}
 				weight={0}
@@ -73,7 +73,7 @@ class StationMarker extends React.Component {
 				<Tooltip>
 					{name}
 				</Tooltip>
-			</CircleMarker>;
+			</CircleMarker>);
 		}
 		const {pts, pct, docks, bikes} = status;
 		const fillColor = isNaN(pct) ? "#999" : hcl(hue, 100 * pct, (100 - pct * 42)).toString();
@@ -104,7 +104,7 @@ class StationMarker extends React.Component {
 			</Tooltip>);
 		}
 		const labelOptions = STATION_EMOJI_CODES.map((code) => {
-			return <option key={code} value={code}>{emojiString(code)}</option>
+			return (<option key={code} value={code}>{emojiString(code)}</option>);
 		})
 		return (
 			<FeatureGroup>
