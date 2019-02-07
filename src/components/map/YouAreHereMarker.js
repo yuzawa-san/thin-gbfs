@@ -46,7 +46,6 @@ export default class YouAreHereMarker extends React.Component {
 		}
 		const { heading, arrow } = this.state;
 		let icon = this.dotIcon;
-		let rotationCss = '';
 		if (arrow) {
 			icon = this.arrowIcon;
 			L.setOptions(this.arrowIcon, {

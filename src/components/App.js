@@ -7,7 +7,7 @@ import SegmentControl from './SegmentControl';
 import SystemMarker from './map/SystemMarker';
 import StationMarker  from './map/StationMarker';
 import YouAreHereMarker from './map/YouAreHereMarker';
-import { Map, Circle, CircleMarker, Popup, TileLayer, ScaleControl, LayerGroup } from 'react-leaflet';
+import { Map, TileLayer, ScaleControl, LayerGroup } from 'react-leaflet';
 import { hcl } from 'd3-color';
 import EmojiFlags from 'emoji-flags';
 import geo from '../geo';
@@ -100,12 +100,12 @@ class App extends React.Component {
       if (!data) {
           return [];
       }
-      var out = [];
+      const out = [];
       for (var i = 1; i < data.length; i++) {
-          var obj = {};
-          var row = data[i];
-          for (var j = 0; j < data[i].length; j++) {
-              obj[data[0][j]] = data[i][j];
+          const obj = {};
+          const row = data[i];
+          for (var j = 0; j < row.length; j++) {
+              obj[data[0][j]] = row[j];
           }
           out.push(obj);
       }
@@ -382,8 +382,10 @@ class App extends React.Component {
 		let zoomLevel = 15;
 		let markers = [];
 		let destination = "";
+		let attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>';
 		if (this.state.currentSystem) {
 			if (this.state.currentSystem.info) {
+				attribution = `${attribution} | <a href="${this.state.currentSystem.info.url}" target="blank">${this.state.currentSystem.name}</a>`;
 				destination = this.state.currentSystem.destination || "";
 				const locations = this._joinStatuses();
 				if (this.state.displayMode==='trip') {
@@ -416,12 +418,10 @@ class App extends React.Component {
 			const systemMarkers = this.state.systems.map((system) => {
 				return (<SystemMarker key={system.id} system={system} mainColor={mainColor} />);
 			});
-			markers = (<LayerGroup>{systemMarkers}</LayerGroup>)
+			markers = (<LayerGroup>{systemMarkers}</LayerGroup>);
 		}else {
 			content = (<div>Loading...</div>);
 		}
-		const attribution = "fsdf";
-		const header = "head";
 		const mod = Date.now();
 		return (
 			<div className={classes.container}>
@@ -431,6 +431,7 @@ class App extends React.Component {
 							url="https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png"
 							attribution={attribution}
 						/>
+						<ScaleControl position='topright' />
 						<YouAreHereMarker key='here'
 							positionAccuracy={positionAccuracy}
 							currentPosition={currentPosition}
