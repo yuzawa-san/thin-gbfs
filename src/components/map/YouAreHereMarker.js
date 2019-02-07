@@ -23,12 +23,18 @@ export default class YouAreHereMarker extends React.Component {
 	}
 	
 	componentDidMount() {
+		let lastUpdated = 0;
+		let heading = null;
 		window.addEventListener('deviceorientation', (event) => {
 			if(event.webkitCompassHeading) {
-				this.setState({
-					arrow: true,
-					heading: event.webkitCompassHeading
-				});
+				const now = Date.now();
+				if((now - lastUpdated) > 500) {
+					this.setState({
+						arrow: true,
+						heading: event.webkitCompassHeading
+					});
+					lastUpdated = now;
+				}
 			}
 		});
 	}
