@@ -230,6 +230,10 @@ class App extends React.Component {
 				// trigger a redraw
 				this.setState({
 					currentSystem: system,
+					viewport: {
+						center: this.state.viewport.center,
+						zoom: 15
+					}
 				});
 				// blow away existing timers
 				clearInterval(this.timerID);
@@ -253,10 +257,11 @@ class App extends React.Component {
 	
 	// the center to the a location
 	setCenter = (e, newCenter) => {
-		const {currentPosition} = this.state;
-		this.setState({
-			centerPosition: newCenter || [currentPosition[0]+Math.random()*1e-9, currentPosition[1]]
-		});
+		const {currentPosition, viewport} = this.state;
+		this.setState({ viewport: {
+			center: newCenter || currentPosition,
+			zoom: viewport.zoom
+		}});
 	}
 	
 	setFavorite = (stationId, isFavorite) => {
@@ -302,7 +307,11 @@ class App extends React.Component {
 		localStorage.setItem("display", value);
 		this.setState({
 			displayMode: value
-		})
+		});
+	}
+	
+	onViewportChanged = (viewport) => {
+		this.setState({ viewport })
 	}
 	
 	componentDidMount(){
@@ -336,7 +345,11 @@ class App extends React.Component {
 							currentSystem: selectedSystem,
 							centerPosition: latLon,
 							currentPosition: latLon,
-							positionAccuracy: accuracy
+							positionAccuracy: accuracy,
+							viewport: {
+								center: latLon,
+								zoom: 10
+							}
 						});
 						if (selectedSystem) {
 							this.selectSystem(selectedSystem);
@@ -375,11 +388,10 @@ class App extends React.Component {
 
 	render() {
 		const {classes} = this.props;
-		const {currentPosition, positionAccuracy, centerPosition} = this.state;
+		const {currentPosition, positionAccuracy} = this.state;
 		const hue = 46;
 		const mainColor = hcl(hue, 100, 58).toString();
 		let content = null;
-		let zoomLevel = 15;
 		let markers = [];
 		let destination = "";
 		let attribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>';
@@ -406,12 +418,11 @@ class App extends React.Component {
 				const markersList = locations.map((location) => {
 					return (<StationMarker key={location.id} station={location} mainColor={mainColor} hue={hue} onFavorite={this.setFavorite} onLabel={this.setLabel} />);
 				});
-				markers = (<LayerGroup>{markersList}</LayerGroup>)
+				markers = (<LayerGroup>{markersList}</LayerGroup>);
 			} else {
 				content = (<div>Loading System...</div>);
 			}
 		}else if (this.state.systems) {
-			zoomLevel = 10;
 			content = this.state.systems.map((system) => {
 				return (<SystemListItem key={system.id} system={system} onSystemSelect={this.selectSystem} onCenter={this.setCenter} />);
 			});
@@ -426,7 +437,11 @@ class App extends React.Component {
 		return (
 			<div className={classes.container}>
 				<div className={classes.map}>
-					<Map className={classes.leafletMap} animate={false} center={centerPosition} zoom={zoomLevel}>
+					<Map
+						className={classes.leafletMap}
+						animate={false}
+						onViewportChanged={this.onViewportChanged}
+						viewport={this.state.viewport}>
 						<TileLayer
 							url="https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png"
 							attribution={attribution}
