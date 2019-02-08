@@ -228,10 +228,11 @@ class App extends React.Component {
 				system.bikes = [];
 				system.statuses = {};
 				// trigger a redraw
+				const {lat, lon} = system;
 				this.setState({
 					currentSystem: system,
 					viewport: {
-						center: this.state.viewport.center,
+						center: system.nearby ? this.state.currentPosition : [lat, lon],
 						zoom: 15
 					}
 				});
@@ -251,7 +252,11 @@ class App extends React.Component {
 	clearSystem = () => {
 		clearInterval(this.timerID);
 		this.setState({
-			currentSystem: undefined
+			currentSystem: undefined,
+			viewport: {
+				center: this.state.currentPosition,
+				zoom: 10
+			}
 		});
 	}
 	
@@ -333,7 +338,7 @@ class App extends React.Component {
 					const latLon = [latitude, longitude];
 					this.currentPosition = latLon;
 					this.positionAccuracy = accuracy;
-					if (!this.state.centerPosition && accuracy < POSITION_THRESHOLD_METERS) {
+					if (!this.state.currentPosition && accuracy < POSITION_THRESHOLD_METERS) {
 						const nearbySystems = geo.nearby(latitude, longitude, systems);
 						const selectedSystemId = localStorage.getItem('system');
 						const selectedSystem = nearbySystems.find((system) => {
@@ -343,7 +348,6 @@ class App extends React.Component {
 						this.setState({
 							systems: nearbySystems,
 							currentSystem: selectedSystem,
-							centerPosition: latLon,
 							currentPosition: latLon,
 							positionAccuracy: accuracy,
 							viewport: {
