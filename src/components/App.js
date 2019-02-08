@@ -13,6 +13,16 @@ import EmojiFlags from 'emoji-flags';
 import geo from '../geo';
 import { emojiString, STATION_EMOJI_CODES } from '../emoji';
 import { getFilter } from '../filters.js';
+import LanguageIcon from '@material-ui/icons/Language';
+import GpsFixedIcon from '@material-ui/icons/GpsFixed';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
+import CallMadeIcon from '@material-ui/icons/CallMade';
+import CallReceivedIcon from '@material-ui/icons/CallReceived';
+import RedoIcon from '@material-ui/icons/Redo';
+import ToggleButton from '@material-ui/lab/ToggleButton';
+import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+import IconButton from '@material-ui/core/IconButton';
+
 
 import 'leaflet/dist/leaflet.css';
 
@@ -43,7 +53,13 @@ const styles = {
 		'border-bottom': '1px solid black'
 	},
 	controls: {
-		padding: '5px'
+		padding: '5px',
+		display: 'flex',
+		alignItems: 'center',
+		justifyContent: 'flex-start'
+	},
+	controlItem: {
+		margin: 'auto'
 	},
 	scroll: {
 		'flex-grow': '1',
@@ -307,8 +323,7 @@ class App extends React.Component {
 	}
 	
 	
-	setDisplayMode = (e) => {
-		const value = e.target.value
+	setDisplayMode = (e, value) => {
 		localStorage.setItem("display", value);
 		this.setState({
 			displayMode: value
@@ -437,7 +452,6 @@ class App extends React.Component {
 		}else {
 			content = (<div>Loading...</div>);
 		}
-		const mod = Date.now();
 		return (
 			<div className={classes.container}>
 				<div className={classes.map}>
@@ -462,15 +476,26 @@ class App extends React.Component {
 					<div className={classes.header}>
 						<div className={classes.appName}>thin-gbfs</div>
 						<div className={classes.controls}>
-						<button onClick={this.setCenter}>Center</button>
-						<button onClick={this.clearSystem}>Systems</button>
-						<select value={this.state.displayMode} onChange={this.setDisplayMode}>
-							<option value="all">All</option>
-							<option value="bike">Bikes</option>
-							<option value="dock">Docks</option>
-							<option value="trip">Trip</option>
-						</select>
-						{mod}
+						<IconButton size="small" className={classes.controlItem} onClick={this.setCenter}>
+						        <GpsFixedIcon />
+						      </IconButton>
+						<IconButton size="small" className={classes.controlItem} onClick={this.clearSystem}>
+						        <LanguageIcon />
+						      </IconButton>
+						<ToggleButtonGroup size="small" className={classes.controlItem} value={this.state.displayMode} exclusive onChange={this.setDisplayMode}>
+						              <ToggleButton value="all">
+						                <ImportExportIcon />
+						              </ToggleButton>
+						              <ToggleButton value="bike">
+						                <CallMadeIcon />
+						              </ToggleButton>
+						              <ToggleButton value="dock">
+						                <CallReceivedIcon />
+						              </ToggleButton>
+						              <ToggleButton value="trip">
+						                <RedoIcon />
+						              </ToggleButton>
+						            </ToggleButtonGroup>
 						</div>
 					</div>
 					<div className={classes.scroll}>

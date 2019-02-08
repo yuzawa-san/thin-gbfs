@@ -5,6 +5,8 @@ import PointsLabel from './PointsLabel';
 import geo from '../geo';
 import { emojiString, STATION_EMOJI_CODES } from '../emoji';
 import { FILTER_BIKES, FILTER_DOCKS } from '../filters.js';
+import Button from '@material-ui/core/Button';
+import CreateIcon from '@material-ui/icons/Create';
 
 const LIMIT = 15;
 const AT_DESTINATION_METERS = 500;
@@ -75,7 +77,7 @@ class StationList extends React.Component {
 				labeledStations[station.label] = station;
 			}
 		});
-		let destinationButton = (<button onClick={(e) => onDestination("")}>Change</button>);
+		let destinationButton = (<Button size="small" variant="outlined" onClick={(e) => onDestination("")}><CreateIcon/></Button>);
 		let destinationSelect = null;
 		const destinationStation = labeledStations[destination];
 		if (!destinationStation || destinationStation.delta.distance < AT_DESTINATION_METERS) {
