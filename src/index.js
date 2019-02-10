@@ -3,8 +3,7 @@ import ReactDOM from 'react-dom';
 import { hcl } from 'd3-color';
 import {DEFAULT_HUE, MAIN_LUMINANCE, ALT_LUMINANCE} from './components/HueControl';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-// import App from './components/App';
-import LocationService from './components/LocationService';
+import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 
 const hue = parseInt(localStorage.getItem("color") || DEFAULT_HUE, 10);
@@ -25,7 +24,7 @@ const theme = createMuiTheme({
 const ThemedApp = () => {
 	return (
 		<MuiThemeProvider theme={theme}>
-			<LocationService />
+			<App/>
 		</MuiThemeProvider>
 	);
 }
