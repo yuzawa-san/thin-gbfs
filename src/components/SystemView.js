@@ -103,15 +103,13 @@ class SystemView extends React.Component {
 		return fetch("/systems/"+this.state.id+"/status")
 			.then((response) => response.json())
 			.then((responseJson) => {
-				const timestamp = Date.now();
 				// stash the raw state on the system
 				const statuses = {}
 				const bikes = pivot(responseJson.bikes);
 				bikes.forEach((bike) => {
-					statuses[bike.id] = {timestamp, isBike:true, docks: 0, bikes: 0, pct: 1.0, alerts: []};
+					statuses[bike.id] = {isBike:true, docks: 0, bikes: 0, pct: 1.0, alerts: []};
 				});
 				pivot(responseJson.statuses).forEach((statusItem) => {
-					statusItem.timestamp = timestamp;
 					// calculate percentage full and fast lookup tabld
 					statusItem.pct = statusItem.bikes / (statusItem.docks + statusItem.bikes);
 					// TODO: alerts
