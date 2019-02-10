@@ -26,7 +26,8 @@ const styles = {
 	},
 	scroll: {
 		flex: 1,
-		overflow: "auto"
+		overflow: "auto",
+		'-webkit-overflow-scrolling': 'touch'
 	},
 	bottomBar: {
 		flexShrink: 0

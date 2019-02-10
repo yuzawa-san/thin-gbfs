@@ -23,7 +23,8 @@ const styles = {
 		height: '50%',
 		display: 'flex',
 		flexDirection: 'column',
-		overflow: 'auto'
+		overflow: 'auto',
+		'-webkit-overflow-scrolling': 'touch'
 	},
 	"@media screen and (min-width: 700px)": {
 		container: {
