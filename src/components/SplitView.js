@@ -57,7 +57,6 @@ class SplitView extends React.Component {
 					<Map
 						className={classes.leafletMap}
 						animate={false}
-						onViewportChanged={onViewportChanged}
 						viewport={viewport}>
 						<TileLayer
 							url="https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png"

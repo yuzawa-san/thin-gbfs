@@ -217,6 +217,7 @@ class SystemView extends React.Component {
 		} else {
 			content = (<ProgressView/>);
 		}
+		const dt=(<p>{`${Date.now()}`}</p>);
 		return (
 			<SplitView
 				attribution={attribution}
@@ -225,6 +226,7 @@ class SystemView extends React.Component {
 				viewport={viewport} markers={markers}>
 				<div className={classes.root}>
 					<div className={classes.scroll}>
+						{dt}
 						{content}
 					</div>
 					<BottomNavigation value={displayMode} onChange={this.setDisplayMode} className={classes.bottomBar}>
