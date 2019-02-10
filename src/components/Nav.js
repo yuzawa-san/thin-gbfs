@@ -28,8 +28,7 @@ const styles = {
 		fontFamily: 'sans-serif'
 	},
 	content: {
-		flexGrow: 1,
-		overflow: "hidden"
+		flex: 1
 	},
 	header: {
 		flexShrink: 0,

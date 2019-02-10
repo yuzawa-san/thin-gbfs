@@ -25,7 +25,7 @@ const styles = {
 		flexDirection: 'column'
 	},
 	scroll: {
-		flexGrow: 1,
+		flex: 1,
 		overflow: "auto"
 	},
 	bottomBar: {
