@@ -42,6 +42,10 @@ var geo = {
         };
 
     },
+	positionToLatLon: function(position) {
+		const {latitude, longitude} = position.coords;
+		return [latitude, longitude]
+	},
     getDistanceString: function(meters) {
         var distance;
         if (imperialUnits) {

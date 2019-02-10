@@ -1,9 +1,11 @@
 import React from 'react';
 import { CircleMarker, Tooltip } from 'react-leaflet';
+import { withTheme } from '@material-ui/core/styles';
 
-export default function SystemMarker(props){
-	const {system, mainColor} = props;
+const SystemMarker = (props) => {
+	const {system, theme} = props;
 	const {lat, lon, city, emoji, name} = system;
+	const mainColor = theme.palette.primary.main;
 	return (<CircleMarker
 		center={[lat, lon]}
 		radius={10}
@@ -21,3 +23,5 @@ export default function SystemMarker(props){
 		</Tooltip>
 	</CircleMarker>);
 }
+
+export default withTheme()(SystemMarker);

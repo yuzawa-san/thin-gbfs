@@ -2,6 +2,7 @@ import React from 'react';
 import { Circle, Marker, FeatureGroup } from 'react-leaflet';
 import { DivIcon } from 'leaflet'
 import L from 'leaflet'
+import geo from '../../geo';
 
 const DOT_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="7" fill="#00ccff" stroke="#007BFF" stroke-width="5"/></svg>';
 const ARROW_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><path fill="#007BFF" d="M 10,0 L 20,20 L 10,14 L 0,20" /></svg>';
@@ -40,11 +41,12 @@ export default class YouAreHereMarker extends React.Component {
 	}
 
 	render(){
-		const { positionAccuracy, currentPosition } = this.props;
-		if (!currentPosition) {
-		    return null;
+		const { position } = this.props;
+		if (!position){
+			return;
 		}
 		const { heading, arrow } = this.state;
+		const latLon = geo.positionToLatLon(position);
 		let icon = this.dotIcon;
 		if (arrow) {
 			icon = this.arrowIcon;
@@ -55,8 +57,8 @@ export default class YouAreHereMarker extends React.Component {
 		return (
 			<FeatureGroup>
 				<Circle
-					radius={positionAccuracy}
-					center={currentPosition}
+					radius={position.coords.accuracy}
+					center={latLon}
 					opacity={0.3}
 					weight={1}
 					interactive={false}
@@ -64,7 +66,7 @@ export default class YouAreHereMarker extends React.Component {
 					color="#007BFF"
 				/>
 				<Marker
-					position={currentPosition}
+					position={latLon}
 					interactive={false}
 					icon={icon}>
 				</Marker>

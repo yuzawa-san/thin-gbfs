@@ -1,12 +1,18 @@
 import React from 'react';
 import injectSheet from 'react-jss';
-import Progress from './Progress';
 import PointsLabel from './PointsLabel';
 import geo from '../geo';
 import { emojiString, STATION_EMOJI_CODES } from '../emoji';
 import { FILTER_BIKES, FILTER_DOCKS } from '../filters.js';
 import Button from '@material-ui/core/Button';
-import CreateIcon from '@material-ui/icons/Create';
+import ChangeIcon from '@material-ui/icons/Create';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Avatar from '@material-ui/core/Avatar';
 
 const LIMIT = 15;
 const AT_DESTINATION_METERS = 500;
@@ -21,8 +27,8 @@ const styles = {
 	},
 	tripCell: {
 		flex: '1',
-		'border-right': '1px solid black',
-		'font-size': '10px'
+		borderRight: '1px solid black',
+		fontSize: '10px'
 	},
 	tripHeader: {
 		background: '#ccc',
@@ -34,50 +40,41 @@ const styles = {
 	},
 	splitRight: {
 		display: 'table-cell',
-		'vertical-align': 'middle',
-		'text-align': 'right'
+		verticalAlign: 'middle',
+		textAlign: 'right'
 	},
 	splitLeft: {
 		display: 'table-cell',
-		'vertical-align': 'middle'
-	},
-	tripPoints: {
-		float: 'right'
+		verticalAlign: 'middle'
 	},
 	row: {
-		'cursor': 'pointer',
-		'padding': '2px',
+		cursor: 'pointer',
 		'&:nth-child(even)': {
-			'background-color': '#f0f0f0'
+			backgroundColor: '#f0f0f0'
 		}
 	},
-	destinationLeft: {
-		padding: '1px',
-		'font-size': '1.5em',
-		display: 'inline-block',
-		'vertical-align': 'middle'
+	stationInner: {
+		padding: '2px',
 	},
-	destinationRight: {
-		padding: '1px',
-		display: 'inline-block',
-		'vertical-align': 'middle'
+	progress: {
+		width: "20px"
 	},
 	destinationInfo: {
-		'font-size': '10px',
-		'color': 'grey'
+		fontSize: '10px',
+		color: 'grey'
 	}
 };
 
 class StationList extends React.Component {
 	render() {
-		const { stations, mainColor, onCenter, classes, destination, onDestination } = this.props;
+		const { stations, onSetCenter, classes, destination, onSetDestination } = this.props;
 		const labeledStations = {};
 		stations.forEach((station) => {
 			if (station.label ) {
 				labeledStations[station.label] = station;
 			}
 		});
-		let destinationButton = (<Button size="small" variant="outlined" onClick={(e) => onDestination("")}><CreateIcon/></Button>);
+		let destinationButton = (<Button size="small" variant="outlined" onClick={(e) => onSetDestination("")}><ChangeIcon/></Button>);
 		let destinationSelect = null;
 		const destinationStation = labeledStations[destination];
 		if (!destinationStation || destinationStation.delta.distance < AT_DESTINATION_METERS) {
@@ -88,20 +85,25 @@ class StationList extends React.Component {
 					const distance = labeledStation.delta.distance < AT_DESTINATION_METERS ?
 						"\u2705 You are here" :
 						`${geo.getDistanceString(labeledStation.delta.distance)} ${geo.cardinalDirection(labeledStation.delta.bearing)}`
-					return (<div key={code} className={classes.row} onClick={(e) => onDestination(code)}>
-							<div className={classes.destinationLeft}>{emojiString(code)}</div>
-							<div className={classes.destinationRight}>
-								<strong>{labeledStation.name}</strong>
-								<div className={classes.destinationInfo}>{distance}</div>
-							</div>
-						</div>);
+					return (<div key={code} className={classes.row} onClick={(e) => onSetDestination(code)}>
+							<ListItem>
+								<ListItemAvatar>
+									<Avatar>{emojiString(code)}</Avatar>
+								</ListItemAvatar>
+								<ListItemText
+									primary={labeledStation.name}
+									secondary={distance} />
+							</ListItem>
+						</div>
+						
+						);
 				});
 			destinationButton = null;
 			destinationSelect = (<div>
 				<div className={classes.message}>Select trip destination:</div>
-				<div>
+				<List dense={true}>
 					{destinations}
-				</div>
+				</List>
 				<div className={classes.message}>
 					<span className={classes.destinationInfo}>
 						Select a station marker in the map to set a label which can be used as a destination.
@@ -109,7 +111,7 @@ class StationList extends React.Component {
 				</div>
 			</div>);
 		}
-		const process = (filter, modifier, affinity) => {
+		const process = (filter, affinity) => {
 			return stations
 				.filter((station) => station.active && filter(station))
 				.sort((a,b) => {
@@ -117,27 +119,24 @@ class StationList extends React.Component {
 				})
 				.slice(0, LIMIT)
 				.map((station) => {
-					return (<div
-						key={station.id}
-						className={classes.row} onClick={(e) => onCenter(e,station.coords)}>
-							<div className={classes.split}>
-								<div className={classes.splitLeft}>
-									<Progress width="20px" mainColor={mainColor} value={station.status.pct}/> {station.emoji} <strong>{station.name}</strong>
-								</div>
-								<div className={classes.splitRight}>
-									<PointsLabel pts={station.status.pts}/>
-								</div>
-							</div>
+					let title = station.name;
+					const emoji = emojiString(station.label, station.favorite);
+					if (emoji) {
+						title=`${emoji} ${title}`;
+					}
+					return (
+					<div className={classes.row} key={station.id} onClick={(e) => onSetCenter(e,station.coords)}>
+						<ListItem className={classes.stationInner}>
+							<ListItemAvatar>
+								<LinearProgress className={classes.progress} variant="determinate" value={station.status.pct*100} />
+							</ListItemAvatar>
+							{title}
+							<ListItemSecondaryAction>
+								<PointsLabel pts={station.status.pts}/>
+							</ListItemSecondaryAction>
+						</ListItem>
 					</div>);
 				});
-		};
-		const MODIFIER_BIKES = (station) => {
-			const pts = station.status.pts || 0;
-			return pts * 200;
-		};
-		const MODIFIER_DOCKS = (station) => {
-			const pts = station.status.pts || 0;
-			return -pts * 200;
 		};
 		return (<div>
 			{destinationSelect}
@@ -153,10 +152,14 @@ class StationList extends React.Component {
 			</div>
 			<div className={classes.tripContainer}>
 				<div className={classes.tripCell}>
-					{process(FILTER_BIKES, MODIFIER_BIKES, 'bikeAffinity')}
+					<List dense={true}>
+					{process(FILTER_BIKES, 'bikeAffinity')}
+					</List>
 				</div>
 				<div className={classes.tripCell}>
-					{process(FILTER_DOCKS, MODIFIER_DOCKS, 'dockAffinity')}
+					<List dense={true}>
+					{process(FILTER_DOCKS, 'dockAffinity')}
+					</List>
 				</div>
 			</div>
 		</div>);
