@@ -23,6 +23,16 @@ const styles = {
 	message: {
 		padding: '5px'
 	},
+	stationEntry: {
+		display: 'flex',
+		width: '100%'
+	},
+	stationName: {
+		flex: 1
+	},
+	stationPoints: {
+		textAlign: 'right'
+	},
 	tripContainer: {
 		display: 'flex',
 		width: '100%',
@@ -125,16 +135,20 @@ class StationList extends React.Component {
 							<ListItemAvatar>
 								<LinearProgress className={classes.progress} variant="determinate" value={station.status.pct*100} />
 							</ListItemAvatar>
-							{title}
-							<ListItemSecondaryAction>
-								<PointsLabel pts={station.status.pts}/>
-							</ListItemSecondaryAction>
+							<div className={classes.stationEntry}>
+								<div className={classes.stationName}>
+									{title}
+								</div>
+								<div className={classes.stationPoints}>
+									<PointsLabel pts={station.status.pts}/>
+								</div>
+							</div>
 						</ListItem>
 					</div>);
 				});
 		};
 		return (<div>
-			<AppBar position="relative" color="primary">
+			<AppBar position="sticky" color="primary">
 				<Toolbar className={classes.tripHeader}>
 					<div>Bikes near you</div>
 					<div className={classes.tripHeaderRight} onClick={(e) => onSetDestination("")}>
