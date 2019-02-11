@@ -65,19 +65,15 @@ class StationMarker extends React.Component {
 		const newStation = nextProps.station;
 		const newStatus = newStation.status;
 		if (status.pct !== newStatus.pct || status.pts !== newStatus.pts) {
-			console.log("ST", nextProps.station);
 			return true;
 		}
 		if (active !== newStation.active) {
-			console.log("active", nextProps.station);
 			return true;
 		}
 		if (favorite !== newStation.favorite) {
-			console.log("Fave", nextProps.station);
 			return true;
 		}
 		if (label !== newStation.label) {
-			console.log("Label", nextProps.station);
 			return true;
 		}
 		return false;

@@ -4,7 +4,6 @@ import PointsLabel from './PointsLabel';
 import geo from '../geo';
 import { emojiString, STATION_EMOJI_CODES } from '../emoji';
 import { FILTER_BIKES, FILTER_DOCKS } from '../filters.js';
-import Button from '@material-ui/core/Button';
 import ChangeIcon from '@material-ui/icons/Create';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -13,6 +12,9 @@ import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Avatar from '@material-ui/core/Avatar';
+
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar';
 
 const LIMIT = 15;
 const AT_DESTINATION_METERS = 500;
@@ -31,20 +33,15 @@ const styles = {
 		fontSize: '10px'
 	},
 	tripHeader: {
-		background: '#ccc',
-		padding: '2px'
+		display: 'flex',
+		minHeight: 'unset',
+		padding: '3px'
 	},
-	split: {
-		width: '100%',
-		display: 'table',
-	},
-	splitRight: {
-		display: 'table-cell',
-		verticalAlign: 'middle',
+	tripHeaderRight: {
+		flex: 1,
 		textAlign: 'right'
 	},
-	splitLeft: {
-		display: 'table-cell',
+	changeIcon: {
 		verticalAlign: 'middle'
 	},
 	row: {
@@ -74,7 +71,6 @@ class StationList extends React.Component {
 				labeledStations[station.label] = station;
 			}
 		});
-		let destinationButton = (<Button size="small" variant="outlined" onClick={(e) => onSetDestination("")}><ChangeIcon/></Button>);
 		let destinationSelect = null;
 		const destinationStation = labeledStations[destination];
 		if (!destinationStation || destinationStation.delta.distance < AT_DESTINATION_METERS) {
@@ -98,7 +94,6 @@ class StationList extends React.Component {
 						
 						);
 				});
-			destinationButton = null;
 			destinationSelect = (<div>
 				<div className={classes.message}>Select trip destination:</div>
 				<List dense={true}>
@@ -139,17 +134,16 @@ class StationList extends React.Component {
 				});
 		};
 		return (<div>
+			<AppBar position="relative" color="primary">
+				<Toolbar className={classes.tripHeader}>
+					<div>Bikes near you</div>
+					<div className={classes.tripHeaderRight} onClick={(e) => onSetDestination("")}>
+						Docks near {emojiString(destination)}
+						<ChangeIcon className={classes.changeIcon} />
+					</div>
+				</Toolbar>
+			</AppBar>
 			{destinationSelect}
-			<div className={classes.tripHeader}>
-				<div className={classes.split}>
-					<div className={classes.splitLeft}>
-						Bikes near you
-					</div>
-					<div className={classes.splitRight}>
-						Docks near {emojiString(destination)} {destinationButton}
-					</div>
-				</div>
-			</div>
 			<div className={classes.tripContainer}>
 				<div className={classes.tripCell}>
 					<List dense={true}>

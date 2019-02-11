@@ -2,12 +2,16 @@ import React from 'react';
 import injectSheet from 'react-jss';
 import { withTheme } from '@material-ui/core/styles';
 import { hcl } from 'd3-color';
+import Button from '@material-ui/core/Button';
 
 const styles = {
 	sample: {
 		display: 'inline-block',
 		width: '10px',
 		height: '10px'
+	},
+	slider: {
+		width: '100%'
 	}
 }
 
@@ -36,6 +40,7 @@ class HueControl extends React.Component {
 	}
 	
 	render() {
+		const { classes } = this.props;
 		const { hue } = this.state;
 		if (hue === undefined) {
 			return null;
@@ -43,10 +48,10 @@ class HueControl extends React.Component {
 		const preview = hcl(hue, 100, MAIN_LUMINANCE).toString();
 		return (
 			<div>
-				Customize Hue: <div className={this.props.classes.sample} style={{background:preview}}></div><br/>
-				<input onChange={this.update} defaultValue={hue} type="range" min="0" max="360"/><br/>
-				<button onClick={this.save}>save</button>
-				<button onClick={this.reset}>reset</button>
+				Customize Hue: <div className={classes.sample} style={{background:preview}}></div><br/>
+				<input className={classes.slider} onChange={this.update} defaultValue={hue} type="range" min="0" max="360"/><br/>
+				<Button size='small' onClick={this.save}>Save</Button>
+				<Button size='small' onClick={this.reset}>Reset</Button>
 			</div>
 		);
 	}
