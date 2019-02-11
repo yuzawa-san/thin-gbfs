@@ -5,7 +5,7 @@ import L from 'leaflet'
 import geo from '../../geo';
 
 const DOT_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="7" fill="#00ccff" stroke="#007BFF" stroke-width="5"/></svg>';
-const ARROW_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><path fill="#007BFF" d="M 10,0 L 20,20 L 10,14 L 0,20" /></svg>';
+const ARROW_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" class="you-are-here"><path fill="#007BFF" d="M 10,0 L 20,20 L 10,14 L 0,20" /></svg>';
 export default class YouAreHereMarker extends React.Component {
 	constructor(props){
 		super(props);
@@ -20,21 +20,21 @@ export default class YouAreHereMarker extends React.Component {
 			className: 'me-icon',
 			iconSize: [20, 20],
 			iconAnchor: [10, 10],
-			html: ''
+			html: ARROW_SVG
 		});
 	}
 	
 	componentDidMount() {
-		let lastUpdated = 0;
+		this.lastUpdated = 0;
 		window.addEventListener('deviceorientation', (event) => {
 			if(event.webkitCompassHeading) {
 				const now = Date.now();
-				if((now - lastUpdated) > 500) {
+				if((now - this.lastUpdated) > 500) {
 					this.setState({
 						arrow: true,
 						heading: event.webkitCompassHeading
 					});
-					lastUpdated = now;
+					this.lastUpdated = now;
 				}
 			}
 		});
@@ -47,15 +47,17 @@ export default class YouAreHereMarker extends React.Component {
 		}
 		const { heading, arrow } = this.state;
 		const latLon = geo.positionToLatLon(position);
+		let style = null;
 		let icon = this.dotIcon;
 		if (arrow) {
 			icon = this.arrowIcon;
-			L.setOptions(this.arrowIcon, {
-				html: `<div style="width:20px;height:20px;transform:rotate(${heading}deg);">${ARROW_SVG}</div>`
-			});
+			style = `.you-are-here {transform:rotate(${heading}deg);}`;
 		}
 		return (
 			<FeatureGroup>
+				<style>
+					{style}
+				</style>
 				<Circle
 					radius={position.coords.accuracy}
 					center={latLon}
