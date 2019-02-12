@@ -20,14 +20,13 @@
     "type": "git",
     "url": "https://github.com/yuzawa-san/thin-gbfs.git"
   },
-  "homepage": "http://localhost:8080/new",
   "scripts": {
     "start": "concurrently 'dev_appserver.py app.yaml' 'react-scripts start'",
-    "build": "react-scripts build && cd oldui && ./node_modules/gulp/bin/gulp.js",
+    "build": "react-scripts build",
     "analyze": "source-map-explorer build/static/js/2.*",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy": "react-scripts build && cd oldui && ./node_modules/gulp/bin/gulp.js && cd .. && gcloud app deploy app.yaml cron.yaml"
+    "deploy": "react-scripts build && gcloud app deploy app.yaml cron.yaml"
   },
   "proxy": "http://localhost:8080/",
   "browserslist": [

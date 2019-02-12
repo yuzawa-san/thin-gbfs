@@ -1,15 +1,14 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
-  "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+    "name": "thin-gbfs",
+    "short_name": "thin-gbfs",
+    "icons": [{
+        "src": "/dist/images/bike.png",
+        "type": "image/png",
+        "sizes": "256x256"
+    }],
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#FD4D02",
+    "theme_color": "#FD4D02"
 }

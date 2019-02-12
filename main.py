@@ -19,29 +19,6 @@ CODECS = {
     PyBikesCodec.NAME: PyBikesCodec()
 }
 
-class MainPage(RestHandler):
-    @http_cached(etag=True)
-    def get(self):
-        payload= template.render('oldui/dist/index.html',{})
-        self.html_response(payload)
-
-class MainPageV2(RestHandler):
-    @http_cached(etag=True)
-    def get(self):
-        payload= template.render('build/index.html',{})
-        self.html_response(payload)
-
-class ServiceWorker(RestHandler):
-    def get(self):
-        payload= template.render('oldui/dist/sw.js',{})
-        self.js_response(payload)
-
-class OverviewPage(RestHandler):
-    @http_cached(etag=True)
-    def get(self):
-        payload= template.render('oldui/src/html/overview.html',{})
-        self.html_response(payload)
-
 class BikeNetworkStatusApi(RestHandler):
     @http_cached(etag=True,ttl=STATION_STATUS_TTL)
     def get(self,system_id):
@@ -101,10 +78,6 @@ class UpdateSystemsHandler(webapp2.RequestHandler):
         http_purge("/systems")
 
 app = webapp2.WSGIApplication([
-    ('/', MainPage),
-    ('/v2', MainPageV2),
-    ('/sw.js', ServiceWorker),
-    ('/overview', OverviewPage),
     ('/systems/([^/]+)/info', BikeNetworkInfoApi),
     ('/systems/([^/]+)/status', BikeNetworkStatusApi),
     ('/systems', BikeNetworkListApi),
