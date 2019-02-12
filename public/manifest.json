@@ -2,7 +2,7 @@
     "name": "thin-gbfs",
     "short_name": "thin-gbfs",
     "icons": [{
-        "src": "/dist/images/bike.png",
+        "src": "/bike.png",
         "type": "image/png",
         "sizes": "256x256"
     }],
