@@ -14,7 +14,7 @@ The goals of this project are:
 * cache system and station information server side to avoid hitting the source data API's too often.
 * limit number of TCP connections and number of hosts contacted
 * use HTTPS
-* privacy: the HTML5 geolocation uri is used, but the location is not transmitted elsewhere.
+* privacy: the HTML5 geolocation APi is used, but the location is not transmitted elsewhere.
 
 ## Development
 
@@ -22,7 +22,7 @@ Get google cloud sdk, load in dependencies using `npm install`.
 
 There are more common tasks listed `npm run`.
 
-To run a dev server: `npm run dev` and open your browser to localhost:8080. TODO: support live reload
+To run a dev server: `npm run dev` and open your browser to localhost:8080.
 You will need to seed the DB by going to localhost:8000, then cron jobs and then run the only cron job.
 
 ## Software License Info
@@ -30,10 +30,14 @@ You will need to seed the DB by going to localhost:8000, then cron jobs and then
 In order to minimize the number of TCP connections between the web app and the server, the dependencies have been webpacked together.
 These projects have been utilized and bundled:
 
-* [zepto](https://github.com/madrobby/zepto) ([MIT](https://github.com/madrobby/zepto/blob/master/MIT-LICENSE))
-* [Leaflet](https://github.com/Leaflet/Leaflet) ([BSD 2-clause](https://github.com/Leaflet/Leaflet/blob/master/LICENSE))
-* [Compass.js](https://github.com/ai/compass.js) ([MIT](https://github.com/ai/compass.js/blob/master/LICENSE))
+* [material-ui](https://github.com/mui-org/material-ui/) ([MIT](https://github.com/mui-org/material-ui/blob/next/LICENSE))
+* [d3-color](https://github.com/d3/d3-color/) ([BSD 3-clause](https://github.com/d3/d3-color/blob/master/LICENSE))
 * [emoji-flags](https://github.com/matiassingers/emoji-flags) ([MIT](https://github.com/matiassingers/emoji-flags/blob/master/license))
+* [leaflet](https://github.com/Leaflet/Leaflet) ([BSD 2-clause](https://github.com/Leaflet/Leaflet/blob/master/LICENSE))
+* [react](https://github.com/facebook/react/) ([MIT](https://github.com/facebook/react/blob/master/LICENSE))
+* [react-jss](https://github.com/cssinjs/jss/blob/master/packages/react-jss) ([MIT](https://github.com/cssinjs/jss/blob/master/packages/react-jss/LICENSE))
+* [react-leaflet](https://github.com/PaulLeCam/react-leaflet/blob/master/LICENSE) ([MIT](https://github.com/PaulLeCam/react-leaflet/blob/master/LICENSE))
+
 
 This project uses the MIT License.
 
