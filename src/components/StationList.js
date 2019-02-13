@@ -26,6 +26,7 @@ const styles = {
 class StationList extends React.Component {
 	render() {
 		const { stations, onSetCenter, classes } = this.props;
+		const nowMs = Date.now();
 		const items = stations
 			.filter((station) => station.active)
 			.sort((a,b) => (a.delta.distance - b.delta.distance))
@@ -35,6 +36,10 @@ class StationList extends React.Component {
 				const emoji = emojiString(station.label, station.favorite);
 				if (emoji) {
 					title=`${emoji} ${title}`;
+				}	
+				let info = `${station.status.bikes} bikes, ${station.status.docks} docks, ${geo.getDistanceString(station.delta.distance)} ${geo.cardinalDirection(station.delta.bearing)}`;
+				if (station.status.mod) {
+					info += ", " + ((nowMs / 1000 - station.status.mod) / 60).toFixed(0) + "m ago";
 				}
 				return (
 					<ListItem className={classes.row} key={station.id} onClick={(e) => onSetCenter(e,station.coords)}>
@@ -44,7 +49,7 @@ class StationList extends React.Component {
 						<ListItemText
 							primary={title}
 							secondary={<span>
-								{station.status.bikes} bikes, {station.status.docks} docks, {geo.getDistanceString(station.delta.distance)} {geo.cardinalDirection(station.delta.bearing)}
+								{info}
 								<PointsLabel prefix=", " pts={station.status.pts}/></span>}
 						/>
 					</ListItem>);
