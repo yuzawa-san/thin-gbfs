@@ -9,7 +9,6 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import Avatar from '@material-ui/core/Avatar';
 
@@ -91,7 +90,7 @@ class StationList extends React.Component {
 					const labeledStation = labeledStations[code];
 					const distance = labeledStation.delta.distance < AT_DESTINATION_METERS ?
 						"\u2705 You are here" :
-						`${geo.getDistanceString(labeledStation.delta.distance)} ${geo.cardinalDirection(labeledStation.delta.bearing)}`
+						`${geo.getDistanceString(labeledStation.delta.distance)} ${geo.cardinalDirection(labeledStation.delta.bearing)}`;
 					return (<div key={code} className={classes.row} onClick={(e) => onSetDestination(code)}>
 							<ListItem>
 								<ListItemAvatar>

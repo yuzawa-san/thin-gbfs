@@ -8,11 +8,11 @@ const styles = {
 	drop: {
 		color: 'red'
 	}
-}
+};
 
 class PointsLabel extends React.Component {
 	render() {
-		const { pts, prefix, suffix, classes } = this.props
+		const { pts, prefix, suffix, classes } = this.props;
 		if (!pts) {
 			return (<span/>);
 		}
@@ -21,7 +21,9 @@ class PointsLabel extends React.Component {
 		return (
 			<React.Fragment>
 				{prefix||""}
-				<span className={cls}>{correctedPts}{suffix||"pts"}</span>
+				<span className={cls}>
+					{correctedPts}{suffix||"pts"}
+				</span>
 			</React.Fragment>);
 	}
 }

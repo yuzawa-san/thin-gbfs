@@ -1,7 +1,6 @@
 import React from 'react';
 import { Circle, Marker, FeatureGroup } from 'react-leaflet';
-import { DivIcon } from 'leaflet'
-import L from 'leaflet'
+import { DivIcon } from 'leaflet';
 import geo from '../../geo';
 
 const DOT_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><circle cx="10" cy="10" r="7" fill="#00ccff" stroke="#007BFF" stroke-width="5"/></svg>';

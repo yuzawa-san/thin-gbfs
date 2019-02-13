@@ -54,7 +54,9 @@ class StationList extends React.Component {
 						/>
 					</ListItem>);
 			});
-		return (<List dense={true}>{items}</List>);
+		return (<List dense={true}>
+			{items}
+		</List>);
 	}
 }
 

@@ -34,7 +34,7 @@ export default class SystemsView extends React.Component {
 	}
 	
 	render() {
-		const { systems, onSetSystem, onSetCenter, currentPosition, onViewportChanged, viewport } = this.props;
+		const { systems, onSetSystem, onSetCenter, currentPosition, viewport } = this.props;
 		const { search, count } = this.state;
 		const lowercaseSearch = search.toLowerCase();
 		let filteredSystems = systems;
@@ -51,7 +51,6 @@ export default class SystemsView extends React.Component {
 		return (
 			<SplitView 
 				currentPosition={currentPosition}
-				onViewportChanged={onViewportChanged}
 				viewport={viewport}
 				markers={filteredSystems.map((system)=>{
 					return (<SystemMarker key={system.id} system={system} mainColor="red" />);
@@ -62,7 +61,9 @@ export default class SystemsView extends React.Component {
 					return (
 						<ListItem key={system.id} alignItems="flex-start">
 							<ListItemAvatar>
-								<Avatar>{system.emoji}</Avatar>
+								<Avatar>
+									{system.emoji}
+								</Avatar>
 							</ListItemAvatar>
 							<ListItemText
 								onClick={(e) => onSetCenter(e,[system.lat, system.lon])}

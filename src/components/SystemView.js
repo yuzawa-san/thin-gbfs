@@ -170,7 +170,7 @@ class SystemView extends React.Component {
 	}
 	
 	render() {
-		const { classes,  currentSystem, onSetCenter, currentPosition, onViewportChanged, viewport } = this.props;
+		const { classes,  currentSystem, onSetCenter, currentPosition, viewport } = this.props;
 		const { displayMode, url, stations, bikes, statuses, favorites, idToStations, destination, labelsToStations, loaded } = this.state;
 		let attribution = null;
 		let content = null;
@@ -219,7 +219,6 @@ class SystemView extends React.Component {
 			<SplitView
 				attribution={attribution}
 				currentPosition={currentPosition}
-				onViewportChanged={onViewportChanged}
 				viewport={viewport} markers={markers}>
 				<div className={classes.root}>
 					<div className={classes.scroll}>

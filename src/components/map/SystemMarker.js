@@ -17,7 +17,9 @@ const SystemMarker = (props) => {
 		color={mainColor}
 		opacity={1.0}>
 		<Tooltip>
-			<strong>{city} {emoji || ""}</strong>
+			<strong>
+				{city} {emoji || ""}
+			</strong>
 			<br/>
 			{name}
 		</Tooltip>

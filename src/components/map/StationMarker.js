@@ -126,8 +126,11 @@ class StationMarker extends React.Component {
 			</Tooltip>);
 		}
 		const labelOptions = STATION_EMOJI_CODES.map((code) => {
-			return (<option key={code} value={code}>{emojiString(code)}</option>);
+			return (<option key={code} value={code}>
+				{emojiString(code)}
+			</option>);
 		});
+		const info = `${bikes||0} bikes, ${docks||0} docks`;
 		return (
 			<FeatureGroup>
 				<CircleMarker
@@ -141,11 +144,21 @@ class StationMarker extends React.Component {
 					{labelTooltip}
 				</CircleMarker>
 				<Popup offset={[0, -radius]}>
-					<strong>{name}</strong> <button onClick={this.toggleFavorite} className={classes.icon}>{favorite?UNFAVORITE_EMOJI:FAVORITE_EMOJI}</button><br/>
-					{bikes||0} bikes, {docks||0} docks
-					<PointsLabel prefix=", " pts={pts}/><br/>
-					Label: <select className={classes.icon} onChange={this.setLabel} value={label||""}>
-						<option value="">none</option>
+					<strong>
+						{name}
+					</strong>
+					<button onClick={this.toggleFavorite} className={classes.icon}>
+						{favorite?UNFAVORITE_EMOJI:FAVORITE_EMOJI}
+					</button>
+					<br/>
+					{info}
+					<PointsLabel prefix=", " pts={pts}/>
+					<br/>
+					Label: 
+					<select className={classes.icon} onChange={this.setLabel} value={label||""}>
+						<option value="">
+							none
+						</option>
 						{labelOptions}
 					</select>
 				</Popup>

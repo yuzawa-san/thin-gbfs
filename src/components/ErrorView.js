@@ -14,17 +14,23 @@ const styles = {
 	inner: {
 		margin: 'auto'
 	}
-}
+};
 
 class ErrorView extends React.Component {
 	render() {
-		const { classes, error } = this.props
+		const { classes, error } = this.props;
 		return (
 			<div className={classes.root}>
 				<div className={classes.inner}>
-					<strong>An error has occurred:</strong><br/>
-					<p>{error}</p>
-					<Button variant='contained' onClick={() => window.location.reload()}>Reload</Button>
+					<strong>
+						An error has occurred:
+					</strong><br/>
+					<p>
+						{error}
+					</p>
+					<Button variant='contained' onClick={() => window.location.reload()}>
+						Reload
+					</Button>
 				</div>
 			</div>
 		);

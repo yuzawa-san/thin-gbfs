@@ -13,11 +13,11 @@ const styles = {
 	progress: {
 		margin: 'auto'
 	}
-}
+};
 
 class ProgressView extends React.Component {
 	render() {
-		const { classes } = this.props
+		const { classes } = this.props;
 		return (
 			<div className={classes.root}>
 				<CircularProgress className={classes.progress}/>

@@ -144,10 +144,6 @@ export default class LocationService extends React.Component {
 		}});
 	}
 	
-	onViewportChanged = (viewport) => {
-		this.setState({ viewport });
-	}
-	
 	render() {
 		const {systems, viewport, currentSystem, currentPosition, recentPosition, error} = this.state;
 		let content = "";
@@ -161,7 +157,6 @@ export default class LocationService extends React.Component {
 						recentPosition={recentPosition}
 						currentPosition={currentPosition}
 						viewport={viewport}
-						onViewportChanged={this.onViewportChanged}
 						onSetCenter={this.setCenter} />
 				);
 			} else {
@@ -171,7 +166,6 @@ export default class LocationService extends React.Component {
 						systems={systems}
 						currentPosition={currentPosition}
 						viewport={viewport}
-						onViewportChanged={this.onViewportChanged}
 						onSetSystem={this.setSystem}
 						onSetCenter={this.setCenter} />
 				);

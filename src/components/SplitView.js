@@ -46,7 +46,7 @@ const styles = {
 
 class SplitView extends React.Component {
 	render() {
-		const {classes, currentPosition, markers, attribution, children, onViewportChanged, viewport} = this.props;
+		const {classes, currentPosition, markers, attribution, children, viewport} = this.props;
 		let effectiveAttribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OSM</a>, &copy; <a href="https://carto.com/attribution">CARTO</a>';
 		if (attribution) {
 			effectiveAttribution = `${effectiveAttribution} | ${attribution}`;

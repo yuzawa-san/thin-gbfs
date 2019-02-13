@@ -61,7 +61,13 @@ class Nav extends React.Component {
 				<AppBar position="static" className={classes.header}>
 					<Toolbar>
 						<Typography color="inherit" className={classes.grow}>
-							<strong>thin-gbfs</strong><br/><small>{title}</small>
+							<strong>
+								thin-gbfs
+							</strong>
+							<br/>
+							<small>
+								{title}
+							</small>
 						</Typography>
 						<IconButton color="inherit" onClick={this.showInfo}>
 							<InfoIcon />
