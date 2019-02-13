@@ -84,7 +84,7 @@ class StationList extends React.Component {
 		let destinationSelect = null;
 		const destinationStation = labeledStations[destination];
 		if (!destinationStation || destinationStation.delta.distance < AT_DESTINATION_METERS) {
-			let destinations = STATION_EMOJI_CODES
+			const destinations = STATION_EMOJI_CODES
 				.filter((code) => labeledStations[code])
 				.map((code) => {
 					const labeledStation = labeledStations[code];
@@ -94,7 +94,9 @@ class StationList extends React.Component {
 					return (<div key={code} className={classes.row} onClick={(e) => onSetDestination(code)}>
 							<ListItem>
 								<ListItemAvatar>
-									<Avatar>{emojiString(code)}</Avatar>
+									<Avatar>
+										{emojiString(code)}
+									</Avatar>
 								</ListItemAvatar>
 								<ListItemText
 									primary={labeledStation.name}
@@ -105,7 +107,13 @@ class StationList extends React.Component {
 						);
 				});
 			if (destinations.length === 0) {
-				destinations = "No labeled stations!";
+				return (<div className={classes.message}>
+					No labeled stations!
+					<br/>
+					<span className={classes.destinationInfo}>
+						Select a station marker in the map to set a label which can be used as a destination.
+					</span>
+				</div>);
 			}
 			destinationSelect = (<div>
 				<div className={classes.message}>Select trip destination:</div>
