@@ -106,13 +106,14 @@ class StationList extends React.Component {
 						
 						);
 				});
+			const help = (<span className={classes.destinationInfo}>
+				Select a station marker in the map to set a label which can be used as a destination.
+			</span>);
 			if (destinations.length === 0) {
 				return (<div className={classes.message}>
 					No labeled stations!
 					<br/>
-					<span className={classes.destinationInfo}>
-						Select a station marker in the map to set a label which can be used as a destination.
-					</span>
+					{help}
 				</div>);
 			}
 			destinationSelect = (<div>
@@ -121,9 +122,7 @@ class StationList extends React.Component {
 					{destinations}
 				</List>
 				<div className={classes.message}>
-					<span className={classes.destinationInfo}>
-						Select a station marker in the map to set a label which can be used as a destination.
-					</span>
+					{help}
 				</div>
 			</div>);
 		}
