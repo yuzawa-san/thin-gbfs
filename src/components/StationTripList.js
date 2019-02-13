@@ -84,7 +84,7 @@ class StationList extends React.Component {
 		let destinationSelect = null;
 		const destinationStation = labeledStations[destination];
 		if (!destinationStation || destinationStation.delta.distance < AT_DESTINATION_METERS) {
-			const destinations = STATION_EMOJI_CODES
+			let destinations = STATION_EMOJI_CODES
 				.filter((code) => labeledStations[code])
 				.map((code) => {
 					const labeledStation = labeledStations[code];
@@ -104,6 +104,9 @@ class StationList extends React.Component {
 						
 						);
 				});
+			if (destinations.length === 0) {
+				destinations = "No labeled stations!";
+			}
 			destinationSelect = (<div>
 				<div className={classes.message}>Select trip destination:</div>
 				<List dense={true}>
