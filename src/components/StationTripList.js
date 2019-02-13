@@ -56,6 +56,7 @@ const styles = {
 	},
 	row: {
 		cursor: 'pointer',
+		userSelect: 'none',
 		'&:nth-child(even)': {
 			backgroundColor: '#f0f0f0'
 		}

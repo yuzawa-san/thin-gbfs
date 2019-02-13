@@ -15,6 +15,7 @@ const LIMIT = 25;
 const styles = {
 	row: {
 		cursor: 'pointer',
+		userSelect: 'none',
 		padding: '5px',
 		'&:nth-child(even)': {
 			backgroundColor: '#f0f0f0'
