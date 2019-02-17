@@ -24,24 +24,24 @@ class SystemListElement(CompactElement):
     def __init__(self, bike_network):
         super(SystemListElement, self).__init__(("id","name","lat","lon","city"), bike_network.key.id())
         self.name = bike_network.name
-        self.lat = bike_network.lat
-        self.lon = bike_network.lon
+        self.lat = float(bike_network.lat)
+        self.lon = float(bike_network.lon)
         self.city = bike_network.city
 
     def row(self):
-        return [self.id, self.name, float(self.lat), float(self.lon), self.city]
+        return [self.id, self.name, self.lat, self.lon, self.city]
 
 class SystemInfoElement(CompactElement):
     def __init__(self, id=None, name=None, lat=0.0, lon=0.0, region=None):
         super(SystemInfoElement, self).__init__(("id","name","lat","lon","region"),id)
         self.id = id
         self.name = name
-        self.lat = lat
-        self.lon = lon
+        self.lat = float(lat)
+        self.lon = float(lon)
         self.region = region
 
     def row(self):
-        out = [self.id, self.name, float(self.lat), float(self.lon)]
+        out = [self.id, self.name, self.lat, self.lon]
         if self.region:
             out.append(self.region)
         return out
