@@ -135,7 +135,7 @@ class StationList extends React.Component {
 				.slice(0, LIMIT)
 				.map((station) => {
 					let title = station.name;
-					const emoji = emojiString(station.label, station.favorite);
+					const emoji = emojiString(station.isBike ? '1F6B2' : station.label, station.favorite);
 					if (emoji) {
 						title=`${emoji} ${title}`;
 					}

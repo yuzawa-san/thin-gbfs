@@ -107,7 +107,9 @@ class SystemView extends React.Component {
 				const statuses = {}
 				const bikes = pivot(responseJson.bikes);
 				bikes.forEach((bike) => {
-					statuses[bike.id] = {isBike:true, docks: 0, bikes: 0, pct: 1.0, alerts: []};
+					bike.isBike = true;
+					bike.coords = [bike.lat, bike.lon];
+					statuses[bike.id] = {docks: 1, bikes: 1, pct: 1.0, alerts: []};
 				});
 				pivot(responseJson.statuses).forEach((statusItem) => {
 					// calculate percentage full and fast lookup tabld

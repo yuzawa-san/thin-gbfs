@@ -9,6 +9,7 @@ import ListItemText from '@material-ui/core/ListItemText';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import List from '@material-ui/core/List';
+import Avatar from '@material-ui/core/Avatar';
 
 const LIMIT = 25;
 
@@ -32,12 +33,27 @@ class StationList extends React.Component {
 			.sort((a,b) => (a.delta.distance - b.delta.distance))
 			.slice(0, LIMIT)
 			.map((station) => {
+				let geoInfo = `${geo.getDistanceString(station.delta.distance)} ${geo.cardinalDirection(station.delta.bearing)}`;
+				if (station.isBike) {
+					return (
+						<ListItem className={classes.row} key={station.id} onClick={(e) => onSetCenter(e,station.coords)}>
+							<ListItemAvatar>
+								<Avatar>
+									{emojiString('1F6B2')}
+								</Avatar>
+							</ListItemAvatar>
+							<ListItemText
+								primary={station.name}
+								secondary={geoInfo}
+							/>
+						</ListItem>);
+				}
 				let title = station.name;
 				const emoji = emojiString(station.label, station.favorite);
 				if (emoji) {
 					title=`${emoji} ${title}`;
-				}	
-				let info = `${station.status.bikes} bikes, ${station.status.docks} docks, ${geo.getDistanceString(station.delta.distance)} ${geo.cardinalDirection(station.delta.bearing)}`;
+				}
+				let info = `${station.status.bikes} bikes, ${station.status.docks} docks, ${geoInfo}`;
 				if (station.status.mod) {
 					info += ", " + ((nowMs / 1000 - station.status.mod) / 60).toFixed(0) + "m ago";
 				}
