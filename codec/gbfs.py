@@ -69,7 +69,7 @@ def process_free_bikes(url):
     out = []
     for bike in response_json['data']['bikes']:
         if bike['is_reserved'] == 0 and bike['is_disabled'] == 0:
-            out.append(SystemInfoElement(id=bike['bike_id'],name=bike['name'],lat=bike['lat'],lon=bike['lon']))
+            out.append(SystemInfoElement(id=bike['bike_id'],name=bike.get('name','Bike'),lat=bike['lat'],lon=bike['lon']))
     return out
 
 @cache(ttl=ALERTS_TTL)
