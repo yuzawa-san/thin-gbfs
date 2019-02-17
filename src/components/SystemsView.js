@@ -52,7 +52,7 @@ export default class SystemsView extends React.Component {
 			<SplitView 
 				currentPosition={currentPosition}
 				viewport={viewport}
-				markers={filteredSystems.map((system)=>{
+				markers={systems.map((system)=>{
 					return (<SystemMarker key={system.id} system={system} mainColor="red" />);
 				})}>
 				<input value={search} onChange={this.onSearch} placeholder="search..." style={{margin:'5px'}}/>
