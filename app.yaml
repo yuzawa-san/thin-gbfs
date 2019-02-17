@@ -19,6 +19,8 @@ handlers:
   expiration: 0d
   static_files: build/index.html
   upload: build/index.html
+  secure: always
 - url: /
+  secure: always
   expiration: 10m
   static_dir: build
