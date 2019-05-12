@@ -16,7 +16,7 @@ const ZOOM_SYSTEM_LIST = 10;
 const ZOOM_SYSTEM = 15;
 
 
-export default class LocationService extends React.Component {
+export default class App extends React.Component {
 	state = {};
 	
 	componentWillUnmount() {
