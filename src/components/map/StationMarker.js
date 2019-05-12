@@ -3,7 +3,6 @@ import { CircleMarker, Tooltip, Popup, Marker, FeatureGroup } from 'react-leafle
 import { hcl } from 'd3-color';
 import { DivIcon } from 'leaflet'
 import PointsLabel from '../PointsLabel';
-import L from 'leaflet';
 import injectSheet from 'react-jss';
 import { withTheme } from '@material-ui/core/styles';
 import { FAVORITE_EMOJI, UNFAVORITE_EMOJI, STATION_EMOJI_CODES, emojiString } from '../../emoji';
@@ -53,13 +52,6 @@ const styles = {
 };
 
 class StationMarker extends React.Component {
-	constructor(props){
-		super(props);
-		this.icon = new DivIcon({
-			className: 'points-xsxs'
-		});
-	}
-	
 	shouldComponentUpdate(nextProps, nextState) {
 		const { favorite, label, status, active } = this.props.station;
 		const newStation = nextProps.station;
@@ -104,13 +96,14 @@ class StationMarker extends React.Component {
 		if (pts) {
 			const innerClass = (pts < 0) ? classes.ptsPick : classes.ptsDrop;
 			const realPts = Math.abs(pts);
-			L.setOptions(this.icon, {
-				html: `<div class="${classes.ptsIcon}"><span class="${classes.ptsIconInner} ${innerClass}">${realPts}</span></div>` 
+			const icon = new DivIcon({
+				className: 'points-xsxs',
+				html: `<div class="${classes.ptsIcon}"><span class="${classes.ptsIconInner} ${innerClass}">${realPts}</span></div>`
 			});
 			pointsMarker = (<Marker
 				position={coords}
 				interactive={false}
-				icon={this.icon}
+				icon={icon}
 				opacity={opacity}
 				/>);
 		}
