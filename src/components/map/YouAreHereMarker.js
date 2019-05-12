@@ -42,7 +42,7 @@ export default class YouAreHereMarker extends React.Component {
 	render(){
 		const { position } = this.props;
 		if (!position){
-			return;
+			return null;
 		}
 		const { heading, arrow } = this.state;
 		const latLon = geo.positionToLatLon(position);
