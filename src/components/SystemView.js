@@ -17,6 +17,9 @@ import TripIcon from '@material-ui/icons/Redo';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 
+const RELOAD_INTERVAL_MS = 10000;
+const RELOAD_CHECK_MS = 1000;
+
 const styles = {
 	root: {
 		width: '100%',
@@ -92,7 +95,11 @@ class SystemView extends React.Component {
 				// fetch system's station statuses
 				this.reload();
 				// and do that periodically
-				this.timerID = setInterval(() => this.reload(),	10000);
+				this.timerID = setInterval(() => {
+					if ((Date.now() - this.lastReloaded) > RELOAD_INTERVAL_MS) {
+						this.reload();
+					}
+				},	RELOAD_CHECK_MS);
 			})
 			.catch((error) =>{
 				alert(error);
@@ -100,6 +107,7 @@ class SystemView extends React.Component {
 	}
 	
 	reload = () => {
+		this.lastReloaded = Date.now();
 		return fetch("/systems/"+this.state.id+"/status")
 			.then((response) => response.json())
 			.then((responseJson) => {
