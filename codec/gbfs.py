@@ -112,6 +112,25 @@ def process_motivate_status(motivate_id):
             pts=pts))
     return out
 
+def process_motivate_stations(motivate_id):
+    url = "https://layer.bicyclesharing.net/map/v1/%s/stations" % motivate_id
+    result = urlfetch.fetch(url, validate_certificate=True)
+    if result.status_code != 200:
+        return {}
+    response_json = json.loads(result.content)
+    out = []
+    for feature in response_json['features']:
+        pt = feature['geometry']['coordinates']
+        station = feature['properties']
+        el = SystemInfoElement(
+            id=station['station_id'],
+            name=station['name'],
+            lat=pt[1],
+            lon=pt[0],
+        )
+        out.append(el)
+    return out
+
 def _process_station_status(url, system_id):
     if system_id in MOTIVATE_IDS:
         return process_motivate_status(MOTIVATE_IDS[system_id])
@@ -166,7 +185,12 @@ class GbfsCodec(BikeNetworkCodec):
                     for feed in response_json['data']['en']['feeds']:
                         config[feed['name']] = feed['url']
                     city = "%s, %s" % (line['Location'], line['Country Code'])
-                    stations = process_station_info(config['station_information'])
+                    sys_info = process_system_info(config['system_information'])
+                    system_id = "gbfs_%s" % sys_info.get("system_id", line['System ID'])
+                    if system_id in MOTIVATE_IDS:
+                        stations = process_motivate_stations(MOTIVATE_IDS[system_id])
+                    else:
+                        stations = process_station_info(config['station_information'])
                     regions = []
                     if 'system_regions' in config:
                         regions = process_regions(config['system_regions'])
@@ -181,8 +205,6 @@ class GbfsCodec(BikeNetworkCodec):
                         avg_lat = avg_lat / station_count
                         avg_lon = avg_lon / station_count
                     recent_ts = 0
-                    sys_info = process_system_info(config['system_information'])
-                    system_id = "gbfs_%s" % sys_info.get("system_id", line['System ID'])
                     station_statuses = _process_station_status(config['station_status'], system_id)
                     for station in station_statuses:
                         ts = station.mod
