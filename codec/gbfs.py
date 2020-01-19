@@ -182,7 +182,10 @@ class GbfsCodec(BikeNetworkCodec):
                         continue
                     response_json = json.loads(result.content)
                     config = {}
-                    for feed in response_json['data']['en']['feeds']:
+                    lang = 'en'
+                    if lang not in response_json['data']:
+                        lang = response_json['data'].keys()[0]
+                    for feed in response_json['data'][lang]['feeds']:
                         config[feed['name']] = feed['url']
                     city = "%s, %s" % (line['Location'], line['Country Code'])
                     sys_info = process_system_info(config['system_information'])
