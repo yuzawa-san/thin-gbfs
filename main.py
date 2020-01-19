@@ -57,7 +57,7 @@ class UpdateSystemsHandler(webapp2.RequestHandler):
                 codec_entities = codec.load()
                 for entity in codec_entities:
                     delta = time.time() - entity.last_updated
-                    if delta < STALE_SYSTEM_SECONDS:
+                    if entity.last_updated == 0 or delta < STALE_SYSTEM_SECONDS:
                         entities.append(entity)
                     else:
                         logging.info("Out of date '%s': %d seconds" % (entity.key.id(), delta))

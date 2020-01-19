@@ -18,7 +18,30 @@ MOTIVATE_IDS = {
     "gbfs_BA": "fgb"
 }
 
-def process_station_info(url):
+def process_motivate_stations(motivate_id):
+    url = "https://layer.bicyclesharing.net/map/v1/%s/stations" % motivate_id
+    result = urlfetch.fetch(url, validate_certificate=True)
+    if result.status_code != 200:
+        return []
+    response_json = json.loads(result.content)
+    out = []
+    for feature in response_json['features']:
+        pt = feature['geometry']['coordinates']
+        station = feature['properties']
+        el = SystemInfoElement(
+            id=station['station_id'],
+            name=station['name'],
+            lat=pt[1],
+            lon=pt[0],
+        )
+        out.append(el)
+    return out
+
+def process_station_info(url, system_id):
+    if not url:
+        return []
+    if system_id in MOTIVATE_IDS:
+        return process_motivate_stations(MOTIVATE_IDS[system_id])
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
         return []
@@ -40,16 +63,20 @@ def process_station_info(url):
     return out
 
 def process_system_info(url):
+    if not url:
+        return {}
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
-        return None
+        return {}
     response_json = json.loads(result.content)
     return response_json['data']
 
 def process_regions(url):
+    if not url:
+        return []
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
-        return None
+        return []
     response_json = json.loads(result.content)
     out = []
     for region in response_json['data']['regions']:
@@ -62,10 +89,10 @@ def process_regions(url):
     return out
     
 @cache(ttl=STATION_STATUS_TTL)
-def process_free_bikes(url):
+def _process_free_bikes(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
-        return None
+        return []
     response_json = json.loads(result.content)
     out = []
     for bike in response_json['data']['bikes']:
@@ -73,19 +100,29 @@ def process_free_bikes(url):
             out.append(SystemInfoElement(id=bike['bike_id'],name=bike.get('name','Bike'),lat=bike['lat'],lon=bike['lon']))
     return out
 
+def process_free_bikes(url):
+    if not url:
+        return []
+    return _process_free_bikes(url)
+
 @cache(ttl=ALERTS_TTL)
-def process_alerts(url):
+def _process_alerts(url):
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
-        return None
+        return []
     response_json = json.loads(result.content)
     return response_json['data']['alerts']
+
+def process_alerts(url):
+    if not url:
+        return []
+    return _process_alerts(url)
 
 def process_motivate_status(motivate_id):
     url = "https://layer.bicyclesharing.net/map/v1/%s/stations" % motivate_id
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
-        return {}
+        return []
     response_json = json.loads(result.content)
     out = []
     for feature in response_json['features']:
@@ -113,31 +150,13 @@ def process_motivate_status(motivate_id):
             pts=pts))
     return out
 
-def process_motivate_stations(motivate_id):
-    url = "https://layer.bicyclesharing.net/map/v1/%s/stations" % motivate_id
-    result = urlfetch.fetch(url, validate_certificate=True)
-    if result.status_code != 200:
-        return {}
-    response_json = json.loads(result.content)
-    out = []
-    for feature in response_json['features']:
-        pt = feature['geometry']['coordinates']
-        station = feature['properties']
-        el = SystemInfoElement(
-            id=station['station_id'],
-            name=station['name'],
-            lat=pt[1],
-            lon=pt[0],
-        )
-        out.append(el)
-    return out
-
+@cache(ttl=STATION_STATUS_TTL)
 def _process_station_status(url, system_id):
     if system_id in MOTIVATE_IDS:
         return process_motivate_status(MOTIVATE_IDS[system_id])
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
-        return None
+        return []
     response_json = json.loads(result.content)
     stations = response_json['data']['stations']
     out = []
@@ -155,8 +174,9 @@ def _process_station_status(url, system_id):
         out.append(SystemStatusElement(id=station['station_id'],bikes=bikes,docks=docks,mod=mod))
     return out
 
-@cache(ttl=STATION_STATUS_TTL)
 def process_station_status(url, system_id):
+    if not url:
+        return []
     return _process_station_status(url, system_id)
 
 
@@ -191,25 +211,25 @@ class GbfsCodec(BikeNetworkCodec):
                     city = "%s, %s" % (line['Location'], line['Country Code'])
                     sys_info = process_system_info(config['system_information'])
                     system_id = "gbfs_%s" % sys_info.get("system_id", line['System ID'])
-                    if system_id in MOTIVATE_IDS:
-                        stations = process_motivate_stations(MOTIVATE_IDS[system_id])
-                    else:
-                        stations = process_station_info(config['station_information'])
-                    regions = []
-                    if 'system_regions' in config:
-                        regions = process_regions(config['system_regions'])
+                    stations = process_station_info(config.get('station_information'), system_id)
+                    regions = process_regions(config.get('system_regions'))
+                    bikes = process_free_bikes(config.get('free_bike_status'))
                     avg_lat = 0
                     avg_lon = 0
-                    station_count = 0
+                    loc_count = 0
                     for station in stations:
                         avg_lat += station.lat
                         avg_lon += station.lon
-                        station_count += 1
-                    if station_count > 0:
-                        avg_lat = avg_lat / station_count
-                        avg_lon = avg_lon / station_count
+                        loc_count += 1
+                    for bike in bikes:
+                        avg_lat += bike.lat
+                        avg_lon += bike.lon
+                        loc_count += 1
+                    if loc_count > 0:
+                        avg_lat = avg_lat / loc_count
+                        avg_lon = avg_lon / loc_count
                     recent_ts = 0
-                    station_statuses = _process_station_status(config['station_status'], system_id)
+                    station_statuses = process_station_status(config.get('station_status'), system_id)
                     for station in station_statuses:
                         ts = station.mod
                         if ts > recent_ts:
@@ -242,11 +262,7 @@ class GbfsCodec(BikeNetworkCodec):
     
     def get_status(self, system):
         status_header = [["id","bikes","docks","mod","pts"]]
-        station_statuses = process_station_status(system.config['station_status'], system.key.id())
-        alerts = []
-        if 'system_alerts' in system.config:
-            alerts = process_alerts(system.config['system_alerts'])
-        bikes = []
-        if 'free_bike_status' in system.config:
-            bikes = process_free_bikes(system.config['free_bike_status'])
+        station_statuses = process_station_status(system.config.get('station_status'), system.key.id())
+        alerts = process_alerts(system.config.get('system_alerts'))
+        bikes = process_free_bikes(system.config.get('free_bike_status'))
         return {"statuses": CompactElement.of(station_statuses), "alerts": alerts, 'bikes': CompactElement.of(bikes)}
