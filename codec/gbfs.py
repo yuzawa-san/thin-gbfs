@@ -26,6 +26,8 @@ def process_station_info(url):
     stations = response_json['data']['stations']
     out = []
     for station in stations:
+        if not (station['lat'] and station['lon']):
+            continue
         element = SystemInfoElement(
             id=station['station_id'],
             name=station['name'],
@@ -34,8 +36,7 @@ def process_station_info(url):
         )
         if 'region_id' in station:
             element.region = station['region_id']
-        if station['lat'] and station['lon']:
-            out.append(element)
+        out.append(element)
     return out
 
 def process_system_info(url):
