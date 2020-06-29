@@ -19,22 +19,25 @@ MOTIVATE_IDS = {
 }
 
 def process_motivate_stations(motivate_id):
-    url = "https://layer.bicyclesharing.net/map/v1/%s/stations" % motivate_id
+    url = "https://layer.bicyclesharing.net/map/v1/%s/map-inventory" % motivate_id
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
         return []
     response_json = json.loads(result.content)
     out = []
     for feature in response_json['features']:
-        pt = feature['geometry']['coordinates']
-        station = feature['properties']
-        el = SystemInfoElement(
-            id=station['station_id'],
-            name=station['name'],
-            lat=pt[1],
-            lon=pt[0],
-        )
-        out.append(el)
+        geometry = feature.get('geometry', {})
+        properties = feature.get('properties', {})
+        station = properties.get('station')
+        if geometry.get('type') == 'Point' and station:
+            pt = geometry.get('coordinates', [0,0])
+            el = SystemInfoElement(
+                id=station['id'],
+                name=station['name'],
+                lat=pt[1],
+                lon=pt[0],
+            )
+            out.append(el)
     return out
 
 def process_station_info(url, system_id):
@@ -119,14 +122,17 @@ def process_alerts(url):
     return _process_alerts(url)
 
 def process_motivate_status(motivate_id):
-    url = "https://layer.bicyclesharing.net/map/v1/%s/stations" % motivate_id
+    url = "https://layer.bicyclesharing.net/map/v1/%s/map-inventory" % motivate_id
     result = urlfetch.fetch(url, validate_certificate=True)
     if result.status_code != 200:
         return []
     response_json = json.loads(result.content)
     out = []
     for feature in response_json['features']:
-        station = feature['properties']
+        properties = feature.get('properties', {})
+        station = properties.get('station')
+        if not station:
+            continue
         bikes = 0
         docks = 0
         if station['installed']:
@@ -134,8 +140,8 @@ def process_motivate_status(motivate_id):
                 bikes = station['bikes_available']
             if station['returning']:
                 docks = station['docks_available']
-        point_action = station.get('bike_angels_action', None)
-        point_value = station.get('bike_angels_points', 0)
+        point_action = properties.get('bike_angels_action', None)
+        point_value = properties.get('bike_angels_points', 0)
         if point_action == 'take':
             pts = -point_value
         elif point_action == 'give':
@@ -143,7 +149,7 @@ def process_motivate_status(motivate_id):
         else:
             pts = None
         out.append(SystemStatusElement(
-            id=station['station_id'],
+            id=station['id'],
             bikes=bikes,
             docks=docks,
             mod=station['last_reported'],
