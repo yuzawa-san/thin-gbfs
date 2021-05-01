@@ -1,6 +1,6 @@
 import React from 'react';
 import injectSheet from 'react-jss';
-import { Map, TileLayer, ScaleControl } from 'react-leaflet';
+import { MapContainer, TileLayer, ScaleControl } from 'react-leaflet';
 import YouAreHereMarker from './map/YouAreHereMarker';
 
 
@@ -54,7 +54,7 @@ class SplitView extends React.Component {
 		return (
 			<div className={classes.container}>
 				<div className={classes.map}>
-					<Map
+					<MapContainer
 						className={classes.leafletMap}
 						animate={false}
 						viewport={viewport}>
@@ -65,7 +65,7 @@ class SplitView extends React.Component {
 						<ScaleControl position='topright' />
 						<YouAreHereMarker position={currentPosition} />
 						{markers}
-					</Map>
+					</MapContainer>
 				</div>
 				<div className={classes.content}>
 					{children}

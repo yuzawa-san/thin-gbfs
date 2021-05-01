@@ -5,21 +5,25 @@
   "author": "yuzawa-san",
   "license": "MIT",
   "dependencies": {
-    "@material-ui/core": "^3.9.2",
-    "@material-ui/icons": "^3.0.2",
-    "d3-color": "^1.2.3",
-    "emoji-flags": "^1.2.0",
-    "leaflet": "^1.4.0",
-    "react": "^16.8.1",
-    "react-dom": "^16.8.1",
-    "react-jss": "^8.6.1",
-    "react-leaflet": "^2.2.0",
-    "react-scripts": "^2.1.5"
+    "@material-ui/core": "^4.11.4",
+    "@material-ui/icons": "^4.11.2",
+    "d3-color": "^2.0.0",
+    "emoji-flags": "^1.3.0",
+    "leaflet": "^1.7.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-jss": "^10.6.0",
+    "react-leaflet": "^3.1.0",
+    "react-scripts": "^4.0.3"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/yuzawa-san/thin-gbfs.git"
   },
+  "bugs": {
+    "url": "https://github.com/yuzawa-san/thin-gbfs/issues"
+  },
+  "homepage": "https://thin-gbfs.appspot.com/",
   "scripts": {
     "start": "concurrently 'dev_appserver.py app.yaml' 'react-scripts start'",
     "build": "react-scripts build",
@@ -36,7 +40,7 @@
     "last 2 Chrome major versions"
   ],
   "devDependencies": {
-    "concurrently": "^4.1.0",
-    "source-map-explorer": "^1.6.0"
+    "concurrently": "^6.0.2",
+    "source-map-explorer": "^2.5.2"
   }
 }
