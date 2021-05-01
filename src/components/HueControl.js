@@ -1,6 +1,5 @@
 import React from 'react';
-import injectSheet from 'react-jss';
-import { withTheme } from '@material-ui/core/styles';
+import { withTheme, withStyles } from '@material-ui/core/styles';
 import { hcl } from 'd3-color';
 import Button from '@material-ui/core/Button';
 
@@ -57,4 +56,4 @@ class HueControl extends React.Component {
 	}
 }
 
-export default withTheme()(injectSheet(styles)(HueControl));
+export default withTheme()(withStyles(styles)(HueControl));
