@@ -30,7 +30,7 @@
     "analyze": "source-map-explorer build/static/js/2.*",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy": "react-scripts build && gcloud config set project thin-gbfs && gcloud app deploy app.yaml cron.yaml"
+    "deploy": "gcloud config set project thin-gbfs && react-scripts build && gcloud app deploy app.yaml cron.yaml"
   },
   "proxy": "http://localhost:8080/",
   "browserslist": [
