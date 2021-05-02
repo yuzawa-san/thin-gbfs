@@ -1,6 +1,6 @@
 import React from 'react';
 import { withStyles } from '@material-ui/core/styles';
-import { MapContainer, TileLayer, ScaleControl } from 'react-leaflet';
+import { Map, TileLayer, ScaleControl } from 'react-leaflet';
 import YouAreHereMarker from './map/YouAreHereMarker';
 
 
@@ -54,11 +54,10 @@ class SplitView extends React.Component {
 		return (
 			<div className={classes.container}>
 				<div className={classes.map}>
-					<MapContainer
+					<Map
 						className={classes.leafletMap}
 						animate={false}
-						center={viewport.center}
-						zoom={viewport.zoom}>
+						viewport={viewport}>
 						<TileLayer
 							url="https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png"
 							attribution={effectiveAttribution}
@@ -66,7 +65,7 @@ class SplitView extends React.Component {
 						<ScaleControl position='topright' />
 						<YouAreHereMarker position={currentPosition} />
 						{markers}
-					</MapContainer>
+					</Map>
 				</div>
 				<div className={classes.content}>
 					{children}
