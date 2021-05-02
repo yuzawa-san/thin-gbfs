@@ -1,5 +1,5 @@
 import React from 'react';
-import injectSheet from 'react-jss';
+import { withStyles } from '@material-ui/core/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
 
 const styles = {
@@ -26,4 +26,4 @@ class ProgressView extends React.Component {
 	}
 }
 
-export default injectSheet(styles)(ProgressView);
+export default withStyles(styles)(ProgressView);

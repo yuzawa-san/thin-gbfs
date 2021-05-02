@@ -1,5 +1,5 @@
 import React from 'react';
-import injectSheet from 'react-jss';
+import { withStyles } from '@material-ui/core/styles';
 import PointsLabel from './PointsLabel';
 import geo from '../geo';
 import { emojiString } from '../emoji';
@@ -76,4 +76,4 @@ class StationList extends React.Component {
 	}
 }
 
-export default injectSheet(styles)(StationList);
+export default withStyles(styles)(StationList);

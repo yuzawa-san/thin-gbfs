@@ -1,5 +1,5 @@
 import React from 'react';
-import injectSheet from 'react-jss';
+import { withStyles } from '@material-ui/core/styles';
 
 const styles = {
 	pick: {
@@ -28,4 +28,4 @@ class PointsLabel extends React.Component {
 	}
 }
 
-export default injectSheet(styles)(PointsLabel);
+export default withStyles(styles)(PointsLabel);

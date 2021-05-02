@@ -1,5 +1,5 @@
 import React from 'react';
-import injectSheet from 'react-jss';
+import { withStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 
 const styles = {
@@ -37,4 +37,4 @@ class ErrorView extends React.Component {
 	}
 }
 
-export default injectSheet(styles)(ErrorView);
+export default withStyles(styles)(ErrorView);

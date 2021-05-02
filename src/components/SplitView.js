@@ -1,5 +1,5 @@
 import React from 'react';
-import injectSheet from 'react-jss';
+import { withStyles } from '@material-ui/core/styles';
 import { MapContainer, TileLayer, ScaleControl } from 'react-leaflet';
 import YouAreHereMarker from './map/YouAreHereMarker';
 
@@ -57,10 +57,11 @@ class SplitView extends React.Component {
 					<MapContainer
 						className={classes.leafletMap}
 						animate={false}
-						viewport={viewport}>
+						center={viewport.center}
+						zoom={viewport.zoom}>
 						<TileLayer
 							url="https://{s}.basemaps.cartocdn.com/rastertiles/light_all/{z}/{x}/{y}{r}.png"
-							attribution={effectiveAttribution }
+							attribution={effectiveAttribution}
 						/>
 						<ScaleControl position='topright' />
 						<YouAreHereMarker position={currentPosition} />
@@ -75,4 +76,4 @@ class SplitView extends React.Component {
 	}
 }
 
-export default injectSheet(styles)(SplitView);
+export default withStyles(styles)(SplitView);

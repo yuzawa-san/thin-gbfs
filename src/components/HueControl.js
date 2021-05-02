@@ -56,4 +56,4 @@ class HueControl extends React.Component {
 	}
 }
 
-export default withTheme()(withStyles(styles)(HueControl));
+export default withTheme(withStyles(styles)(HueControl));

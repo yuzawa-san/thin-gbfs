@@ -1,5 +1,5 @@
 import React from 'react';
-import injectSheet from 'react-jss';
+import { withStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
@@ -105,4 +105,4 @@ class Nav extends React.Component {
 	}
 }
 
-export default injectSheet(styles)(Nav);
+export default withStyles(styles)(Nav);

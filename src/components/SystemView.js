@@ -1,5 +1,5 @@
 import React from 'react';
-import injectSheet from 'react-jss';
+import { withStyles } from '@material-ui/core/styles';
 import pivot from '../pivot';
 import geo from '../geo';
 import SplitView from './SplitView';
@@ -246,4 +246,4 @@ class SystemView extends React.Component {
 	}
 }
 
-export default injectSheet(styles)(SystemView);
+export default withStyles(styles)(SystemView);

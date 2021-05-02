@@ -26,4 +26,4 @@ const SystemMarker = (props) => {
 	</CircleMarker>);
 }
 
-export default withTheme()(SystemMarker);
+export default withTheme(SystemMarker);

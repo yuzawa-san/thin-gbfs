@@ -3,8 +3,7 @@ import { CircleMarker, Tooltip, Popup, Marker, FeatureGroup } from 'react-leafle
 import { hcl } from 'd3-color';
 import { DivIcon } from 'leaflet'
 import PointsLabel from '../PointsLabel';
-import injectSheet from 'react-jss';
-import { withTheme } from '@material-ui/core/styles';
+import { withTheme, withStyles } from '@material-ui/core/styles';
 import { FAVORITE_EMOJI, UNFAVORITE_EMOJI, STATION_EMOJI_CODES, emojiString } from '../../emoji';
 
 const styles = {
@@ -169,4 +168,4 @@ class StationMarker extends React.Component {
 	}
 }
 
-export default withTheme()(injectSheet(styles)(StationMarker));
+export default withTheme(withStyles(styles)(StationMarker));
