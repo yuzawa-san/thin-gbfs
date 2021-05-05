@@ -128,11 +128,13 @@ class StationMarker extends React.Component {
 				<CircleMarker
 					center={coords}
 					radius={radius}
-					weight={2}
-					fillColor={fillColor}
-					fillOpacity={opacity}
-					color={mainColor}
-					opacity={opacity}>
+					pathOptions={{
+						weight: 2,
+						fillColor,
+						fillOpacity: opacity,
+						color: mainColor,
+						opacity
+					}}>
 					{labelTooltip}
 				</CircleMarker>
 				<Popup offset={[0, -radius]}>
