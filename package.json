@@ -1,6 +1,6 @@
 {
   "name": "thin-gbfs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A fast and low-network-use mobile web app for many common bike sharing systems.",
   "author": "yuzawa-san",
   "license": "MIT",
