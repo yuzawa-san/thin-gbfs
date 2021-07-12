@@ -1,0 +1,34 @@
+name: Deploy to Google Cloud
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'git ref'
+        default: 'master'
+        required: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref }}
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 11.x
+      - run: npm ci
+      - run: npm run build --if-present
+      - uses: google-github-actions/setup-gcloud@master
+        with:
+          version: '290.0.1'
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      - id: Deploy
+        uses: google-github-actions/deploy-appengine@main
+        with:
+          deliverables: app.yaml cron.yaml
+          project_id: ${{ secrets.GCP_PROJECT }}
