@@ -137,7 +137,7 @@ def process_motivate_status(motivate_id):
         docks = 0
         if station['installed']:
             if station['renting']:
-                bikes = station['bikes_available']
+                bikes = station['bikes_available'] - station.get('ebikes_available', 0)
             if station['returning']:
                 docks = station['docks_available']
         point_action = properties.get('bike_angels_action', None)
