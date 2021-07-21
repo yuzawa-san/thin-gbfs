@@ -49,7 +49,7 @@ def process_station_info(url, system_id):
     if result.status_code != 200:
         return []
     response_json = json.loads(result.content)
-    stations = response_json['data']['stations']
+    stations = response_json.get('data',{}).get('stations',[])
     out = []
     for station in stations:
         if not (station['lat'] and station['lon']):
@@ -82,7 +82,11 @@ def process_regions(url):
         return []
     response_json = json.loads(result.content)
     out = []
-    for region in response_json['data']['regions']:
+    if type(response_json['data']) is list:
+        region_list = response_json['data']
+    else:
+        region_list = response_json['data']['regions']
+    for region in region_list:
         name = "unknown"
         if "name" in region:
             name = region['name']
@@ -99,8 +103,13 @@ def _process_free_bikes(url):
     response_json = json.loads(result.content)
     out = []
     for bike in response_json['data']['bikes']:
-        if bike['is_reserved'] == 0 and bike['is_disabled'] == 0:
-            out.append(SystemInfoElement(id=bike['bike_id'],name=bike.get('name','Bike'),lat=bike['lat'],lon=bike['lon']))
+        if bike.get('is_reserved',0) == 0 and bike.get('is_disabled',0) == 0 and 'lat' in bike and 'lon' in bike:
+            out.append(SystemInfoElement(
+                id=bike['bike_id'],
+                name=bike.get('name','Bike'),
+                lat=bike['lat'],
+                lon=bike['lon']
+            ))
     return out
 
 def process_free_bikes(url):
@@ -164,17 +173,17 @@ def _process_station_status(url, system_id):
     if result.status_code != 200:
         return []
     response_json = json.loads(result.content)
-    stations = response_json['data']['stations']
+    stations = response_json.get('data',{}).get('stations',[])
     out = []
     for station in stations:
         bikes = 0
         docks = 0
         if station['is_installed'] > 0:
             if station['is_renting'] == 1:
-                bikes = station['num_bikes_available']
+                bikes = station.get('num_bikes_available',0)
             if station['is_returning'] == 1:
-                docks = station['num_docks_available']
-        mod = station['last_reported']
+                docks = station.get('num_docks_available',0)
+        mod = int(station['last_reported'])
         if mod > 10000000000:
             mod = mod / 1000
         out.append(SystemStatusElement(id=station['station_id'],bikes=bikes,docks=docks,mod=mod))
@@ -205,7 +214,7 @@ class GbfsCodec(BikeNetworkCodec):
                     url = line['Auto-Discovery URL']
                     result = urlfetch.fetch(url, validate_certificate=True)
                     if result.status_code != 200:
-                        logging.error("failed to autodiscovery url for %s" % name)
+                        logging.error("failed to load autodiscovery url for %s" % name)
                         continue
                     response_json = json.loads(result.content)
                     config = {}
@@ -213,7 +222,7 @@ class GbfsCodec(BikeNetworkCodec):
                     if lang not in response_json['data']:
                         lang = response_json['data'].keys()[0]
                     for feed in response_json['data'][lang]['feeds']:
-                        config[feed['name']] = feed['url']
+                        config[feed['name'].replace('.json','')] = feed['url']
                     city = "%s, %s" % (line['Location'], line['Country Code'])
                     sys_info = process_system_info(config['system_information'])
                     system_id = "gbfs_%s" % sys_info.get("system_id", line['System ID'])
@@ -257,6 +266,12 @@ class GbfsCodec(BikeNetworkCodec):
                         lon=round(avg_lon, 2),
                         last_updated=recent_ts)
                     entities.append(r)
+                    break
+                except TypeError as e:
+                    logging.exception("malformed load %s: %s", name, e)
+                    break
+                except KeyError as e:
+                    logging.exception("malformed load %s: %s", name, e)
                     break
                 except Exception as e:
                     logging.exception("failed to load %s: %s", name, e)

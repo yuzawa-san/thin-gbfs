@@ -1,7 +1,7 @@
 cron:
 - description: load systems
   url: /load
-  schedule: every monday 05:17
+  schedule: 1 of month 05:17
   timezone: America/New_York
   retry_parameters:
     min_backoff_seconds: 2.5
