@@ -206,8 +206,17 @@ class GbfsCodec(BikeNetworkCodec):
         
         reader = csv.DictReader(buffer)
         entities = []
+        system_ids = set()
+        system_ids_duplicates = set()
+        lines = []
         for line in reader:
-            for attempt in range(3):
+            lines.append(line)
+            system_id = "gbfs_%s" % line['System ID']
+            if system_id in system_ids:
+                system_ids_duplicates.add(system_id)
+            system_ids.add(system_id)
+        for line in lines:
+            for attempt in range(1):
                 name = line['Name']
                 logging.info("Processing %s, attempt %d" % (name,attempt))
                 try:
@@ -226,6 +235,8 @@ class GbfsCodec(BikeNetworkCodec):
                     city = "%s, %s" % (line['Location'], line['Country Code'])
                     sys_info = process_system_info(config['system_information'])
                     system_id = "gbfs_%s" % sys_info.get("system_id", line['System ID'])
+                    if system_id in system_ids_duplicates:
+                        system_id = "%s_%s" % (system_id, name)
                     stations = process_station_info(config.get('station_information'), system_id)
                     regions = process_regions(config.get('system_regions'))
                     bikes = process_free_bikes(config.get('free_bike_status'))
