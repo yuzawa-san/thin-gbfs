@@ -17,9 +17,15 @@ const theme = createMuiTheme({
 		secondary: {
 			main: altColor,
 		},
-  	},
+	},
 	hue
 });
+
+// set theme color for browser bar
+const meta = document.createElement('meta');
+meta.name = "theme-color";
+meta.content = mainColor;
+document.getElementsByTagName('head')[0].appendChild(meta);
 
 const ThemedApp = () => {
 	return (
