@@ -39,7 +39,7 @@
     "last 2 Chrome major versions"
   ],
   "devDependencies": {
-    "concurrently": "^6.0.2",
+    "concurrently": "^7.0.0",
     "source-map-explorer": "^2.5.2"
   }
 }
