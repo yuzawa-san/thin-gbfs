@@ -2,11 +2,6 @@ name: Deploy to Google Cloud
 
 on:
   workflow_dispatch:
-    inputs:
-      ref:
-        description: 'git ref'
-        default: 'master'
-        required: true
 
 jobs:
   deploy:
@@ -16,8 +11,6 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.ref }}
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
