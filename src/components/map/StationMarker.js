@@ -4,7 +4,7 @@ import { hcl } from 'd3-color';
 import { DivIcon } from 'leaflet'
 import PointsLabel from '../PointsLabel';
 import { withTheme, withStyles } from '@material-ui/core/styles';
-import { FAVORITE_EMOJI, UNFAVORITE_EMOJI, STATION_EMOJI_CODES, emojiString } from '../../emoji';
+import { FAVORITE_EMOJI, UNFAVORITE_EMOJI, STATION_EMOJI_CODES, NAV_EMOJI, emojiString } from '../../emoji';
 
 const styles = {
 	stationLabel: {
@@ -123,6 +123,7 @@ class StationMarker extends React.Component {
 			</option>);
 		});
 		const info = `${bikes||0} bikes, ${docks||0} docks`;
+		const navLink = `https://www.google.com/maps/dir/?api=1&travelmode=bicycling&destination=${coords[0]},${coords[1]}`;
 		return (
 			<FeatureGroup>
 				<CircleMarker
@@ -141,20 +142,25 @@ class StationMarker extends React.Component {
 					<strong>
 						{name}
 					</strong>
-					<button onClick={this.toggleFavorite} className={classes.icon}>
-						{favorite?UNFAVORITE_EMOJI:FAVORITE_EMOJI}
-					</button>
 					<br/>
 					{info}
 					<PointsLabel prefix=", " pts={pts}/>
 					<br/>
-					Label: 
-					<select className={classes.icon} onChange={this.setLabel} value={label||""}>
+					Label:
+					<select className={classes.icon} onChange={this.setLabel} value={label||""} style={{marginLeft:"5px"}}>
 						<option value="">
 							none
 						</option>
 						{labelOptions}
 					</select>
+					<button onClick={this.toggleFavorite} className={classes.icon} style={{marginLeft:"5px"}}>
+						{favorite?UNFAVORITE_EMOJI:FAVORITE_EMOJI}
+					</button>
+					<a href={navLink} target="blank">
+						<button className={classes.icon} style={{marginLeft:"5px"}}>
+							{NAV_EMOJI}
+						</button>
+					</a>
 				</Popup>
 				{pointsMarker}
 			</FeatureGroup>
