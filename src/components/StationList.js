@@ -60,7 +60,7 @@ class StationList extends React.Component {
 				return (
 					<ListItem className={classes.row} key={station.id} onClick={(e) => onSetCenter(e,station.coords)}>
 						<ListItemAvatar>
-							<LinearProgress variant="determinate" value={station.status.pct*100} />
+							<LinearProgress variant="determinate" value={station.status.pct*100} style={{marginRight:"5px"}} />
 						</ListItemAvatar>
 						<ListItemText
 							primary={title}

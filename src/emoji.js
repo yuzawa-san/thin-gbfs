@@ -1,4 +1,3 @@
-
 export const CURRENT_LOCATION_EMOJI_CODE = "1F535";
 export const STATION_EMOJI_CODES = [ // list of emoji
 	"1F3E0", // home
@@ -21,6 +20,7 @@ export const STATION_EMOJI_CODES = [ // list of emoji
 const EMOJI_VARIANT = String.fromCodePoint(0xFE0F);
 export const UNFAVORITE_EMOJI = String.fromCodePoint(0x1F494) + EMOJI_VARIANT;
 export const FAVORITE_EMOJI = String.fromCodePoint(0x2764) + EMOJI_VARIANT;
+export const NAV_EMOJI = String.fromCodePoint(0x1F9ED);
 export const emojiString = (codePoint, isFavorite) => {
 	if (!codePoint) {
 		if (isFavorite) {
