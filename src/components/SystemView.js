@@ -19,6 +19,7 @@ import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 
 const RELOAD_INTERVAL_MS = 10000;
 const RELOAD_CHECK_MS = 1000;
+const EXPIRED_MS = 60000;
 
 const styles = {
 	root: {
@@ -95,11 +96,7 @@ class SystemView extends React.Component {
 				// fetch system's station statuses
 				this.reload();
 				// and do that periodically
-				this.timerID = setInterval(() => {
-					if ((Date.now() - this.lastReloaded) > RELOAD_INTERVAL_MS) {
-						this.reload();
-					}
-				},	RELOAD_CHECK_MS);
+				this.timerID = setInterval(this.reload,	RELOAD_CHECK_MS);
 			})
 			.catch((error) =>{
 				alert(error);
@@ -107,7 +104,14 @@ class SystemView extends React.Component {
 	}
 	
 	reload = () => {
-		this.lastReloaded = Date.now();
+		const now = Date.now();
+		if ((now - this.lastReloaded) < RELOAD_INTERVAL_MS) {
+			return;
+		}
+		this.lastReloaded = now;
+		this.setState({
+			loading: true
+		});
 		return fetch("/systems/"+this.state.id+"/status")
 			.then((response) => response.json())
 			.then((responseJson) => {
@@ -130,8 +134,9 @@ class SystemView extends React.Component {
 				this.setState({
 					bikes,
 					statuses,
-					loaded: true
-				})
+					loading: false,
+					lastLoaded: Date.now()
+				});
 			})
 			.catch((error) =>{
 				alert(error);
@@ -181,7 +186,7 @@ class SystemView extends React.Component {
 	
 	render() {
 		const { classes,  currentSystem, onSetCenter, currentPosition, viewport } = this.props;
-		const { displayMode, url, stations, bikes, statuses, favorites, idToStations, destination, labelsToStations, loaded } = this.state;
+		const { displayMode, url, stations, bikes, statuses, favorites, idToStations, destination, labelsToStations, loading, lastLoaded } = this.state;
 		let attribution = null;
 		let content = null;
 		
@@ -215,15 +220,17 @@ class SystemView extends React.Component {
 		const markers = effective.map((station) => {
 			return (<StationMarker key={station.id} station={station} mainColor="red" hue={43} onSetLabel={this.setLabel} onSetFavorite={this.setFavorite}/>);
 		});
-		if (loaded) {
+		if (currentSystem) {
 			attribution = `<a href="${url}" target="blank">${currentSystem.name}</a>`;
-			if(displayMode==="trip"){
+		}
+		if ((!lastLoaded || (Date.now() - lastLoaded) > EXPIRED_MS) && loading) {
+			content = (<ProgressView/>);
+		} else {
+			if (displayMode==="trip") {
 				content = (<StationTripList stations={effective} onSetCenter={onSetCenter} onSetDestination={this.setDestination} destination={destination}/>);
-			}else{
+			} else {
 				content = (<StationList stations={effective} onSetCenter={onSetCenter}/>);
 			}
-		} else {
-			content = (<ProgressView/>);
 		}
 		return (
 			<SplitView
