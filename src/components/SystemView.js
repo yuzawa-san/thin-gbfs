@@ -54,6 +54,7 @@ class SystemView extends React.Component {
 	
 	componentDidMount(){
 		const system = this.props.currentSystem;
+		window.addEventListener('focus', this.increment);
 		return fetch("/systems/"+system.id+"/info")
 			.then((response) => response.json())
 			.then((responseJson) => {
@@ -101,6 +102,12 @@ class SystemView extends React.Component {
 			.catch((error) =>{
 				alert(error);
 			});
+	}
+	
+	increment = () => {
+		this.setState({
+			network: " network"
+		});
 	}
 	
 	reload = () => {
@@ -186,7 +193,7 @@ class SystemView extends React.Component {
 	
 	render() {
 		const { classes,  currentSystem, onSetCenter, currentPosition, viewport } = this.props;
-		const { displayMode, url, stations, bikes, statuses, favorites, idToStations, destination, labelsToStations, loading, lastLoaded } = this.state;
+		const { displayMode, url, stations, bikes, statuses, favorites, idToStations, destination, labelsToStations, loading, lastLoaded, network } = this.state;
 		let attribution = null;
 		let content = null;
 		
@@ -221,7 +228,7 @@ class SystemView extends React.Component {
 			return (<StationMarker key={station.id} station={station} mainColor="red" hue={43} onSetLabel={this.setLabel} onSetFavorite={this.setFavorite}/>);
 		});
 		if (currentSystem) {
-			attribution = `<a href="${url}" target="blank">${currentSystem.name}</a>`;
+			attribution = `<a href="${url}" target="blank">${currentSystem.name}${network||''}</a>`;
 		}
 		if ((!lastLoaded || (Date.now() - lastLoaded) > EXPIRED_MS) && loading) {
 			content = (<ProgressView/>);
