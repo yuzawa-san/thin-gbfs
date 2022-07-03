@@ -19,7 +19,6 @@ import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
 
 const RELOAD_INTERVAL_MS = 10000;
 const RELOAD_CHECK_MS = 1000;
-const EXPIRED_MS = 60000;
 
 const styles = {
 	root: {
@@ -50,11 +49,11 @@ class SystemView extends React.Component {
 	
 	componentWillUnmount() {
 		clearInterval(this.timerID);
+		window.removeEventListener('focus', this.handleFocus);
 	}
 	
 	componentDidMount(){
 		const system = this.props.currentSystem;
-		window.addEventListener('focus', this.increment);
 		return fetch("/systems/"+system.id+"/info")
 			.then((response) => response.json())
 			.then((responseJson) => {
@@ -98,27 +97,28 @@ class SystemView extends React.Component {
 				this.reload();
 				// and do that periodically
 				this.timerID = setInterval(this.reload,	RELOAD_CHECK_MS);
+				window.addEventListener('focus', this.handleFocus);
 			})
 			.catch((error) =>{
 				alert(error);
 			});
 	}
 	
-	increment = () => {
-		this.setState({
-			network: " network"
-		});
+	handleFocus = () => {
+		this.lastReloaded = 0;
+		this.reload();
 	}
-	
 	reload = () => {
 		const now = Date.now();
 		if ((now - this.lastReloaded) < RELOAD_INTERVAL_MS) {
 			return;
 		}
+		if (!this.lastReloaded) {
+			this.setState({
+				loading: true
+			});
+		}
 		this.lastReloaded = now;
-		this.setState({
-			loading: true
-		});
 		return fetch("/systems/"+this.state.id+"/status")
 			.then((response) => response.json())
 			.then((responseJson) => {
@@ -141,8 +141,7 @@ class SystemView extends React.Component {
 				this.setState({
 					bikes,
 					statuses,
-					loading: false,
-					lastLoaded: Date.now()
+					loading: false
 				});
 			})
 			.catch((error) =>{
@@ -193,7 +192,7 @@ class SystemView extends React.Component {
 	
 	render() {
 		const { classes,  currentSystem, onSetCenter, currentPosition, viewport } = this.props;
-		const { displayMode, url, stations, bikes, statuses, favorites, idToStations, destination, labelsToStations, loading, lastLoaded, network } = this.state;
+		const { displayMode, url, stations, bikes, statuses, favorites, idToStations, destination, labelsToStations, loading } = this.state;
 		let attribution = null;
 		let content = null;
 		
@@ -228,9 +227,9 @@ class SystemView extends React.Component {
 			return (<StationMarker key={station.id} station={station} mainColor="red" hue={43} onSetLabel={this.setLabel} onSetFavorite={this.setFavorite}/>);
 		});
 		if (currentSystem) {
-			attribution = `<a href="${url}" target="blank">${currentSystem.name}${network||''}</a>`;
+			attribution = `<a href="${url}" target="blank">${currentSystem.name}</a>`;
 		}
-		if ((!lastLoaded || (Date.now() - lastLoaded) > EXPIRED_MS) && loading) {
+		if (loading) {
 			content = (<ProgressView/>);
 		} else {
 			if (displayMode==="trip") {
