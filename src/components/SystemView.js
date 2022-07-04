@@ -103,11 +103,12 @@ class SystemView extends React.Component {
 				alert(error);
 			});
 	}
-	
+
 	handleFocus = () => {
 		this.lastReloaded = 0;
 		this.reload();
 	}
+
 	reload = () => {
 		const now = Date.now();
 		if ((now - this.lastReloaded) < RELOAD_INTERVAL_MS) {
