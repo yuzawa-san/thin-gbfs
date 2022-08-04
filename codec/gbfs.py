@@ -218,6 +218,9 @@ class GbfsCodec(BikeNetworkCodec):
         for line in lines:
             for attempt in range(1):
                 name = line['Name']
+                country = line.get('Country Code')
+                if not country in ("US","CA"):
+                    continue
                 logging.info("Processing %s, attempt %d" % (name,attempt))
                 try:
                     url = line['Auto-Discovery URL']
