@@ -219,7 +219,7 @@ class GbfsCodec(BikeNetworkCodec):
             for attempt in range(1):
                 name = line['Name']
                 country = line.get('Country Code')
-                if not country in ("US","DE","CH","FR","GB"):
+                if not country in ("US","DE","CH"):
                     continue
                 logging.info("Processing %s, attempt %d" % (name,attempt))
                 try:
