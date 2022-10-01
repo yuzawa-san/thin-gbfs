@@ -38,7 +38,7 @@
     "last 2 Chrome major versions"
   ],
   "devDependencies": {
-    "concurrently": "^7.1.0",
+    "concurrently": "^7.4.0",
     "source-map-explorer": "^2.5.2",
     "react-scripts": "^5.0.1"
   }
